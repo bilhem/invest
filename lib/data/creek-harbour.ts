@@ -84,6 +84,12 @@ const deep: AreaDeep = {
     'Une master community waterfront développée par Emaar, dont la transformation se poursuit progressivement autour de nouvelles infrastructures, de nouveaux pôles commerciaux et d’une meilleure connectivité.',
   lastReviewed: '2026-10-04',
   masterplanImage: 'creek-masterplan',
+  masterplanCaption:
+    'Extrait de plan directeur servant de référence à la structure du quartier. La configuration finale peut évoluer ; un masterplan officiel récent sera intégré ici.',
+  gallery: [
+    { slot: 'creek-lifestyle', caption: 'Promenade, terrasses et tours résidentielles en bord d’eau.' },
+    { slot: 'creek-downtown-view', caption: 'Downtown Dubai et le Burj Khalifa, de l’autre côté du Creek.' },
+  ],
   atAGlance: [
     'Développement principalement porté par Emaar, en collaboration avec Dubai Holding sur certains volets, dont Dubai Square.',
     'Master community waterfront en bordure du Creek.',
@@ -103,7 +109,10 @@ const deep: AreaDeep = {
       kicker: 'Pôle retail, loisirs, hospitality et commercial',
       status: 'under-construction',
       statusNote: 'Construction en cours selon Emaar (communiqué du 5 décembre 2025)',
-      image: 'creek-dubai-square',
+      images: [
+        { slot: 'creek-dubai-square', caption: 'Concept d’une rue commerçante couverte. Le programme final et la composition de Dubai Square restent à confirmer.' },
+        { slot: 'creek-dubai-square-masterplan', caption: 'Rendu conceptuel du cœur du quartier. Il peut correspondre à une étape antérieure du projet et ne doit pas être lu comme la configuration finale.' },
+      ],
       body: [
         'Emaar présente Dubai Square comme l’ancre du développement de Dubai Creek Harbour : une destination de retail et de loisirs associée à des surfaces d’hospitality et de commerce.',
         'Pour un investisseur, la question n’est pas la promesse commerciale du centre, mais ce qu’il pourrait changer pour le quartier : fréquentation, services, emplois et vie de quartier, à mesure qu’il ouvre.',
@@ -131,7 +140,9 @@ const deep: AreaDeep = {
       kicker: 'Future connectivité par le métro',
       status: 'under-construction',
       statusNote: 'Travaux en cours : percement des tunnels lancé le 3 mai 2026',
-      image: 'creek-blue-line',
+      images: [
+        { slot: 'creek-blue-line', caption: 'Illustration d’une rame de métro et d’une station. Le design et l’emplacement définitifs des stations de Creek Harbour restent à confirmer.' },
+      ],
       body: [
         'La Dubai Metro Blue Line doit desservir plusieurs quartiers de Dubai et passe par Dubai Creek Harbour. La station de Creek Harbour est un élément important de la future connectivité du quartier.',
         'Un métro ne valorise pas un bien à lui seul. L’effet dépend de l’emplacement exact du bien par rapport à la station et de l’ouverture effective de la ligne.',
@@ -160,7 +171,9 @@ const deep: AreaDeep = {
       kicker: 'Le futur cœur emblématique du quartier',
       status: 'planned',
       statusNote: 'Projet redessiné : configuration finale, appel d’offres et calendrier à confirmer',
-      image: 'creek-tower',
+      images: [
+        { slot: 'creek-tower', caption: 'La conception ayant été modifiée selon Emaar (janvier 2026), ce visuel ne représente pas nécessairement le projet actuel.' },
+      ],
       body: [
         'La Creek Tower est un projet emblématique associé depuis plusieurs années à Dubai Creek Harbour. Son parcours montre pourquoi il faut distinguer le projet historique, les confirmations récentes et ce qui reste ouvert.',
         'BF Properties l’analyse comme un facteur potentiel pour le cœur du quartier, et non comme un élément acquis.',

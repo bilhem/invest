@@ -1,4 +1,4 @@
-import BFImage from '@/components/BFImage';
+import Figure from '@/components/ui/Figure';
 import type { Catalyst, SourceRef } from '@/lib/data/area-types';
 import { StatusBadge, StatusLegend } from './Status';
 import SourceRefs from './SourceRefs';
@@ -15,8 +15,10 @@ export default function Catalysts({ areaName, intro, items, sources }: { areaNam
         <div className="mt-16 space-y-20 md:space-y-28">
           {items.map((c, i) => (
             <article key={c.id} id={c.id} className="grid scroll-mt-28 items-start gap-10 lg:grid-cols-2 lg:gap-16">
-              <div className={`relative aspect-[4/3] w-full lg:sticky lg:top-28 ${i % 2 ? 'lg:order-2' : ''}`}>
-                <BFImage slot={c.image} sizes="(min-width:1024px) 50vw, 100vw" />
+              <div className={`space-y-8 ${c.images.length === 1 ? 'lg:sticky lg:top-28' : ''} ${i % 2 ? 'lg:order-2' : ''}`}>
+                {c.images.map((im) => (
+                  <Figure key={im.slot} slot={im.slot} caption={im.caption} status={c.status} tone="dark" fallbackAspect="4 / 3" />
+                ))}
               </div>
               <div>
                 <StatusBadge status={c.status} tone="dark" />

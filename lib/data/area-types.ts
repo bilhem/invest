@@ -34,7 +34,7 @@ export type Catalyst = {
   kicker: string;
   status: InfraStatus;
   statusNote?: string; // wording as used by the source
-  image: ImageKey;
+  images: { slot: ImageKey; caption: string }[]; // first = main; captions must state render/concept status honestly
   body: string[];
   facts?: { label: string; value: string }[]; // every fact must be backed by sourceIds
   confirmed: string[];
@@ -49,6 +49,8 @@ export type AreaDeep = {
   lastReviewed: string; // ISO date of the last fact-check
   atAGlance: string[];
   masterplanImage: ImageKey;
+  masterplanCaption: string;
+  gallery?: { slot: ImageKey; caption: string }[]; // overview figures (location, lifestyle)
   catalystsIntro: string;
   catalysts: Catalyst[];
   infrastructure: InfraItem[];

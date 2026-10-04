@@ -3,24 +3,68 @@
  * To replace: drop the file in /public/images and set `src` (e.g. '/images/hero.jpg').
  * While `src` is undefined, a neutral architectural placeholder is rendered.
  */
-export type ImageSlot = { src?: string; alt: string; focal?: string; tone?: 'dusk' | 'day' | 'water' };
+export type ImageSlot = {
+  src?: string;
+  alt: string;
+  focal?: string;
+  tone?: 'dusk' | 'day' | 'water';
+  /** Intrinsic size of `src`. Lets components reserve the exact aspect ratio (no stretch, no layout shift). */
+  width?: number;
+  height?: number;
+  /** photo | render (concept / architectural render) | plan (masterplan extract). Drives caption labels. */
+  kind?: 'photo' | 'render' | 'plan';
+  /** Commercial republication rights. 'unconfirmed' assets must be replaced by licensed originals before production. */
+  rights?: 'cleared' | 'unconfirmed';
+};
 
 /**
  * Dubai Creek Harbour slots (reference area page). Real photographs are selected separately.
  * To fill a slot: save the licensed file as /public/images/creek/<slot>.jpg and set `src: '/images/creek/<slot>.jpg'`.
  * `creekHero` is shared by the area page, the area listing and the home page card: set `src` once.
  */
-const creekHero: ImageSlot = { alt: 'Dubai Creek Harbour : front de mer et skyline', tone: 'water', focal: '50% 60%' };
+const CREEK = '/images/areas/dubai-creek-harbour';
+// Visual pack received 2026-10-04. Cropped from screenshots: commercial rights NOT confirmed (see README).
+// 710 px wide only: fine for cards and figures, soft as a full-screen hero. Replace the file, keep the path.
+const creekHero: ImageSlot = {
+  src: `${CREEK}/01-hero.webp`, width: 710, height: 398, kind: 'photo', rights: 'unconfirmed',
+  alt: 'Le front de mer de Dubai Creek Harbour face à la skyline de Downtown Dubai au coucher du soleil',
+  tone: 'water', focal: '35% 55%',
+};
+const creekWaterfront: ImageSlot = {
+  src: `${CREEK}/02-waterfront-lifestyle.webp`, width: 710, height: 471, kind: 'photo', rights: 'unconfirmed',
+  alt: 'Promenade au bord de l’eau, restaurants et tours résidentielles à Dubai Creek Harbour',
+  tone: 'water',
+};
 
 export const IMAGES = {
   'creek-hero': creekHero,
   'area-dubai-creek-harbour': creekHero,
-  'creek-waterfront': { alt: 'Promenade et front de mer de Dubai Creek Harbour', tone: 'water' },
-  'creek-masterplan': { alt: 'Masterplan de Dubai Creek Harbour', tone: 'day' },
-  'creek-dubai-square': { alt: 'Dubai Square à Dubai Creek Harbour', tone: 'dusk' },
-  'creek-blue-line': { alt: 'Future Dubai Metro Blue Line à Creek Harbour', tone: 'day' },
-  'creek-tower': { alt: 'Site de la Creek Tower à Dubai Creek Harbour', tone: 'dusk' },
-  'creek-lifestyle': { alt: 'Art de vivre à Dubai Creek Harbour', tone: 'water' },
+  'creek-waterfront': creekWaterfront,
+  'creek-lifestyle': creekWaterfront,
+  'creek-downtown-view': {
+    src: `${CREEK}/03-downtown-view.webp`, width: 710, height: 474, kind: 'photo', rights: 'unconfirmed',
+    alt: 'Skyline de Downtown Dubai et Burj Khalifa vus de l’autre côté du Creek', tone: 'dusk',
+  },
+  'creek-masterplan': {
+    src: `${CREEK}/04-masterplan.webp`, width: 710, height: 156, kind: 'plan', rights: 'unconfirmed',
+    alt: 'Extrait de plan directeur de Dubai Creek Harbour : The Sanctuary, Dubai Creek Boulevard et un district voisin', tone: 'day',
+  },
+  'creek-dubai-square': {
+    src: `${CREEK}/06-dubai-square-architecture.webp`, width: 710, height: 531, kind: 'render', rights: 'unconfirmed',
+    alt: 'Rendu d’une rue commerçante couverte, illustrant l’expérience retail envisagée pour Dubai Square', tone: 'day',
+  },
+  'creek-dubai-square-masterplan': {
+    src: `${CREEK}/05-dubai-square-masterplan.webp`, width: 710, height: 500, kind: 'render', rights: 'unconfirmed',
+    alt: 'Rendu conceptuel à vol d’oiseau du cœur de Dubai Creek Harbour et de Dubai Square', tone: 'dusk',
+  },
+  'creek-blue-line': {
+    src: `${CREEK}/07-blue-line-station.webp`, width: 710, height: 174, kind: 'render', rights: 'unconfirmed',
+    alt: 'Rendu architectural d’une rame de métro sur viaduc à proximité d’une station', tone: 'day',
+  },
+  'creek-tower': {
+    src: `${CREEK}/08-creek-tower.webp`, width: 710, height: 275, kind: 'render', rights: 'unconfirmed',
+    alt: 'Rendu conceptuel d’une tour dominant une skyline, au bord de l’eau et de zones de mangrove', tone: 'dusk',
+  },
   hero: { alt: 'Skyline de Dubai au crépuscule', tone: 'dusk', focal: '50% 60%' },
   philosophy: { alt: 'Architecture contemporaine à Dubai', tone: 'day', focal: '50% 50%' },
   lab: { alt: 'Interface de modélisation BF Investment Lab', tone: 'dusk' },
@@ -51,3 +95,9 @@ export const IMAGES = {
 } satisfies Record<string, ImageSlot>;
 export type ImageKey = keyof typeof IMAGES;
 export const getImage = (k: ImageKey): ImageSlot => IMAGES[k];
+
+/** CSS aspect-ratio for a slot (e.g. "710 / 398"); falls back to the given default while a placeholder is shown. */
+export const getAspect = (k: ImageKey, fallback = '16 / 10'): string => {
+  const i = getImage(k);
+  return i.src && i.width && i.height ? `${i.width} / ${i.height}` : fallback;
+};

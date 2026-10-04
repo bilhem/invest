@@ -8,6 +8,7 @@ import JsonLd from '@/components/ui/JsonLd';
 import TrackEvent from '@/components/TrackEvent';
 import BFImage from '@/components/BFImage';
 import { Disclaimer } from '@/components/ui/Bits';
+import Figure from '@/components/ui/Figure';
 import Catalysts from '@/components/area/Catalysts';
 import { InfraBoard, StatusLegend } from '@/components/area/Status';
 import { Maturation, Thesis, InvestorFit } from '@/components/area/Editorial';
@@ -100,6 +101,13 @@ export default async function Page({ params }: { params: Promise<Params> }) {
                     <li key={t} className="flex gap-3 text-sm leading-relaxed"><span aria-hidden className="mt-2.5 h-px w-3 shrink-0 bg-champagne" />{t}</li>
                   ))}
                 </ul>
+                {deep.gallery && (
+                  <div className="mt-10 grid gap-5 sm:grid-cols-2">
+                    {deep.gallery.map((g) => (
+                      <Figure key={g.slot} slot={g.slot} caption={g.caption} sizes="(min-width:1024px) 30vw, (min-width:640px) 45vw, 100vw" />
+                    ))}
+                  </div>
+                )}
               </div>
             )}
             <dl>
@@ -111,10 +119,13 @@ export default async function Page({ params }: { params: Promise<Params> }) {
               ))}
             </dl>
             {deep && (
-              <figure className="mt-12">
-                <div className="relative aspect-[16/9] w-full overflow-hidden"><BFImage slot={deep.masterplanImage} sizes="(min-width:1024px) 60vw, 100vw" /></div>
-                <figcaption className="mt-2 text-xs text-stone">Masterplan : un visuel officiel récent sera intégré ici, avec l’autorisation du promoteur.</figcaption>
-              </figure>
+              <Figure
+                slot={deep.masterplanImage}
+                caption={deep.masterplanCaption}
+                sizes="(min-width:1024px) 60vw, 100vw"
+                fallbackAspect="16 / 9"
+                className="mt-12"
+              />
             )}
           </div>
           <aside className="space-y-8 lg:sticky lg:top-28 lg:self-start">
