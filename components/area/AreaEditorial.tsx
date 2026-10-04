@@ -5,7 +5,6 @@ import MapSlot from '@/components/ui/MapSlot';
 import Reveal from '@/components/Reveal';
 import ZoomImage from '@/components/area/ZoomImage';
 import { StatusBadge } from '@/components/area/Status';
-import SourceRefs from '@/components/area/SourceRefs';
 import type { Area, AreaDeep, AreaEditorial, Catalyst, EditorialHead } from '@/lib/data/area-types';
 
 /**
@@ -16,7 +15,6 @@ import type { Area, AreaDeep, AreaEditorial, Catalyst, EditorialHead } from '@/l
  * Content lives in `deep.editorial`; catalyst titles, statuses and images come from `deep.catalysts`.
  */
 const GAP = 'mt-14 md:mt-20';
-const fmt = (iso: string) => new Date(iso).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
 const num = (i: number) => String(i + 1).padStart(2, '0');
 
 function ChapterHead({ eyebrow, title, intro, dark = false }: EditorialHead & { dark?: boolean }) {
@@ -30,13 +28,13 @@ function ChapterHead({ eyebrow, title, intro, dark = false }: EditorialHead & { 
 }
 
 function CatalystBlock({
-  index, item, base, sources,
+  index, item, base,
 }: {
   index: number;
   item: AreaEditorial['catalysts']['items'][number];
   base: Catalyst;
-  sources: AreaDeep['sources'];
 }) {
+  const figs = item.figures ?? [];
   return (
     <article>
       <figure>
@@ -48,30 +46,34 @@ function CatalystBlock({
 
       <div className="mt-10 grid gap-8 md:mt-12 lg:grid-cols-12 lg:gap-16">
         <div className="lg:col-span-5">
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
             <span className="font-serif text-xl text-champagne-light">{num(index)}</span>
+            <span className="eyebrow">{base.title}</span>
             <StatusBadge status={base.status} tone="dark" className="uppercase tracking-[0.14em]" />
           </div>
-          <h3 className="ed-h3 mt-6">{base.title}</h3>
-          <p className="ed-sub mt-4 text-champagne-light">{item.subtitle}</p>
+          <h3 className="ed-h3 mt-6">{item.headline}</h3>
         </div>
         <div className="lg:col-span-7">
-          <p className="ed-body text-ivory/75">
-            {item.text}
-            {item.sourceIds && <SourceRefs ids={item.sourceIds} sources={sources} tone="dark" />}
-          </p>
-          {item.facts && (
-            <dl className="mt-8 max-w-[36rem] divide-y divide-ivory/15 border-y border-ivory/15">
-              {item.facts.map((f) => (
-                <div key={f.label} className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 py-4">
-                  <dt className="text-sm text-ivory/60">{f.label}</dt>
-                  <dd className="font-serif text-xl text-ivory">{f.value}</dd>
+          <div className="space-y-5">
+            {item.paragraphs.map((p) => (
+              <p key={p} className="ed-body text-ivory/75">{p}</p>
+            ))}
+          </div>
+          {item.insight && (
+            <p className="ed-body mt-8 border-l-2 border-champagne pl-5 text-ivory/90">{item.insight}</p>
+          )}
+          {figs.length > 0 && (
+            <dl className={`mt-10 grid gap-6 border-t border-ivory/15 pt-8 ${figs.length === 3 ? 'grid-cols-3' : 'grid-cols-2'}`}>
+              {figs.map((f) => (
+                <div key={f.label}>
+                  <dd className="ed-figure">
+                    {f.value}
+                    {f.unit && <span className="ml-1.5 text-[0.5em] text-champagne-light/80">{f.unit}</span>}
+                  </dd>
+                  <dt className="mt-3 max-w-[14rem] text-xs leading-relaxed text-ivory/60 md:text-sm">{f.label}</dt>
                 </div>
               ))}
             </dl>
-          )}
-          {item.insight && (
-            <p className="ed-body mt-8 border-l-2 border-champagne pl-5 text-ivory/90">{item.insight}</p>
           )}
         </div>
       </div>
@@ -160,7 +162,7 @@ export default function AreaEditorial({ area, deep, editorial: ed }: { area: Are
               if (!base) return null;
               return (
                 <Reveal key={item.id}>
-                  <CatalystBlock index={i} item={item} base={base} sources={deep.sources} />
+                  <CatalystBlock index={i} item={item} base={base} />
                 </Reveal>
               );
             })}
@@ -168,16 +170,38 @@ export default function AreaEditorial({ area, deep, editorial: ed }: { area: Are
         </div>
       </section>
 
-      {/* 4 · NOTRE ANALYSE */}
+      {/* 4 · LA THÈSE BF PROPERTIES — dark editorial break */}
+      <section className="section relative overflow-hidden bg-charcoal text-ivory">
+        <BFImage slot="creek-downtown-view" overlay="strong" className="opacity-40" sizes="100vw" />
+        <div className="wrap relative">
+          <Reveal>
+            <p className="eyebrow">{ed.thesisBreak.eyebrow}</p>
+            <h2 className="h-section mt-5 max-w-4xl">{ed.thesisBreak.title}</h2>
+          </Reveal>
+          <div className={`${GAP} grid gap-6 lg:grid-cols-12 lg:gap-16`}>
+            <div className="space-y-6 lg:col-span-7 lg:col-start-6">
+              {ed.thesisBreak.paragraphs.map((p) => (
+                <p key={p} className="ed-lead text-ivory/80">{p}</p>
+              ))}
+            </div>
+          </div>
+          <Reveal className="mt-16 border-t border-ivory/20 pt-12 md:mt-24 md:pt-16">
+            <p className="ed-statement text-ivory/70">{ed.thesisBreak.statement[0]}</p>
+            <p className="ed-statement mt-3 text-champagne-light">{ed.thesisBreak.statement[1]}</p>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* 5 · BF PROPERTIES — how we select */}
       <section className="section">
         <div className="wrap">
-          <ChapterHead eyebrow={ed.thesis.eyebrow} title={ed.thesis.title} intro={ed.thesis.intro} />
+          <ChapterHead eyebrow={ed.approach.eyebrow} title={ed.approach.title} intro={ed.approach.intro} />
           <div className={`${GAP} grid gap-14 md:grid-cols-2 md:gap-16 lg:gap-24`}>
-            <NumberedList title={ed.thesis.interestTitle} items={ed.thesis.interest} accent />
-            <NumberedList title={ed.thesis.watchTitle} items={ed.thesis.watch} />
+            <NumberedList title={ed.approach.interestTitle} items={ed.approach.interest} accent />
+            <NumberedList title={ed.approach.analysisTitle} items={ed.approach.analysis} />
           </div>
           <Reveal className="mt-16 md:mt-20">
-            <p className="ed-statement border-l-2 border-champagne pl-6 md:pl-8">{ed.thesis.conviction}</p>
+            <p className="ed-statement border-l-2 border-champagne pl-6 md:pl-8">{ed.approach.conviction}</p>
           </Reveal>
         </div>
       </section>
@@ -202,25 +226,6 @@ export default function AreaEditorial({ area, deep, editorial: ed }: { area: Are
 
       {/* 6 · CTA */}
       <CtaBand id={`area_${area.slug}`} title={ed.cta.title} text={ed.cta.text} label={ed.cta.label} />
-
-      {/* Sources — discret */}
-      <section id="sources" className="py-12 md:py-16">
-        <div className="wrap max-w-4xl">
-          <h2 className="text-xs font-medium uppercase tracking-[0.18em] text-stone">Sources et vérification</h2>
-          <p className="mt-3 text-xs leading-relaxed text-stone">
-            Informations vérifiées le {fmt(deep.lastReviewed)}, auprès de sources officielles lorsqu’elles existent ; une information de presse est signalée comme telle. Analyse à visée informative : elle ne constitue pas un conseil financier et ne garantit aucune performance.
-          </p>
-          <ol className="mt-5 space-y-2 text-xs text-charcoal/65">
-            {deep.sources.map((s, i) => (
-              <li key={s.id} id={`source-${s.id}`} className="scroll-mt-28">
-                <span className="mr-2 text-champagne-dark">{i + 1}.</span>
-                <a href={s.url} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4 hover:text-champagne-dark">{s.title}</a>
-                {' '}— {s.publisher}, {fmt(s.date)} — {s.type === 'primary' ? 'source officielle' : 'presse'}
-              </li>
-            ))}
-          </ol>
-        </div>
-      </section>
     </>
   );
 }

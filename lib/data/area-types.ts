@@ -52,32 +52,43 @@ export type EditorialHead = { eyebrow: string; title: string; intro?: string };
 
 export type AreaEditorial = {
   heroLine: string;
+  /** 1 · Discover */
   intro: EditorialHead & {
     items: { title: string; text: string; slot: ImageKey }[];
     statement: string;
   };
+  /** 2 · Understand the scale */
   masterplan: EditorialHead & {
     /** Shown before the caption while the image is only an extract of the plan. Remove once the full plan is supplied. */
     extractLabel?: string;
     caption: string;
     insight: string;
   };
+  /** 3 · Understand what is coming */
   catalysts: EditorialHead & {
     items: {
       id: string;
-      subtitle: string;
-      text: string;
-      facts?: { label: string; value: string }[];
+      headline: string;
+      paragraphs: string[];
+      /** Secondary visual elements: the figure serves the story, not the reverse. Each must be backed by a source. */
+      figures?: { value: string; unit?: string; label: string }[];
       insight?: string;
       imageNote: string;
-      sourceIds?: string[];
     }[];
   };
-  thesis: EditorialHead & {
+  /** 4 · The BF Properties thesis (dark editorial break) */
+  thesisBreak: {
+    eyebrow: string;
+    title: string;
+    paragraphs: string[];
+    statement: [string, string];
+  };
+  /** 5 · BF Properties: how we select */
+  approach: EditorialHead & {
     interestTitle: string;
     interest: string[];
-    watchTitle: string;
-    watch: string[];
+    analysisTitle: string;
+    analysis: string[];
     conviction: string;
   };
   location: EditorialHead & { landmarks: { label: string; text: string }[] };
