@@ -1,0 +1,201 @@
+import Link from 'next/link';
+import BFImage from '@/components/BFImage';
+import Reveal from '@/components/Reveal';
+import CtaLink from '@/components/CtaLink';
+import { METHOD, STORIES, STRATEGIES, AREAS, INSIGHTS } from '@/lib/content';
+import type { ImageKey } from '@/lib/images';
+
+export function Hero() {
+  return (
+    <section className="relative flex min-h-[88svh] items-end bg-charcoal text-ivory lg:min-h-[100svh]">
+      <BFImage slot="hero" priority overlay="strong" />
+      <div className="wrap relative pb-14 pt-40 md:pb-20">
+        <p className="eyebrow">Dubai real estate investment advisory</p>
+        <h1 className="h-display mt-5 max-w-3xl">L’investissement qui vous ressemble.</h1>
+        <p className="mt-6 max-w-xl text-base leading-relaxed text-ivory/80 md:text-lg">
+          À Dubai, chaque investisseur a des objectifs différents. BF Properties vous aide à comprendre le marché, définir votre stratégie et identifier les opportunités adaptées à votre situation.
+        </p>
+        <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+          <CtaLink href="/consultation" id="hero_project" className="btn btn-gold">Définir mon projet</CtaLink>
+          <CtaLink href="/a-propos" id="hero_approach" className="btn btn-outline-light">Découvrir notre approche</CtaLink>
+        </div>
+        <ul className="mt-14 grid grid-cols-2 gap-x-6 gap-y-4 border-t border-ivory/15 pt-6 text-xs text-ivory/70 md:grid-cols-4 md:text-sm">
+          {['L’investisseur avant la propriété', 'Analyse du marché et des quartiers', 'Sélection ciblée, sur mesure', 'Accompagnement de A à Z'].map((t) => <li key={t}>{t}</li>)}
+        </ul>
+      </div>
+    </section>
+  );
+}
+
+export function Philosophy() {
+  return (
+    <section className="section">
+      <div className="wrap grid items-center gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:gap-20">
+        <Reveal>
+          <h2 className="h-section max-w-xl">Nous ne commençons pas par vous montrer des propriétés.</h2>
+          <p className="mt-8 font-serif text-2xl text-champagne-dark">Nous commençons par comprendre votre situation.</p>
+          <p className="mt-5 max-w-md leading-relaxed text-charcoal/75">
+            Votre capital, vos objectifs, votre horizon et vos contraintes déterminent les opportunités qui méritent réellement votre attention.
+          </p>
+          <CtaLink href="/a-propos" id="philosophy" className="btn btn-outline-dark mt-9">Notre approche</CtaLink>
+        </Reveal>
+        <div className="relative aspect-[4/5] w-full lg:aspect-[3/4]"><BFImage slot="philosophy" sizes="(min-width:1024px) 40vw, 100vw" /></div>
+      </div>
+    </section>
+  );
+}
+
+export function Method() {
+  return (
+    <section className="bg-ivory-200 section">
+      <div className="wrap">
+        <Reveal><h2 className="h-section max-w-2xl">Une sélection construite autour de vous.</h2></Reveal>
+        <ol className="mt-14 grid gap-px bg-stone-light/50 sm:grid-cols-2 lg:grid-cols-4">
+          {METHOD.map((m) => (
+            <li key={m.n} className="bg-ivory-200 py-8 pr-6 sm:px-6 sm:first:pl-0">
+              <span className="font-serif text-4xl text-champagne">{m.n}</span>
+              <h3 className="mt-4 font-serif text-2xl">{m.t}</h3>
+              <p className="mt-3 text-sm leading-relaxed text-charcoal/70">{m.d}</p>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </section>
+  );
+}
+
+export function Stories() {
+  return (
+    <section className="section">
+      <div className="wrap">
+        <Reveal><h2 className="h-section max-w-2xl">Des investisseurs. Des stratégies. Des résultats.</h2></Reveal>
+        <div className="mt-14 grid gap-6 md:grid-cols-3">
+          {STORIES.map((s) => (
+            <article key={s.slug} className="group flex flex-col bg-white">
+              <div className="relative aspect-[4/3]"><BFImage slot={s.img as ImageKey} sizes="(min-width:768px) 33vw, 100vw" className="transition-transform duration-[1200ms] group-hover:scale-[1.03]" /></div>
+              <div className="flex flex-1 flex-col p-6">
+                <h3 className="font-serif text-2xl">{s.name}</h3>
+                <p className="text-sm text-stone">{s.who}</p>
+                <dl className="mt-5 space-y-2 border-t border-stone-light/60 pt-4 text-sm">
+                  {([['Stratégie', s.strategy], ['Quartier', s.area], ['Investissement', s.invest], ['Évolution observée', s.evo]] as const).map(([k, v]) => (
+                    <div key={k} className="flex justify-between gap-4"><dt className="text-stone">{k}</dt><dd className="text-right">{v}</dd></div>
+                  ))}
+                </dl>
+                <Link href={`/investor-stories/${s.slug}`} className="mt-6 text-sm font-medium text-champagne-dark underline-offset-4 hover:underline">Découvrir son histoire</Link>
+              </div>
+            </article>
+          ))}
+        </div>
+        <p className="mt-6 text-xs text-stone">Données illustratives en attente de validation. Les performances passées ne garantissent pas les performances futures.</p>
+      </div>
+    </section>
+  );
+}
+
+export function Strategies() {
+  return (
+    <section className="bg-charcoal section text-ivory">
+      <div className="wrap grid gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20">
+        <Reveal className="lg:sticky lg:top-32 lg:self-start">
+          <h2 className="h-section">Plusieurs objectifs. Plusieurs façons d’investir.</h2>
+          <CtaLink href="/strategies" id="strategies" className="btn btn-gold mt-9">Explorer les stratégies</CtaLink>
+        </Reveal>
+        <ul>
+          {STRATEGIES.map((s) => (
+            <li key={s.t} className="border-t border-ivory/15 last:border-b">
+              <Link href="/strategies" className="group flex items-center gap-5 py-5">
+                <span className="relative h-16 w-16 shrink-0 sm:h-20 sm:w-20"><BFImage slot={s.img as ImageKey} sizes="80px" /></span>
+                <span className="flex-1">
+                  <span className="block font-serif text-xl sm:text-2xl">{s.t}</span>
+                  <span className="mt-1 block text-sm text-ivory/60">{s.d}</span>
+                </span>
+                <span aria-hidden className="text-champagne transition-transform group-hover:translate-x-1">→</span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  );
+}
+
+export function Areas() {
+  return (
+    <section className="section">
+      <div className="wrap">
+        <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
+          <Reveal><h2 className="h-section max-w-2xl">Comprendre Dubai, quartier par quartier.</h2></Reveal>
+          <CtaLink href="/quartiers" id="areas" className="btn btn-outline-dark self-start">Explorer Dubai</CtaLink>
+        </div>
+        <div className="mt-14 grid gap-4 md:grid-cols-6">
+          {AREAS.map((a, i) => (
+            <Link key={a.slug} href={`/quartiers/${a.slug}`}
+              className={`group relative block overflow-hidden text-ivory ${i === 0 ? 'aspect-[16/10] md:col-span-4 md:row-span-2 md:aspect-auto md:min-h-[480px]' : i < 3 ? 'aspect-[4/3] md:col-span-2' : 'aspect-[4/3] md:col-span-3 lg:col-span-2'}`}>
+              <BFImage slot={`area-${a.slug}` as ImageKey} overlay="soft" sizes="(min-width:768px) 50vw, 100vw" className="transition-transform duration-[1400ms] group-hover:scale-[1.04]" />
+              <div className="absolute inset-x-0 bottom-0 p-5 md:p-7">
+                <h3 className="font-serif text-2xl md:text-3xl">{a.name}</h3>
+                <p className="mt-1 text-xs text-ivory/75">{a.tag}</p>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export function LabTeaser() {
+  return (
+    <section className="relative overflow-hidden bg-charcoal section text-ivory">
+      <div className="wrap grid items-center gap-12 lg:grid-cols-2">
+        <Reveal>
+          <p className="eyebrow">Coming soon</p>
+          <h2 className="h-section mt-4">BF Investment Lab</h2>
+          <p className="mt-3 font-serif text-2xl text-champagne-light">Votre stratégie immobilière, modélisée.</p>
+          <p className="mt-6 max-w-md leading-relaxed text-ivory/70">
+            Un nouvel outil BF Properties conçu pour comparer différentes stratégies d’investissement, visualiser leurs besoins en capital et mieux préparer votre projet immobilier à Dubai.
+          </p>
+          <CtaLink href="/lab" id="lab_teaser" className="btn btn-gold mt-9">Découvrir le Lab</CtaLink>
+        </Reveal>
+        <div className="relative aspect-[4/3] border border-ivory/10"><BFImage slot="lab" overlay="strong" sizes="(min-width:1024px) 50vw, 100vw" /></div>
+      </div>
+    </section>
+  );
+}
+
+export function Insights() {
+  return (
+    <section className="section">
+      <div className="wrap">
+        <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
+          <Reveal>
+            <h2 className="h-section">BF Insights</h2>
+            <p className="mt-3 font-serif text-2xl text-stone">Comprendre le marché. Mieux investir.</p>
+          </Reveal>
+          <CtaLink href="/insights" id="insights" className="btn btn-outline-dark self-start">Toutes les analyses</CtaLink>
+        </div>
+        <div className="mt-14 grid gap-8 md:grid-cols-3">
+          {INSIGHTS.map((a) => (
+            <Link key={a.slug} href={`/insights/${a.slug}`} className="group block">
+              <div className="relative aspect-[3/2]"><BFImage slot={a.img as ImageKey} sizes="(min-width:768px) 33vw, 100vw" className="transition-transform duration-[1200ms] group-hover:scale-[1.03]" /></div>
+              <p className="mt-5 text-xs text-champagne-dark">{a.cat} · {a.date}</p>
+              <h3 className="mt-2 font-serif text-2xl leading-snug group-hover:text-champagne-dark">{a.title}</h3>
+            </Link>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export function FinalCta() {
+  return (
+    <section className="relative flex min-h-[70svh] items-center bg-charcoal text-ivory">
+      <BFImage slot="cta" overlay="strong" />
+      <div className="wrap relative py-24 text-center">
+        <h2 className="h-section mx-auto max-w-2xl">Votre projet commence par une conversation.</h2>
+        <CtaLink href="/consultation" id="final" className="btn btn-gold mt-10">Prendre rendez-vous</CtaLink>
+      </div>
+    </section>
+  );
+}
