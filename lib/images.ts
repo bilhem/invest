@@ -28,12 +28,12 @@ const CREEK = '/images/areas/dubai-creek-harbour';
 // Visual pack received 2026-10-04, rights declared cleared by the client. Source files were 710 px wide;
 // they were smoothly upscaled 2x (no new detail). Replace with high-resolution originals when available, keep the path.
 const creekHero: ImageSlot = {
-  src: `${CREEK}/01-hero.webp`, width: 1420, height: 796, kind: 'photo', rights: 'cleared',
+  src: `${CREEK}/01-hero.webp`, width: 2124, height: 1194, kind: 'photo', rights: 'cleared',
   alt: 'Résidences waterfront de Dubai Creek Harbour, avec la skyline de Downtown Dubai en arrière-plan au coucher du soleil',
   tone: 'water', focal: '35% 55%', focalMobile: '40% 45%',
 };
 const creekWaterfront: ImageSlot = {
-  src: `${CREEK}/02-waterfront-lifestyle.webp`, width: 1420, height: 942, kind: 'photo', rights: 'cleared',
+  src: `${CREEK}/02-waterfront-lifestyle.webp`, width: 2124, height: 1413, kind: 'photo', rights: 'cleared',
   alt: 'Promenade au bord de l’eau, restaurants et tours résidentielles à Dubai Creek Harbour',
   tone: 'water',
 };
@@ -44,27 +44,27 @@ export const IMAGES = {
   'creek-waterfront': creekWaterfront,
   'creek-lifestyle': creekWaterfront,
   'creek-downtown-view': {
-    src: `${CREEK}/03-downtown-view.webp`, width: 1420, height: 948, kind: 'photo', rights: 'cleared',
+    src: `${CREEK}/03-downtown-view.webp`, width: 2130, height: 1422, kind: 'photo', rights: 'cleared',
     alt: 'Skyline de Downtown Dubai et Burj Khalifa vus de l’autre côté du Creek', tone: 'dusk',
   },
   'creek-masterplan': {
-    src: `${CREEK}/04-masterplan.webp`, width: 1152, height: 1034, kind: 'plan', rights: 'cleared',
+    src: `${CREEK}/04-masterplan.webp`, width: 1728, height: 1551, kind: 'plan', rights: 'cleared',
     alt: 'Plan directeur de Dubai Creek Harbour : The Island, The Sanctuary, The Tower, les districts Retail, Financial, Central, North et South, Dubai Creek Boulevard, Urban River, Green Parks et le métro', tone: 'day',
   },
   'creek-dubai-square': {
-    src: `${CREEK}/06-dubai-square-architecture.webp`, width: 1420, height: 1062, kind: 'render', rights: 'cleared',
+    src: `${CREEK}/06-dubai-square-architecture.webp`, width: 2124, height: 1593, kind: 'render', rights: 'cleared',
     alt: 'Rendu d’une rue commerçante couverte, illustrant l’expérience retail envisagée pour Dubai Square', tone: 'day', focal: '50% 55%',
   },
   'creek-dubai-square-masterplan': {
-    src: `${CREEK}/05-dubai-square-masterplan.webp`, width: 1420, height: 1000, kind: 'render', rights: 'cleared',
+    src: `${CREEK}/05-dubai-square-masterplan.webp`, width: 2124, height: 1500, kind: 'render', rights: 'cleared',
     alt: 'Rendu conceptuel à vol d’oiseau du cœur de Dubai Creek Harbour et de Dubai Square', tone: 'dusk',
   },
   'creek-blue-line': {
-    src: `${CREEK}/07-blue-line-station.webp`, width: 1420, height: 348, kind: 'render', rights: 'cleared',
+    src: `${CREEK}/07-blue-line-station.webp`, width: 2124, height: 522, kind: 'render', rights: 'cleared',
     alt: 'Rendu architectural d’une rame de métro sur viaduc à proximité d’une station', tone: 'day', focal: '45% 50%',
   },
   'creek-tower': {
-    src: `${CREEK}/08-creek-tower.webp`, width: 1420, height: 550, kind: 'render', rights: 'cleared',
+    src: `${CREEK}/08-creek-tower.webp`, width: 2124, height: 825, kind: 'render', rights: 'cleared',
     alt: 'Rendu conceptuel d’une tour dominant une skyline, au bord de l’eau et de zones de mangrove', tone: 'dusk', focal: '48% 35%',
   },
   hero: { alt: 'Skyline de Dubai au crépuscule', tone: 'dusk', focal: '50% 60%' },

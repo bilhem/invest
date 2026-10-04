@@ -139,16 +139,16 @@ export default function AreaEditorial({ area, deep, editorial: ed }: { area: Are
       <section className="section bg-ivory-200">
         <div className="wrap">
           <ChapterHead eyebrow={ed.masterplan.eyebrow} title={ed.masterplan.title} intro={ed.masterplan.intro} />
-          <div className={GAP}>
-            <ZoomImage slot={deep.masterplanImage} sizes="(min-width:1280px) 1200px, 100vw" />
-            <p className="mt-3 text-xs leading-relaxed text-stone">
-              {ed.masterplan.extractLabel && <span className="mr-3 text-champagne-dark">{ed.masterplan.extractLabel}</span>}
-              {ed.masterplan.caption}
-            </p>
+          <div className={`${GAP} grid items-end gap-10 lg:grid-cols-12 lg:gap-14`}>
+            <div className="lg:col-span-8">
+              <ZoomImage slot={deep.masterplanImage} sizes="(min-width:1280px) 800px, (min-width:1024px) 62vw, 100vw" />
+              <p className="mt-3 text-xs leading-relaxed text-stone">{ed.masterplan.caption}</p>
+            </div>
+            <Reveal className="lg:col-span-4 lg:pb-10">
+              <p className="eyebrow">Lecture BF</p>
+              <p className="ed-sub mt-4 border-l-2 border-champagne pl-5 text-charcoal/90">{ed.masterplan.insight}</p>
+            </Reveal>
           </div>
-          <Reveal className="mt-14 md:mt-16">
-            <p className="ed-body border-l-2 border-champagne pl-5 text-charcoal/85">{ed.masterplan.insight}</p>
-          </Reveal>
         </div>
       </section>
 
@@ -171,7 +171,7 @@ export default function AreaEditorial({ area, deep, editorial: ed }: { area: Are
       </section>
 
       {/* 4 · LA THÈSE BF PROPERTIES — dark editorial break */}
-      <section className="section relative overflow-hidden bg-charcoal text-ivory">
+      <section className="section relative overflow-hidden border-t border-ivory/10 bg-charcoal text-ivory">
         <BFImage slot="creek-downtown-view" overlay="strong" className="opacity-40" sizes="100vw" />
         <div className="wrap relative">
           <Reveal>
