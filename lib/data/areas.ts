@@ -1,0 +1,190 @@
+import type { ImageKey } from '@/lib/images';
+
+/**
+ * AREA CONTENT — qualitative, no market figures.
+ * Editorial copy below is a first draft written from general public knowledge:
+ * BF Properties must review and validate it before publication. Add verified figures only from sourced data.
+ */
+export type Area = {
+  slug: string;
+  name: string;
+  img: ImageKey;
+  tagline: string;
+  summary: string;
+  tags: string[];
+  coords: { lat: number; lng: number }; // indicative centre point
+  overview: string;
+  masterplan: string;
+  location: string;
+  connectivity: string;
+  lifestyle: string;
+  market: string;
+  profiles: string[];
+  rental: string;
+  pipeline: string;
+  developers: string[];
+  strengths: string[];
+  considerations: string[];
+  bfView: string;
+  storySlug?: string;
+};
+
+export const AREAS: Area[] = [
+  {
+    slug: 'dubai-creek-harbour',
+    name: 'Dubai Creek Harbour',
+    img: 'area-dubai-creek-harbour',
+    tagline: 'Une master community pensée autour de l’eau et de la skyline.',
+    summary: 'Un quartier planifié en bordure du Creek, positionné entre nature, front de mer et proximité de Downtown.',
+    tags: ['Master community', 'Front de mer', 'Valorisation'],
+    coords: { lat: 25.2, lng: 55.345 },
+    overview: 'Dubai Creek Harbour est un quartier développé de manière progressive, organisé autour d’un front de mer et d’espaces publics. Sa trajectoire dépend en grande partie du rythme de livraison des différentes phases.',
+    masterplan: 'Le plan directeur prévoit un ensemble résidentiel, commercial et public, livré par phases. Le profil du quartier évolue donc au fil des livraisons : le niveau de maturité n’est pas le même d’une zone à l’autre.',
+    location: 'Situé en bordure du Creek et à proximité de la réserve de Ras Al Khor, à quelques minutes de Downtown Dubai.',
+    connectivity: 'L’accès repose principalement sur le réseau routier. Les liaisons de transport public sont à vérifier selon la phase concernée et l’avancement des infrastructures.',
+    lifestyle: 'Promenades, vues dégagées sur l’eau et sur la skyline, offre de loisirs en développement.',
+    market: 'Marché majoritairement orienté vers des projets récents ou en cours de livraison, avec une part importante d’offre sur plan.',
+    profiles: ['Appartements de 1 à 3 chambres', 'Résidences de standing en front de mer'],
+    rental: 'Le marché locatif se construit au rythme des livraisons ; la profondeur de la demande locative doit être analysée phase par phase.',
+    pipeline: 'Plusieurs phases restent à livrer. Le calendrier précis doit être confirmé auprès du promoteur au moment de l’étude.',
+    developers: ['Emaar', 'Dubai Holding (partenaire du projet)'],
+    strengths: ['Cadre de vie différenciant, en bordure d’eau', 'Plan directeur cohérent et suivi par un promoteur majeur', 'Proximité de Downtown'],
+    considerations: ['Quartier encore en construction : l’environnement évolue pendant plusieurs années', 'Dépendance au calendrier de livraison', 'Offre importante à venir, à comparer avec la demande'],
+    bfView: 'Un quartier qui peut convenir à un investisseur disposant d’un horizon moyen à long terme et acceptant la dimension « en construction ». À étudier avec attention selon la phase, le promoteur et la structure de paiement.',
+    storySlug: 'franck',
+  },
+  {
+    slug: 'dubai-hills-estate',
+    name: 'Dubai Hills Estate',
+    img: 'area-dubai-hills-estate',
+    tagline: 'Un quartier résidentiel vert, articulé autour d’un parcours de golf.',
+    summary: 'Une communauté résidentielle structurée, appréciée pour son cadre et son offre mixte appartements et villas.',
+    tags: ['Résidentiel', 'Familles', 'Golf'],
+    coords: { lat: 25.108, lng: 55.247 },
+    overview: 'Dubai Hills Estate est une communauté résidentielle de grande taille, organisée autour d’espaces verts et d’un parcours de golf, avec des équipements de proximité.',
+    masterplan: 'Le plan directeur combine appartements, townhouses et villas, ainsi que commerces, écoles et espaces publics.',
+    location: 'Situé en position intermédiaire entre le centre de Dubai et les quartiers de l’ouest, avec un accès routier direct aux axes principaux.',
+    connectivity: 'Accès routier aux axes majeurs. Les temps de trajet vers Downtown, Marina ou l’aéroport varient fortement selon l’heure et sont à vérifier sur place.',
+    lifestyle: 'Environnement résidentiel et verdoyant, orienté famille, avec centre commercial et espaces de loisirs.',
+    market: 'Marché mêlant produits récents et ensembles plus avancés dans leur livraison, avec une offre de villas et d’appartements.',
+    profiles: ['Appartements', 'Townhouses', 'Villas'],
+    rental: 'Quartier à profil résidentiel, souvent associé à une demande locative de type familial. La performance réelle dépend du bien, du prix d’entrée et des charges.',
+    pipeline: 'Plusieurs sous-quartiers et phases coexistent ; le détail est à qualifier projet par projet.',
+    developers: ['Emaar', 'Meraas (partenaire du projet)'],
+    strengths: ['Cadre résidentiel structuré', 'Équipements et services déjà présents', 'Offre diversifiée (appartements, villas)'],
+    considerations: ['Prix d’entrée généralement plus élevés que dans d’autres zones', 'Sensibilité à l’offre de nouvelles livraisons', 'Trajets dépendants du trafic'],
+    bfView: 'Convient à des investisseurs recherchant un environnement résidentiel établi et lisible. Le choix du sous-quartier et du type de bien est déterminant.',
+  },
+  {
+    slug: 'downtown-dubai',
+    name: 'Downtown Dubai',
+    img: 'area-downtown-dubai',
+    tagline: 'Le centre emblématique de Dubai, entre Burj Khalifa et Dubai Mall.',
+    summary: 'Un quartier central et très identifiable, associé à une forte visibilité internationale.',
+    tags: ['Centre urbain', 'Prestige', 'Patrimoine'],
+    coords: { lat: 25.1972, lng: 55.2744 },
+    overview: 'Downtown Dubai concentre certains des repères les plus connus de la ville : le Burj Khalifa, le Dubai Mall et la Dubai Fountain.',
+    masterplan: 'Quartier urbain dense, mêlant résidences, hôtels, bureaux et commerces, déjà largement construit.',
+    location: 'Au cœur de Dubai, à proximité de Business Bay et de l’axe Sheikh Zayed Road.',
+    connectivity: 'Bien relié au reste de la ville par le réseau routier et les transports en commun ; l’accessibilité exacte dépend de l’adresse.',
+    lifestyle: 'Vie urbaine, restauration, commerces, événements et vues sur la skyline.',
+    market: 'Marché mature, avec une forte concentration de résidences haut de gamme. Les écarts de prix selon l’adresse, la vue et la tour sont importants.',
+    profiles: ['Appartements de standing', 'Résidences de marque', 'Penthouses'],
+    rental: 'Quartier recherché pour des séjours de moyenne et longue durée ; les rendements dépendent fortement du bien et ne doivent pas être supposés.',
+    pipeline: 'Peu de foncier restant : les nouveaux projets sont plus rares et ciblés.',
+    developers: ['Emaar'],
+    strengths: ['Adresse reconnue internationalement', 'Quartier mature et déjà construit', 'Forte identité urbaine'],
+    considerations: ['Prix d’entrée élevés', 'Charges de service à intégrer dans l’analyse', 'Écarts importants de qualité entre immeubles'],
+    bfView: 'Adapté à un profil patrimonial recherchant une adresse de référence. L’analyse par immeuble est indispensable.',
+  },
+  {
+    slug: 'business-bay',
+    name: 'Business Bay',
+    img: 'area-business-bay',
+    tagline: 'Un quartier d’affaires et résidentiel en bordure du canal.',
+    summary: 'Un pôle urbain mixte, à proximité immédiate de Downtown, avec une offre variée.',
+    tags: ['Urbain', 'Canal', 'Mixte'],
+    coords: { lat: 25.185, lng: 55.265 },
+    overview: 'Business Bay est un quartier mixte (bureaux, résidences, hôtels) situé le long du Dubai Water Canal.',
+    masterplan: 'De nombreux promoteurs y interviennent, ce qui donne un quartier hétérogène, avec des projets de qualités très différentes.',
+    location: 'Juste à côté de Downtown Dubai, à proximité de l’axe Sheikh Zayed Road.',
+    connectivity: 'Position centrale, accès routier aux principaux axes. À vérifier : accessibilité piétonne et transports selon la tour.',
+    lifestyle: 'Environnement urbain, vie de quartier en développement le long du canal.',
+    market: 'Marché actif avec une offre importante et variée, allant de projets récents à des immeubles plus anciens.',
+    profiles: ['Studios et appartements', 'Résidences en bordure de canal'],
+    rental: 'La profondeur de la demande locative est réelle mais très variable selon l’immeuble ; une analyse bien par bien est nécessaire.',
+    pipeline: 'Plusieurs projets sont en cours ou prévus, ce qui peut influencer l’offre dans le temps.',
+    developers: ['Multiples promoteurs (à détailler selon le projet)'],
+    strengths: ['Position centrale', 'Offre large et diversifiée', 'Proximité de Downtown'],
+    considerations: ['Hétérogénéité de qualité entre immeubles', 'Offre abondante : le choix de l’immeuble est déterminant', 'Environnement encore en transformation'],
+    bfView: 'Un quartier où la sélection fine fait toute la différence. Il est rarement pertinent de l’aborder sans analyse précise du projet et du promoteur.',
+  },
+  {
+    slug: 'dubai-marina',
+    name: 'Dubai Marina',
+    img: 'area-dubai-marina',
+    tagline: 'Un front de mer établi, entre marina, plage et vie urbaine.',
+    summary: 'Un quartier mature et très fréquenté, avec une identité balnéaire et urbaine.',
+    tags: ['Waterfront', 'Mature', 'Locatif'],
+    coords: { lat: 25.0805, lng: 55.1403 },
+    overview: 'Dubai Marina est un quartier mature organisé autour d’une marina artificielle, avec une promenade et une forte densité de tours résidentielles.',
+    masterplan: 'Quartier largement construit ; l’essentiel de l’offre porte sur le marché secondaire.',
+    location: 'Sur la côte, à proximité de JBR et de Palm Jumeirah, dans l’ouest de la ville.',
+    connectivity: 'Desservi par le métro et le tramway ; l’accès routier peut être dense aux heures de pointe.',
+    lifestyle: 'Promenade, restaurants, accès à la plage et vie urbaine active.',
+    market: 'Marché secondaire dominant, avec de nombreux immeubles d’âges et de niveaux d’entretien différents.',
+    profiles: ['Appartements en tour', 'Vues marina ou mer'],
+    rental: 'Quartier historiquement associé à une demande locative soutenue ; les performances dépendent du bien, de la vue, de l’état et des charges.',
+    pipeline: 'Peu de nouveaux terrains ; les nouvelles livraisons sont limitées.',
+    developers: ['Multiples promoteurs (selon l’immeuble)'],
+    strengths: ['Quartier mature et lisible', 'Transports et services à proximité', 'Identité forte, front de mer'],
+    considerations: ['Immeubles de génération variable, entretien à examiner', 'Charges de service à intégrer', 'Densité et circulation en période de pointe'],
+    bfView: 'Pertinent pour un investisseur qui souhaite un quartier établi. La qualité de l’immeuble et son état priment sur l’adresse seule.',
+  },
+  {
+    slug: 'dubai-south',
+    name: 'Dubai South',
+    img: 'area-dubai-south',
+    tagline: 'Un quartier de long terme, bâti autour de l’aéroport Al Maktoum.',
+    summary: 'Une zone en développement pensée comme un pôle logistique, aéronautique et résidentiel.',
+    tags: ['Long terme', 'Développement', 'Entrée accessible'],
+    coords: { lat: 24.9, lng: 55.16 },
+    overview: 'Dubai South est une zone en développement située autour de l’aéroport international Al Maktoum, associant activités logistiques, aéronautiques et résidentielles.',
+    masterplan: 'Le projet repose sur un développement par étapes ; sa trajectoire dépend de l’évolution des activités économiques et des infrastructures.',
+    location: 'Au sud-ouest de Dubai, à distance du centre-ville.',
+    connectivity: 'Dépendante des infrastructures de transport, dont l’évolution doit être vérifiée au moment de l’analyse.',
+    lifestyle: 'Environnement encore en construction, orienté communautés résidentielles et activités économiques.',
+    market: 'Marché en phase de développement, avec des niveaux de prix généralement distincts des quartiers centraux.',
+    profiles: ['Appartements', 'Townhouses et villas'],
+    rental: 'Dépend de l’installation d’habitants et d’entreprises dans la zone ; à analyser avec prudence.',
+    pipeline: 'Développements en cours et projets annoncés ; leur calendrier réel est à confirmer.',
+    developers: ['Dubai South (autorité de la zone)', 'Promoteurs privés (selon le projet)'],
+    strengths: ['Potentiel lié au développement de la zone', 'Niveaux d’entrée souvent plus accessibles', 'Vision de long terme'],
+    considerations: ['Horizon d’investissement long', 'Dépendance à la réalisation des infrastructures', 'Demande locative encore en construction'],
+    bfView: 'Un pari de long terme, qui suppose d’accepter l’incertitude sur le calendrier. Il doit rester une partie mesurée d’une stratégie plus large.',
+  },
+  {
+    slug: 'palm-jebel-ali',
+    name: 'Palm Jebel Ali',
+    img: 'area-palm-jebel-ali',
+    tagline: 'Un projet insulaire d’envergure, encore à ses débuts.',
+    summary: 'Un projet de long terme annoncé par Nakheel, dont le calendrier de livraison reste à suivre de près.',
+    tags: ['Projet insulaire', 'Très long terme', 'Prestige'],
+    coords: { lat: 25.003, lng: 54.98 },
+    overview: 'Palm Jebel Ali est un projet insulaire de grande ampleur annoncé par Nakheel, positionné comme un développement de long terme.',
+    masterplan: 'Un plan directeur ambitieux, dont la réalisation se fera par phases sur de nombreuses années.',
+    location: 'Sur la côte, au sud-ouest de Dubai, près de Jebel Ali.',
+    connectivity: 'Infrastructures dépendantes de l’avancement du projet.',
+    lifestyle: 'Vision d’un cadre de vie balnéaire de prestige ; la réalité dépendra des livraisons effectives.',
+    market: 'Phase initiale : l’offre se limite à des lancements précoces, dont le calendrier doit être vérifié.',
+    profiles: ['Villas et résidences en première ligne', 'Projets en lancement'],
+    rental: 'Aucune base historique : la demande locative est à ce stade hypothétique.',
+    pipeline: 'Projet en phase de lancement ; les échéances officielles doivent être confirmées auprès du promoteur.',
+    developers: ['Nakheel'],
+    strengths: ['Projet d’envergure porté par un grand promoteur', 'Potentiel de différenciation à long terme', 'Positionnement balnéaire'],
+    considerations: ['Aucun recul historique', 'Risque lié au calendrier et à l’exécution', 'Horizon d’investissement très long'],
+    bfView: 'À aborder avec la plus grande prudence et un horizon très long. Ce n’est pas un point d’entrée par défaut.',
+  },
+];
+
+export const getAreaBySlug = (slug: string) => AREAS.find((a) => a.slug === slug);

@@ -23,6 +23,17 @@ export const IMAGES = {
   'insight-1': { alt: 'Analyse de marché', tone: 'dusk' },
   'insight-2': { alt: 'Guide investisseur', tone: 'day' },
   'insight-3': { alt: 'Analyse de quartier', tone: 'water' },
+  // Page heroes
+  'hero-invest': { alt: 'Vue architecturale de Dubai', tone: 'dusk', focal: '50% 60%' },
+  'hero-strategies': { alt: 'Architecture contemporaine', tone: 'day' },
+  'hero-entrepreneurs': { alt: 'Quartier d’affaires de Dubai', tone: 'dusk' },
+  'hero-areas': { alt: 'Dubai, vue d’ensemble des quartiers', tone: 'water' },
+  'hero-stories': { alt: 'Résidence contemporaine à Dubai', tone: 'day' },
+  'hero-insights': { alt: 'Dubai, lumière du matin', tone: 'dusk' },
+  'hero-about': { alt: 'Skyline de Dubai', tone: 'dusk' },
+  'hero-consult': { alt: 'Dubai la nuit', tone: 'water' },
+  'hero-lab': { alt: 'BF Investment Lab', tone: 'dusk' },
+  'hero-legal': { alt: 'BF Properties', tone: 'dusk' },
 } satisfies Record<string, ImageSlot>;
 export type ImageKey = keyof typeof IMAGES;
 export const getImage = (k: ImageKey): ImageSlot => IMAGES[k];

@@ -4,6 +4,8 @@ import './globals.css';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { SITE } from '@/lib/site';
+import Consent from '@/components/Consent';
+import AttributionCapture from '@/components/AttributionCapture';
 
 const serif = Cormorant_Garamond({ subsets: ['latin'], weight: ['400', '500', '600'], variable: '--font-serif', display: 'swap' });
 const sans = Inter({ subsets: ['latin'], variable: '--font-sans', display: 'swap' });
@@ -12,7 +14,6 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
   title: { default: `${SITE.name} — ${SITE.tagline}`, template: `%s | ${SITE.name}` },
   description: SITE.description,
-  alternates: { canonical: '/' },
   openGraph: { type: 'website', siteName: SITE.name, locale: 'fr_FR', title: SITE.name, description: SITE.description },
 };
 
@@ -25,6 +26,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Header />
         <main>{children}</main>
         <Footer />
+        <AttributionCapture />
+        <Consent />
       </body>
     </html>
   );

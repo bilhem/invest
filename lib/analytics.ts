@@ -10,4 +10,5 @@ export function track(event: BFEvent, params: Record<string, unknown> = {}) {
   if (typeof window === 'undefined') return;
   window.dataLayer?.push({ event, ...params });
   window.gtag?.('event', event, params);
+  window.fbq?.('trackCustom', event, params);
 }
