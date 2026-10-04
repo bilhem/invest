@@ -8,6 +8,10 @@ import JsonLd from '@/components/ui/JsonLd';
 import TrackEvent from '@/components/TrackEvent';
 import BFImage from '@/components/BFImage';
 import { Disclaimer } from '@/components/ui/Bits';
+import Catalysts from '@/components/area/Catalysts';
+import { InfraBoard, StatusLegend } from '@/components/area/Status';
+import { Maturation, Thesis, InvestorFit } from '@/components/area/Editorial';
+import Sources from '@/components/area/Sources';
 import { buildMetadata, abs } from '@/lib/seo';
 import { getArea, getAreas, getStory } from '@/lib/cms';
 
@@ -23,8 +27,8 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   const a = getArea(slug);
   if (!a) return {};
   return buildMetadata({
-    title: `${a.name} : analyse pour investisseur`,
-    description: `${a.tagline} ${a.summary}`,
+    title: a.deep?.seo.title ?? `${a.name} : analyse pour investisseur`,
+    description: a.deep?.seo.description ?? `${a.tagline} ${a.summary}`,
     path: `/quartiers/${a.slug}`,
   });
 }
@@ -47,29 +51,57 @@ export default async function Page({ params }: { params: Promise<Params> }) {
     ['Projets en cours', a.pipeline],
   ];
 
+  const deep = a.deep;
+  const url = abs(`/quartiers/${a.slug}`);
+
   const placeLd = {
     '@context': 'https://schema.org',
     '@type': 'Place',
     name: a.name,
     description: a.summary,
-    url: abs(`/quartiers/${a.slug}`),
+    url,
     geo: { '@type': 'GeoCoordinates', latitude: a.coords.lat, longitude: a.coords.lng },
   };
+  // Enriched pages also declare a WebPage with its fact-check date, about the Place.
+  const pageLd = deep
+    ? {
+        '@context': 'https://schema.org',
+        '@type': 'WebPage',
+        name: deep.seo.title,
+        description: deep.seo.description,
+        url,
+        inLanguage: 'fr',
+        dateModified: deep.lastReviewed,
+        about: { '@type': 'Place', name: a.name },
+        publisher: { '@type': 'Organization', name: 'BF Properties', url: abs('/') },
+      }
+    : null;
 
   return (
     <>
       <TrackEvent event="area_viewed" params={{ area: a.slug }} />
       <JsonLd data={placeLd} />
+      {pageLd && <JsonLd data={pageLd} />}
       <PageHero
         image={a.img}
         title={a.name}
-        subtitle={a.tagline}
+        subtitle={deep?.heroSubtitle ?? a.tagline}
         crumbs={[{ label: 'Quartiers', href: '/quartiers' }, { label: a.name }]}
       />
 
       <section className="section">
         <div className="wrap grid gap-14 lg:grid-cols-[1.5fr_0.8fr] lg:gap-20">
           <div>
+            {deep && (
+              <div className="mb-12">
+                <h2 className="font-serif text-3xl">À retenir</h2>
+                <ul className="mt-6 grid gap-x-10 gap-y-3 text-charcoal/80 md:grid-cols-2">
+                  {deep.atAGlance.map((t) => (
+                    <li key={t} className="flex gap-3 text-sm leading-relaxed"><span aria-hidden className="mt-2.5 h-px w-3 shrink-0 bg-champagne" />{t}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
             <dl>
               {rows.map(([k, v]) => (
                 <div key={k} className="grid gap-2 border-t border-stone-light/70 py-7 md:grid-cols-[0.5fr_1fr] md:gap-10">
@@ -78,6 +110,12 @@ export default async function Page({ params }: { params: Promise<Params> }) {
                 </div>
               ))}
             </dl>
+            {deep && (
+              <figure className="mt-12">
+                <div className="relative aspect-[16/9] w-full overflow-hidden"><BFImage slot={deep.masterplanImage} sizes="(min-width:1024px) 60vw, 100vw" /></div>
+                <figcaption className="mt-2 text-xs text-stone">Masterplan : un visuel officiel récent sera intégré ici, avec l’autorisation du promoteur.</figcaption>
+              </figure>
+            )}
           </div>
           <aside className="space-y-8 lg:sticky lg:top-28 lg:self-start">
             <MapSlot name={a.name} lat={a.coords.lat} lng={a.coords.lng} />
@@ -95,6 +133,26 @@ export default async function Page({ params }: { params: Promise<Params> }) {
           </aside>
         </div>
       </section>
+
+      {deep && (
+        <>
+          <Catalysts areaName={a.name} intro={deep.catalystsIntro} items={deep.catalysts} sources={deep.sources} />
+
+          <section id="infrastructures" className="section">
+            <div className="wrap">
+              <h2 className="h-section max-w-3xl">Infrastructures : ce qui existe, ce qui se construit, ce qui est annoncé</h2>
+              <p className="mt-5 max-w-2xl leading-relaxed text-charcoal/75">
+                Chaque infrastructure mentionnée sur BF Properties reçoit un statut, afin de ne pas confondre l’existant avec l’annoncé.
+              </p>
+              <div className="mt-10"><StatusLegend /></div>
+              <div className="mt-14"><InfraBoard items={deep.infrastructure} sources={deep.sources} /></div>
+            </div>
+          </section>
+
+          <Maturation data={deep.maturation} />
+          <Thesis data={deep.thesis} />
+        </>
+      )}
 
       <section className="section bg-ivory-200">
         <div className="wrap">
@@ -115,11 +173,28 @@ export default async function Page({ params }: { params: Promise<Params> }) {
           </div>
           <div className="mt-14 border-l-2 border-champagne bg-ivory p-8 md:p-10">
             <p className="text-xs font-medium uppercase tracking-[0.18em] text-stone">Le regard de BF Properties</p>
-            <p className="mt-4 max-w-3xl font-serif text-2xl leading-snug">{a.bfView}</p>
+            {deep ? (
+              <div className="mt-4 max-w-3xl space-y-5 font-serif text-2xl leading-snug">
+                {deep.bfView.map((p) => <p key={p}>{p}</p>)}
+              </div>
+            ) : (
+              <p className="mt-4 max-w-3xl font-serif text-2xl leading-snug">{a.bfView}</p>
+            )}
           </div>
-          <Disclaimer>Analyse qualitative à visée informative, sans donnée chiffrée vérifiée à ce stade. Elle ne constitue pas un conseil financier et ne garantit aucune performance.</Disclaimer>
+          <Disclaimer>
+            {deep
+              ? 'Analyse à visée informative. Elle ne constitue pas un conseil financier et ne garantit aucune performance. Les informations sur les infrastructures reposent sur les sources citées en bas de page.'
+              : 'Analyse qualitative à visée informative, sans donnée chiffrée vérifiée à ce stade. Elle ne constitue pas un conseil financier et ne garantit aucune performance.'}
+          </Disclaimer>
         </div>
       </section>
+
+      {deep && (
+        <>
+          <InvestorFit items={deep.investorFit} />
+          <Sources sources={deep.sources} lastReviewed={deep.lastReviewed} />
+        </>
+      )}
 
       {story && (
         <section className="section">

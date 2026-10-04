@@ -1,58 +1,15 @@
-import type { ImageKey } from '@/lib/images';
+import type { Area } from './area-types';
+import { CREEK_HARBOUR } from './creek-harbour';
 
 /**
  * AREA CONTENT — qualitative, no market figures.
  * Editorial copy below is a first draft written from general public knowledge:
  * BF Properties must review and validate it before publication. Add verified figures only from sourced data.
  */
-export type Area = {
-  slug: string;
-  name: string;
-  img: ImageKey;
-  tagline: string;
-  summary: string;
-  tags: string[];
-  coords: { lat: number; lng: number }; // indicative centre point
-  overview: string;
-  masterplan: string;
-  location: string;
-  connectivity: string;
-  lifestyle: string;
-  market: string;
-  profiles: string[];
-  rental: string;
-  pipeline: string;
-  developers: string[];
-  strengths: string[];
-  considerations: string[];
-  bfView: string;
-  storySlug?: string;
-};
+export type { Area, AreaDeep } from './area-types';
 
 export const AREAS: Area[] = [
-  {
-    slug: 'dubai-creek-harbour',
-    name: 'Dubai Creek Harbour',
-    img: 'area-dubai-creek-harbour',
-    tagline: 'Une master community pensée autour de l’eau et de la skyline.',
-    summary: 'Un quartier planifié en bordure du Creek, positionné entre nature, front de mer et proximité de Downtown.',
-    tags: ['Master community', 'Front de mer', 'Valorisation'],
-    coords: { lat: 25.2, lng: 55.345 },
-    overview: 'Dubai Creek Harbour est un quartier développé de manière progressive, organisé autour d’un front de mer et d’espaces publics. Sa trajectoire dépend en grande partie du rythme de livraison des différentes phases.',
-    masterplan: 'Le plan directeur prévoit un ensemble résidentiel, commercial et public, livré par phases. Le profil du quartier évolue donc au fil des livraisons : le niveau de maturité n’est pas le même d’une zone à l’autre.',
-    location: 'Situé en bordure du Creek et à proximité de la réserve de Ras Al Khor, à quelques minutes de Downtown Dubai.',
-    connectivity: 'L’accès repose principalement sur le réseau routier. Les liaisons de transport public sont à vérifier selon la phase concernée et l’avancement des infrastructures.',
-    lifestyle: 'Promenades, vues dégagées sur l’eau et sur la skyline, offre de loisirs en développement.',
-    market: 'Marché majoritairement orienté vers des projets récents ou en cours de livraison, avec une part importante d’offre sur plan.',
-    profiles: ['Appartements de 1 à 3 chambres', 'Résidences de standing en front de mer'],
-    rental: 'Le marché locatif se construit au rythme des livraisons ; la profondeur de la demande locative doit être analysée phase par phase.',
-    pipeline: 'Plusieurs phases restent à livrer. Le calendrier précis doit être confirmé auprès du promoteur au moment de l’étude.',
-    developers: ['Emaar', 'Dubai Holding (partenaire du projet)'],
-    strengths: ['Cadre de vie différenciant, en bordure d’eau', 'Plan directeur cohérent et suivi par un promoteur majeur', 'Proximité de Downtown'],
-    considerations: ['Quartier encore en construction : l’environnement évolue pendant plusieurs années', 'Dépendance au calendrier de livraison', 'Offre importante à venir, à comparer avec la demande'],
-    bfView: 'Un quartier qui peut convenir à un investisseur disposant d’un horizon moyen à long terme et acceptant la dimension « en construction ». À étudier avec attention selon la phase, le promoteur et la structure de paiement.',
-    storySlug: 'franck',
-  },
+  CREEK_HARBOUR,
   {
     slug: 'dubai-hills-estate',
     name: 'Dubai Hills Estate',

@@ -49,6 +49,15 @@ Node 20+ recommandé. Copiez `.env.example` en `.env.local` pour configurer CRM,
 
 Metadata dynamiques et canonicals par page, OpenGraph, `sitemap.xml`, `robots.txt`, fil d’Ariane (JSON-LD), Organization, Article, FAQ et Place en données structurées. Pages quartiers et insights générées statiquement.
 
+## Page quartier de référence : Dubai Creek Harbour
+
+`/quartiers/dubai-creek-harbour` est le modèle des futures pages quartier.
+
+- **Données** : `lib/data/creek-harbour.ts`. Une page quartier devient « enrichie » dès qu’elle porte un bloc `deep` (type `AreaDeep` dans `lib/data/area-types.ts`) : catalyseurs, infrastructures, maturation, thèse, profils, sources. Sans `deep`, le template standard s’applique.
+- **Composants réutilisables** : `components/area/` — `Status` (badges et légende **Existant / En construction / Planifié ou annoncé**, `InfraBoard`), `Catalysts`, `Editorial` (maturation, thèse et contre-arguments, profils), `Sources`, `SourceRefs`.
+- **Règle de contenu** : un chiffre, une date ou un statut n’apparaît que si une source listée dans `sources` le dit. Sinon : « à confirmer ». Chaque source est marquée officielle ou presse. À chaque mise à jour, changer `lastReviewed`.
+- **Images** (noms explicites dans `lib/images.ts`) : `creek-hero`, `creek-waterfront`, `creek-masterplan`, `creek-dubai-square`, `creek-blue-line`, `creek-tower`, `creek-lifestyle`. Déposer le fichier autorisé dans `public/images/creek/` puis renseigner `src` (et `alt` si besoin). `creek-hero` alimente aussi la page Quartiers et la Home. En développement, chaque placeholder affiche le nom de son emplacement (`NEXT_PUBLIC_SHOW_IMAGE_SLOTS=1` pour une preview).
+
 ## Non inclus en V1
 
 CMS connecté, espace client (`/client`, prévu par l’architecture), BF Investment Lab réel, vidéo hero, vraies photographies, carte interactive avancée (une carte OpenStreetMap indicative est utilisée), transitions de page.

@@ -32,6 +32,9 @@ function Placeholder({ tone, seed }: { tone: keyof typeof TONES; seed: number })
   );
 }
 
+/** Placeholders show their slot name in development, or when NEXT_PUBLIC_SHOW_IMAGE_SLOTS=1 (e.g. on a preview deploy). Never in production. */
+const SHOW_SLOTS = process.env.NODE_ENV !== 'production' || process.env.NEXT_PUBLIC_SHOW_IMAGE_SLOTS === '1';
+
 type Props = { slot: ImageKey; className?: string; priority?: boolean; sizes?: string; overlay?: 'none' | 'soft' | 'strong' };
 
 /** Fills its (relative) parent. Swap placeholders via lib/images.ts only. */
@@ -44,7 +47,14 @@ export default function BFImage({ slot, className = '', priority, sizes = '100vw
         <Image src={img.src} alt={img.alt} fill priority={priority} sizes={sizes}
           style={{ objectFit: 'cover', objectPosition: ('focal' in img && img.focal) || '50% 50%' }} />
       ) : (
-        <Placeholder tone={('tone' in img && img.tone) || 'dusk'} seed={seed} />
+        <>
+          <Placeholder tone={('tone' in img && img.tone) || 'dusk'} seed={seed} />
+          {SHOW_SLOTS && (
+            <span className="absolute left-3 top-3 z-10 rounded-sm bg-charcoal/80 px-2 py-1 font-sans text-[0.65rem] tracking-wide text-ivory/90">
+              Image à fournir : {slot}
+            </span>
+          )}
+        </>
       )}
       {overlay !== 'none' && (
         <div className={`absolute inset-0 ${overlay === 'strong'
