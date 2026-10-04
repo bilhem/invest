@@ -53,7 +53,7 @@ export const IMAGES = {
   },
   'creek-dubai-square': {
     src: `${CREEK}/06-dubai-square-architecture.webp`, width: 1420, height: 1062, kind: 'render', rights: 'cleared',
-    alt: 'Rendu d’une rue commerçante couverte, illustrant l’expérience retail envisagée pour Dubai Square', tone: 'day',
+    alt: 'Rendu d’une rue commerçante couverte, illustrant l’expérience retail envisagée pour Dubai Square', tone: 'day', focal: '50% 55%',
   },
   'creek-dubai-square-masterplan': {
     src: `${CREEK}/05-dubai-square-masterplan.webp`, width: 1420, height: 1000, kind: 'render', rights: 'cleared',
@@ -61,11 +61,11 @@ export const IMAGES = {
   },
   'creek-blue-line': {
     src: `${CREEK}/07-blue-line-station.webp`, width: 1420, height: 348, kind: 'render', rights: 'cleared',
-    alt: 'Rendu architectural d’une rame de métro sur viaduc à proximité d’une station', tone: 'day',
+    alt: 'Rendu architectural d’une rame de métro sur viaduc à proximité d’une station', tone: 'day', focal: '45% 50%',
   },
   'creek-tower': {
     src: `${CREEK}/08-creek-tower.webp`, width: 1420, height: 550, kind: 'render', rights: 'cleared',
-    alt: 'Rendu conceptuel d’une tour dominant une skyline, au bord de l’eau et de zones de mangrove', tone: 'dusk',
+    alt: 'Rendu conceptuel d’une tour dominant une skyline, au bord de l’eau et de zones de mangrove', tone: 'dusk', focal: '48% 35%',
   },
   hero: { alt: 'Skyline de Dubai au crépuscule', tone: 'dusk', focal: '50% 60%' },
   philosophy: { alt: 'Architecture contemporaine à Dubai', tone: 'day', focal: '50% 50%' },

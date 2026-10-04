@@ -44,29 +44,43 @@ export type Catalyst = {
 };
 
 /**
- * Simplified editorial layout (6 sections). When present, the area page renders AreaEditorial
- * instead of the dense standard template. Catalyst titles, statuses and images come from `deep.catalysts` (matched by id).
+ * Editorial layout for an enriched area page. When `deep.editorial` is present, the area page renders AreaEditorial
+ * (hero, intro, masterplan, 3 catalysts, thesis, location, CTA) instead of the dense standard template.
+ * Catalyst titles, statuses and images come from `deep.catalysts` (matched by id).
  */
+export type EditorialHead = { eyebrow: string; title: string; intro?: string };
+
 export type AreaEditorial = {
   heroLine: string;
-  why: { title: string; items: { title: string; text: string; slot?: ImageKey }[] };
-  timeline: { eyebrow: string; title: string; text: string };
-  catalysts: {
-    id: string;
-    subtitle: string;
-    lines: string[];
-    imageNote: string;
-    layout: 'split' | 'banner';
-    sourceIds?: string[];
-  }[];
-  lens: {
-    title: string;
+  intro: EditorialHead & {
+    items: { title: string; text: string; slot: ImageKey }[];
+    statement: string;
+  };
+  masterplan: EditorialHead & {
+    /** Shown before the caption while the image is only an extract of the plan. Remove once the full plan is supplied. */
+    extractLabel?: string;
+    caption: string;
+    insight: string;
+  };
+  catalysts: EditorialHead & {
+    items: {
+      id: string;
+      subtitle: string;
+      text: string;
+      facts?: { label: string; value: string }[];
+      insight?: string;
+      imageNote: string;
+      sourceIds?: string[];
+    }[];
+  };
+  thesis: EditorialHead & {
     interestTitle: string;
     interest: string[];
     watchTitle: string;
     watch: string[];
-    closing: string;
+    conviction: string;
   };
+  location: EditorialHead & { landmarks: { label: string; text: string }[] };
   cta: { title: string; text: string; label: string };
 };
 
