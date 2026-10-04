@@ -19,6 +19,9 @@
   .btn-outline-dark { @apply border border-charcoal/30 text-charcoal hover:border-charcoal hover:bg-charcoal/5; }
   .hairline { @apply border-t border-stone-light/60; }
 }
+/* Per-breakpoint focal point for photos: --fp-sm below 768px, --fp-md from 768px up (set by BFImage). */
+.bf-img { object-position: var(--fp-sm, 50% 50%); }
+@media (min-width: 768px) { .bf-img { object-position: var(--fp-md, 50% 50%); } }
 .reveal { opacity: 0; transform: translateY(14px); transition: opacity .9s ease, transform .9s ease; }
 .reveal.is-in { opacity: 1; transform: none; }
 @media (prefers-reduced-motion: reduce) {

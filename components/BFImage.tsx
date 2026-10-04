@@ -41,11 +41,13 @@ type Props = { slot: ImageKey; className?: string; priority?: boolean; sizes?: s
 export default function BFImage({ slot, className = '', priority, sizes = '100vw', overlay = 'none' }: Props) {
   const img = getImage(slot);
   const seed = slot.length * 7 + slot.charCodeAt(slot.length - 1);
+  const fpMd = img.focal ?? '50% 50%'; // focal point from 768px up
+  const fpSm = img.focalMobile ?? fpMd; // focal point on phones
   return (
     <div className={`absolute inset-0 overflow-hidden ${className}`}>
       {'src' in img && img.src ? (
-        <Image src={img.src} alt={img.alt} fill priority={priority} sizes={sizes}
-          style={{ objectFit: 'cover', objectPosition: ('focal' in img && img.focal) || '50% 50%' }} />
+        <Image src={img.src} alt={img.alt} fill priority={priority} sizes={sizes} quality={85} className="bf-img"
+          style={{ objectFit: 'cover', '--fp-md': fpMd, '--fp-sm': fpSm } as React.CSSProperties} />
       ) : (
         <>
           <Placeholder tone={('tone' in img && img.tone) || 'dusk'} seed={seed} />

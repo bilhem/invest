@@ -7,6 +7,8 @@ export type ImageSlot = {
   src?: string;
   alt: string;
   focal?: string;
+  /** Focal point on phones (object-position). Defaults to `focal`. */
+  focalMobile?: string;
   tone?: 'dusk' | 'day' | 'water';
   /** Intrinsic size of `src`. Lets components reserve the exact aspect ratio (no stretch, no layout shift). */
   width?: number;
@@ -23,15 +25,15 @@ export type ImageSlot = {
  * `creekHero` is shared by the area page, the area listing and the home page card: set `src` once.
  */
 const CREEK = '/images/areas/dubai-creek-harbour';
-// Visual pack received 2026-10-04. Cropped from screenshots: commercial rights NOT confirmed (see README).
-// 710 px wide only: fine for cards and figures, soft as a full-screen hero. Replace the file, keep the path.
+// Visual pack received 2026-10-04, rights declared cleared by the client. Source files were 710 px wide;
+// they were smoothly upscaled 2x (no new detail). Replace with high-resolution originals when available, keep the path.
 const creekHero: ImageSlot = {
-  src: `${CREEK}/01-hero.webp`, width: 710, height: 398, kind: 'photo', rights: 'unconfirmed',
+  src: `${CREEK}/01-hero.webp`, width: 1420, height: 796, kind: 'photo', rights: 'cleared',
   alt: 'Le front de mer de Dubai Creek Harbour face à la skyline de Downtown Dubai au coucher du soleil',
-  tone: 'water', focal: '35% 55%',
+  tone: 'water', focal: '35% 55%', focalMobile: '40% 45%',
 };
 const creekWaterfront: ImageSlot = {
-  src: `${CREEK}/02-waterfront-lifestyle.webp`, width: 710, height: 471, kind: 'photo', rights: 'unconfirmed',
+  src: `${CREEK}/02-waterfront-lifestyle.webp`, width: 1420, height: 942, kind: 'photo', rights: 'cleared',
   alt: 'Promenade au bord de l’eau, restaurants et tours résidentielles à Dubai Creek Harbour',
   tone: 'water',
 };
@@ -42,27 +44,27 @@ export const IMAGES = {
   'creek-waterfront': creekWaterfront,
   'creek-lifestyle': creekWaterfront,
   'creek-downtown-view': {
-    src: `${CREEK}/03-downtown-view.webp`, width: 710, height: 474, kind: 'photo', rights: 'unconfirmed',
+    src: `${CREEK}/03-downtown-view.webp`, width: 1420, height: 948, kind: 'photo', rights: 'cleared',
     alt: 'Skyline de Downtown Dubai et Burj Khalifa vus de l’autre côté du Creek', tone: 'dusk',
   },
   'creek-masterplan': {
-    src: `${CREEK}/04-masterplan.webp`, width: 710, height: 156, kind: 'plan', rights: 'unconfirmed',
+    src: `${CREEK}/04-masterplan.webp`, width: 1420, height: 312, kind: 'plan', rights: 'cleared',
     alt: 'Extrait de plan directeur de Dubai Creek Harbour : The Sanctuary, Dubai Creek Boulevard et un district voisin', tone: 'day',
   },
   'creek-dubai-square': {
-    src: `${CREEK}/06-dubai-square-architecture.webp`, width: 710, height: 531, kind: 'render', rights: 'unconfirmed',
+    src: `${CREEK}/06-dubai-square-architecture.webp`, width: 1420, height: 1062, kind: 'render', rights: 'cleared',
     alt: 'Rendu d’une rue commerçante couverte, illustrant l’expérience retail envisagée pour Dubai Square', tone: 'day',
   },
   'creek-dubai-square-masterplan': {
-    src: `${CREEK}/05-dubai-square-masterplan.webp`, width: 710, height: 500, kind: 'render', rights: 'unconfirmed',
+    src: `${CREEK}/05-dubai-square-masterplan.webp`, width: 1420, height: 1000, kind: 'render', rights: 'cleared',
     alt: 'Rendu conceptuel à vol d’oiseau du cœur de Dubai Creek Harbour et de Dubai Square', tone: 'dusk',
   },
   'creek-blue-line': {
-    src: `${CREEK}/07-blue-line-station.webp`, width: 710, height: 174, kind: 'render', rights: 'unconfirmed',
+    src: `${CREEK}/07-blue-line-station.webp`, width: 1420, height: 348, kind: 'render', rights: 'cleared',
     alt: 'Rendu architectural d’une rame de métro sur viaduc à proximité d’une station', tone: 'day',
   },
   'creek-tower': {
-    src: `${CREEK}/08-creek-tower.webp`, width: 710, height: 275, kind: 'render', rights: 'unconfirmed',
+    src: `${CREEK}/08-creek-tower.webp`, width: 1420, height: 550, kind: 'render', rights: 'cleared',
     alt: 'Rendu conceptuel d’une tour dominant une skyline, au bord de l’eau et de zones de mangrove', tone: 'dusk',
   },
   hero: { alt: 'Skyline de Dubai au crépuscule', tone: 'dusk', focal: '50% 60%' },
