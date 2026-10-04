@@ -29,7 +29,7 @@ const CREEK = '/images/areas/dubai-creek-harbour';
 // they were smoothly upscaled 2x (no new detail). Replace with high-resolution originals when available, keep the path.
 const creekHero: ImageSlot = {
   src: `${CREEK}/01-hero.webp`, width: 1420, height: 796, kind: 'photo', rights: 'cleared',
-  alt: 'Le front de mer de Dubai Creek Harbour face à la skyline de Downtown Dubai au coucher du soleil',
+  alt: 'Résidences waterfront de Dubai Creek Harbour, avec la skyline de Downtown Dubai en arrière-plan au coucher du soleil',
   tone: 'water', focal: '35% 55%', focalMobile: '40% 45%',
 };
 const creekWaterfront: ImageSlot = {

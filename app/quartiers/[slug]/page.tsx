@@ -13,6 +13,7 @@ import Catalysts from '@/components/area/Catalysts';
 import { InfraBoard, StatusLegend } from '@/components/area/Status';
 import { Maturation, Thesis, InvestorFit } from '@/components/area/Editorial';
 import Sources from '@/components/area/Sources';
+import AreaEditorial from '@/components/area/AreaEditorial';
 import { buildMetadata, abs } from '@/lib/seo';
 import { getArea, getAreas, getStory } from '@/lib/cms';
 
@@ -77,6 +78,18 @@ export default async function Page({ params }: { params: Promise<Params> }) {
         publisher: { '@type': 'Organization', name: 'BF Properties', url: abs('/') },
       }
     : null;
+
+  // Enriched areas with an editorial block use the simplified 6-section layout.
+  if (deep?.editorial) {
+    return (
+      <>
+        <TrackEvent event="area_viewed" params={{ area: a.slug }} />
+        <JsonLd data={placeLd} />
+        {pageLd && <JsonLd data={pageLd} />}
+        <AreaEditorial area={a} deep={deep} editorial={deep.editorial} />
+      </>
+    );
+  }
 
   return (
     <>

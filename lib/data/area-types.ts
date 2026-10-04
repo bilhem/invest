@@ -43,7 +43,35 @@ export type Catalyst = {
   sourceIds: string[];
 };
 
+/**
+ * Simplified editorial layout (6 sections). When present, the area page renders AreaEditorial
+ * instead of the dense standard template. Catalyst titles, statuses and images come from `deep.catalysts` (matched by id).
+ */
+export type AreaEditorial = {
+  heroLine: string;
+  why: { title: string; items: { title: string; text: string; slot?: ImageKey }[] };
+  timeline: { eyebrow: string; title: string; text: string };
+  catalysts: {
+    id: string;
+    subtitle: string;
+    lines: string[];
+    imageNote: string;
+    layout: 'split' | 'banner';
+    sourceIds?: string[];
+  }[];
+  lens: {
+    title: string;
+    interestTitle: string;
+    interest: string[];
+    watchTitle: string;
+    watch: string[];
+    closing: string;
+  };
+  cta: { title: string; text: string; label: string };
+};
+
 export type AreaDeep = {
+  editorial?: AreaEditorial;
   seo: { title: string; description: string };
   heroSubtitle: string;
   lastReviewed: string; // ISO date of the last fact-check

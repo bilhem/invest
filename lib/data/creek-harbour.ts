@@ -80,8 +80,98 @@ const deep: AreaDeep = {
     description:
       'Analyse de Dubai Creek Harbour par BF Properties : master community waterfront d’Emaar, Dubai Square, future Blue Line, atouts, risques et profils d’investisseurs.',
   },
-  heroSubtitle:
-    'Une master community waterfront développée par Emaar, dont la transformation se poursuit progressivement autour de nouvelles infrastructures, de nouveaux pôles commerciaux et d’une meilleure connectivité.',
+  heroSubtitle: 'Une master community waterfront développée par Emaar, face à la skyline de Downtown Dubai.',
+  editorial: {
+    heroLine: 'Une master community waterfront développée par Emaar, face à la skyline de Downtown Dubai.',
+    why: {
+      title: 'Pourquoi Creek Harbour ?',
+      items: [
+        {
+          title: 'Waterfront',
+          text: 'Une master community développée autour de Dubai Creek, de promenades, d’espaces publics et d’un environnement résidentiel moderne.',
+          slot: 'creek-lifestyle',
+        },
+        {
+          title: 'Downtown à l’horizon',
+          text: 'La relation visuelle et géographique avec Downtown Dubai et Burj Khalifa constitue une caractéristique forte du quartier.',
+          slot: 'creek-downtown-view',
+        },
+        {
+          title: 'Une master community encore en transformation',
+          text: 'Creek Harbour continue d’évoluer avec de nouvelles infrastructures, de nouveaux équipements et plusieurs projets structurants.',
+        },
+      ],
+    },
+    timeline: {
+      eyebrow: 'Une master community en transformation',
+      title: 'Un quartier qui se construit dans le temps',
+      text: 'Dubai Creek Harbour se développe progressivement. Selon les zones, les bâtiments, les espaces publics et les équipements ne sont pas au même stade : une thèse d’investissement doit tenir compte de ces différents niveaux de maturité.',
+    },
+    catalysts: [
+      {
+        id: 'dubai-square',
+        subtitle: 'Un futur pôle de retail, de loisirs et d’hospitality.',
+        lines: [
+          'Selon Emaar, la construction est en cours (communiqué du 5 décembre 2025), avec une fin de chantier annoncée dans environ trois ans.',
+          'Emaar annonce 2,6 millions de m² de surfaces retail, hospitality et commerciales.',
+          'Un point d’ancrage potentiel de la vie du quartier. Ouverture et programme final restent à confirmer.',
+        ],
+        imageNote: 'Illustration d’une rue commerçante couverte — programme final à confirmer.',
+        layout: 'split',
+        sourceIds: ['emaar-square'],
+      },
+      {
+        id: 'blue-line',
+        subtitle: 'La future connectivité du quartier par le métro.',
+        lines: [
+          'Dubai Creek Harbour doit être desservi par la Blue Line : les travaux de percement des tunnels ont été lancés le 3 mai 2026.',
+          'Objectif d’ouverture annoncé par les autorités : 2029. Une date cible n’est pas une garantie.',
+          'Un catalyseur potentiel, dont l’effet dépend de l’emplacement exact de chaque bien.',
+        ],
+        imageNote: 'Illustration d’une rame et d’une station — design et emplacement définitifs à confirmer.',
+        layout: 'banner',
+        sourceIds: ['dmo-blue-line', 'rta-blue-line'],
+      },
+      {
+        id: 'creek-tower',
+        subtitle: 'Un projet emblématique, en cours de redéfinition.',
+        lines: [
+          'Selon une déclaration publique du fondateur d’Emaar en janvier 2026, la conception a été modifiée et un appel d’offres devait être lancé.',
+          'Design, hauteur et calendrier ne sont pas confirmés à ce jour.',
+          'Un facteur à suivre pour le cœur du quartier, pas un acquis.',
+        ],
+        imageNote: 'Visuel conceptuel — configuration finale susceptible d’évoluer.',
+        layout: 'banner',
+        sourceIds: ['kt-creek-tower'],
+      },
+    ],
+    lens: {
+      title: 'Pourquoi nous regardons Dubai Creek Harbour',
+      interestTitle: 'Ce qui nous intéresse',
+      interest: [
+        'Une master community portée principalement par Emaar',
+        'Un positionnement waterfront',
+        'La relation avec Downtown Dubai',
+        'La montée en puissance progressive des infrastructures',
+        'Dubai Square et la future connectivité métro, comme catalyseurs potentiels',
+      ],
+      watchTitle: 'Points de vigilance',
+      watch: [
+        'Un quartier encore en phase de maturation',
+        'Le calendrier des infrastructures futures',
+        'Des différences importantes entre bâtiments et emplacements',
+        'Le volume futur de nouvelles livraisons',
+        'La proximité d’une infrastructure ne garantit pas automatiquement la valorisation d’un bien',
+      ],
+      closing:
+        'À Creek Harbour, nous ne cherchons pas simplement à acheter dans le quartier. Nous cherchons à identifier les emplacements capables de bénéficier le plus de sa maturation.',
+    },
+    cta: {
+      title: 'Dubai Creek Harbour correspond-il à votre stratégie ?',
+      text: 'Nous analysons votre objectif, votre horizon d’investissement et votre budget avant de sélectionner les opportunités pertinentes.',
+      label: 'Définir mon projet',
+    },
+  },
   lastReviewed: '2026-10-04',
   masterplanImage: 'creek-masterplan',
   masterplanCaption:
@@ -203,9 +293,9 @@ const deep: AreaDeep = {
       sourceIds: ['emaar-community'],
     },
     {
-      name: 'Promenades et front de mer',
+      name: 'Promenades en bord d’eau',
       status: 'existing',
-      summary: 'Promenades dédiées aux loisirs et à la restauration, selon Emaar.',
+      summary: 'Promenades en bordure de Dubai Creek dédiées aux loisirs et à la restauration, selon Emaar.',
       sourceIds: ['emaar-community'],
     },
     {
@@ -264,7 +354,7 @@ const deep: AreaDeep = {
       'Creek Harbour ne s’analyse pas uniquement à travers les immeubles actuellement disponibles. L’investissement doit aussi être étudié dans le contexte de la maturation progressive d’un quartier qui se complète, couche après couche.',
     layers: [
       { title: 'Logements', text: 'Immeubles livrés, en cours de livraison et à venir : l’offre évolue par phases.' },
-      { title: 'Waterfront', text: 'Marina, promenades et front de mer : un atout déjà visible, mais pas encore partout.' },
+      { title: 'Waterfront', text: 'Marina, promenades en bord d’eau et vues sur Dubai Creek : un atout déjà visible, mais pas encore partout.' },
       { title: 'Espaces publics', text: 'Leur qualité et leur livraison conditionnent la vie de quartier.' },
       { title: 'Retail', text: 'Commerces de proximité aujourd’hui, Dubai Square à terme.' },
       { title: 'Hospitality', text: 'Hôtels et résidences de service qui animent le quartier.' },
@@ -354,7 +444,7 @@ export const CREEK_HARBOUR: Area = {
   img: 'creek-hero',
   tagline: 'Une master community waterfront en pleine maturation.',
   summary: 'Une master community waterfront développée par Emaar, entre le Creek, la réserve de Ras Al Khor et Downtown Dubai.',
-  tags: ['Master community', 'Front de mer', 'Valorisation'],
+  tags: ['Master community', 'Waterfront', 'Valorisation'],
   coords: { lat: 25.2, lng: 55.345 },
   overview:
     'Dubai Creek Harbour est une master community waterfront développée principalement par Emaar, en bordure du Creek. Elle combine résidentiel, retail, hospitality et espaces publics, et se construit par phases : l’environnement continue de mûrir.',
@@ -365,10 +455,10 @@ export const CREEK_HARBOUR: Area = {
   connectivity:
     'Aujourd’hui, l’accès repose surtout sur le réseau routier. La Dubai Metro Blue Line, en construction, doit desservir le quartier, avec un objectif d’ouverture annoncé en 2029.',
   lifestyle:
-    'Marina, promenades, vues sur l’eau et accès à la réserve naturelle voisine. L’offre de commerces et de loisirs est appelée à s’étoffer, notamment avec Dubai Square.',
+    'Marina, promenades en bord d’eau, vues sur Dubai Creek et accès à la réserve naturelle voisine. L’offre de commerces et de loisirs est appelée à s’étoffer, notamment avec Dubai Square.',
   market:
     'Marché composé majoritairement de projets récents ou en cours de livraison, avec une part importante d’offre sur plan. Les écarts entre bâtiments, phases et emplacements sont importants.',
-  profiles: ['Appartements de 1 à 3 chambres', 'Résidences de standing en front de mer'],
+  profiles: ['Appartements de 1 à 3 chambres', 'Résidences waterfront'],
   rental:
     'Le marché locatif se construit au rythme des livraisons ; la profondeur de la demande doit être analysée phase par phase, sans extrapolation.',
   pipeline:

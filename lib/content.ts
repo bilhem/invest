@@ -20,7 +20,7 @@ export const STRATEGIES = [
   { t: 'Entrepreneurs & Companies', d: 'Aborder l’investissement dans un cadre patrimonial ou professionnel.', img: 'area-business-bay' },
 ] as const;
 export const AREAS = [
-  { slug: 'dubai-creek-harbour', name: 'Dubai Creek Harbour', tag: 'Front de mer · Master community' },
+  { slug: 'dubai-creek-harbour', name: 'Dubai Creek Harbour', tag: 'Waterfront · Master community' },
   { slug: 'dubai-hills-estate', name: 'Dubai Hills Estate', tag: 'Résidentiel · Golf' },
   { slug: 'downtown-dubai', name: 'Downtown Dubai', tag: 'Centre urbain' },
   { slug: 'business-bay', name: 'Business Bay', tag: 'Urbain · Canal' },
