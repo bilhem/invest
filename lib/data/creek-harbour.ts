@@ -108,7 +108,6 @@ const deep: AreaDeep = {
       title: 'Comprendre Creek Harbour à l’échelle du quartier',
       intro:
         'Creek Harbour n’est pas quelques tours résidentielles : c’est une master community de multiples districts, de waterfront, d’espaces verts, de retail, d’hospitality et de futurs pôles d’attractivité, à des stades de développement très différents.',
-      extractLabel: 'Extrait du plan directeur',
       caption:
         'Masterplan de référence. Certains éléments représentés correspondent à des visions ou projets dont la configuration finale peut évoluer.',
       insight:

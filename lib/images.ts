@@ -48,8 +48,8 @@ export const IMAGES = {
     alt: 'Skyline de Downtown Dubai et Burj Khalifa vus de l’autre côté du Creek', tone: 'dusk',
   },
   'creek-masterplan': {
-    src: `${CREEK}/04-masterplan.webp`, width: 1420, height: 312, kind: 'plan', rights: 'cleared',
-    alt: 'Extrait de plan directeur de Dubai Creek Harbour : The Sanctuary, Dubai Creek Boulevard et un district voisin', tone: 'day',
+    src: `${CREEK}/04-masterplan.webp`, width: 1152, height: 1034, kind: 'plan', rights: 'cleared',
+    alt: 'Plan directeur de Dubai Creek Harbour : The Island, The Sanctuary, The Tower, les districts Retail, Financial, Central, North et South, Dubai Creek Boulevard, Urban River, Green Parks et le métro', tone: 'day',
   },
   'creek-dubai-square': {
     src: `${CREEK}/06-dubai-square-architecture.webp`, width: 1420, height: 1062, kind: 'render', rights: 'cleared',

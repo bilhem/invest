@@ -12,6 +12,9 @@ export default function ZoomImage({ slot, sizes = '100vw' }: { slot: ImageKey; s
   const img = getImage(slot);
   const ref = useRef<HTMLDialogElement>(null);
   const aspect = getAspect(slot, '16 / 7');
+  const ratio = img.width && img.height ? img.width / img.height : 16 / 7;
+  // Never taller than ~80% of the viewport: tall plans stay fully visible without cropping.
+  const maxW = `min(100%, calc(80vh * ${ratio.toFixed(3)}))`;
 
   if (!img.src) {
     return (
@@ -27,7 +30,8 @@ export default function ZoomImage({ slot, sizes = '100vw' }: { slot: ImageKey; s
         type="button"
         onClick={() => ref.current?.showModal()}
         aria-label="Agrandir le plan"
-        className="group relative block w-full cursor-zoom-in border border-stone-light/70 bg-ivory"
+        className="group relative mx-auto block w-full cursor-zoom-in border border-stone-light/70 bg-ivory"
+        style={{ maxWidth: maxW }}
       >
         <span className="relative block w-full" style={{ aspectRatio: aspect }}>
           <Image src={img.src} alt={img.alt} fill sizes={sizes} quality={90} style={{ objectFit: 'contain' }} />
@@ -50,7 +54,7 @@ export default function ZoomImage({ slot, sizes = '100vw' }: { slot: ImageKey; s
           >
             Fermer
           </button>
-          <div className="relative w-full max-w-[1800px] bg-ivory" style={{ aspectRatio: aspect }}>
+          <div className="relative w-full bg-ivory" style={{ aspectRatio: aspect, maxWidth: `min(100%, calc(92vh * ${ratio.toFixed(3)}))` }}>
             <Image src={img.src} alt={img.alt} fill sizes="100vw" quality={90} style={{ objectFit: 'contain' }} />
           </div>
         </div>
