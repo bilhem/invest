@@ -51,8 +51,9 @@ const creekWaterfront: ImageSlot = {
 // The pack has NO golf photograph and NO Dubai Hills masterplan: 03-dubai-hills-golf and 05-dubai-hills-masterplan come from the earlier
 // pack (small, temporary). Replace them when an authorised HD source is supplied; do not invent either.
 // 02-dubai-hills-park of the pack is the same file as 01 (it is not duplicated here).
+// The three files that replace earlier ones carry a `-v2` suffix on purpose: a new URL forces next/image and the browser to drop the old cached version.
 const hillsHero: ImageSlot = {
-  src: `${HILLS}/01-dubai-hills-hero.webp`, width: 3841, height: 2161, rights: 'cleared',
+  src: `${HILLS}/01-dubai-hills-hero-v2.webp`, width: 3841, height: 2161, rights: 'cleared',
   alt: 'Parc central de Dubai Hills Estate et résidences environnantes, vus en hauteur',
   kind: 'render', tone: 'day', focal: '50% 60%', focalMobile: '58% 55%',
 };
@@ -118,7 +119,7 @@ export const IMAGES = {
     kind: 'photo', tone: 'day',
   },
   'hills-mall': {
-    src: `${HILLS}/04-dubai-hills-mall.webp`, width: 3841, height: 2161, rights: 'cleared',
+    src: `${HILLS}/04-dubai-hills-mall-v2.webp`, width: 3841, height: 2161, rights: 'cleared',
     alt: 'Dubai Hills Mall vu de nuit : parvis, terrasses et enseigne lumineuse le long de l’avenue',
     kind: 'render', tone: 'dusk', focal: '60% 45%', focalMobile: '80% 45%',
   },
@@ -129,7 +130,7 @@ export const IMAGES = {
     kind: 'plan', tone: 'day',
   },
   'hills-lifestyle': {
-    src: `${HILLS}/06-dubai-hills-lifestyle.webp`, width: 3841, height: 2161, rights: 'cleared',
+    src: `${HILLS}/06-dubai-hills-lifestyle-v2.webp`, width: 3841, height: 2161, rights: 'cleared',
     alt: 'Cheminement piéton paysager et terrasse de café au pied des résidences de Dubai Hills',
     kind: 'render', tone: 'day', focal: '60% 50%',
   },
