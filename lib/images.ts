@@ -57,10 +57,16 @@ const hillsHero: ImageSlot = {
   alt: 'Parc central de Dubai Hills Estate et résidences environnantes, vus en hauteur',
   kind: 'render', tone: 'day', focal: '50% 60%', focalMobile: '58% 55%',
 };
+// Downtown Dubai: PRODUCTION V2 pack (extracts of the official Emaar IL PRIMO / The Opera District brochure, native resolution, no upscaling,
+// received 2026-10-05). Used here: 01 (hero, 1797 px) and 05 (centrality, 5869 px). The pack has NO Dubai Mall / Fashion Avenue photograph and NO
+// Downtown masterplan (its map is a project location map and must not be labelled as a masterplan): `downtown-fashion-avenue`, `downtown-masterplan`
+// and `downtown-fountain` come from the earlier pack: replace them when authorised HD sources arrive. The other pack visuals (Opera, skyline,
+// residential view, pool, night, interior) are IL PRIMO project images: not used, so the page stays about the neighbourhood.
+// 01 carries a `-v2` suffix: a new URL forces next/image and the browser to drop the previous cached hero.
 const downtownHero: ImageSlot = {
-  src: `${DOWNTOWN}/01-downtown-dubai-hero.webp`, width: 2130, height: 1422, rights: 'cleared',
-  alt: 'Vue panoramique de Downtown Dubai et du Burj Khalifa',
-  kind: 'photo', tone: 'dusk', focal: '55% 40%', focalMobile: '52% 40%',
+  src: `${DOWNTOWN}/01-downtown-dubai-hero-v2.webp`, width: 1797, height: 1467, rights: 'cleared',
+  alt: 'Le Burj Khalifa illuminé de nuit, la Dubai Fountain et le Dubai Mall vus du ciel',
+  kind: 'photo', tone: 'dusk', focal: '50% 55%', focalMobile: '49% 50%',
 };
 
 export const IMAGES = {
@@ -150,7 +156,7 @@ export const IMAGES = {
     alt: 'Espace bien-être ouvert sur la terrasse et la piscine d’une résidence',
     kind: 'render', tone: 'day',
   },
-  // Downtown Dubai — visual pack received 2026-10-05.
+  // Downtown Dubai (see the V2 pack note above).
   'downtown-hero': downtownHero,
   'downtown-fountain': {
     src: `${DOWNTOWN}/02-downtown-dubai-lifestyle.webp`, width: 2340, height: 1336, rights: 'cleared',
@@ -168,9 +174,9 @@ export const IMAGES = {
     kind: 'plan', tone: 'day',
   },
   'downtown-centrality': {
-    src: `${DOWNTOWN}/01-downtown-dubai-hero.webp`, width: 2130, height: 1422, rights: 'cleared',
-    alt: 'Skyline de Downtown Dubai au cœur de Dubai',
-    kind: 'photo', tone: 'dusk', focal: '78% 45%', focalMobile: '75% 45%',
+    src: `${DOWNTOWN}/05-downtown-dubai-architecture.webp`, width: 5869, height: 3308, rights: 'cleared',
+    alt: 'Façade d’une tour de Downtown Dubai face au Burj Khalifa, avec la skyline de la ville à l’horizon',
+    kind: 'render', tone: 'day', focal: '60% 45%', focalMobile: '78% 45%',
   },
   hero: { alt: 'Skyline de Dubai au crépuscule', tone: 'dusk', focal: '50% 60%' },
   philosophy: { alt: 'Architecture contemporaine à Dubai', tone: 'day', focal: '50% 50%' },
