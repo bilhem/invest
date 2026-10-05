@@ -19,7 +19,7 @@ function Closing({ lines, dark, className = '' }: { lines: string[]; dark: boole
  *  centered = airy centred block (Dubai Hills)
  *  columns  = title 7 / text 5, then the closing lines across the full width (Downtown)
  *  split    = text 5 / image 7
- *  stagger  = title across, text 4 / large image 8, then a full-bleed photo band carrying the statement (Creek)
+ *  stagger  = title across, text 4 / large image 8, then a full-bleed photo band carrying the statement from column 5 (Creek)
  */
 export default function EditorialSection({ s, density, tone, join }: SectionProps<EditorialData>) {
   const dark = tone === 'dark';
@@ -109,7 +109,12 @@ export default function EditorialSection({ s, density, tone, join }: SectionProp
           <BFImage slot={band.slot} sizes="100vw" />
           <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-charcoal/90 via-charcoal/40 to-charcoal/10" />
           <div className="ed-wrap relative flex min-h-[28rem] items-end pb-12 pt-40 md:min-h-[36rem] md:pb-20 lg:min-h-[42rem]">
-            {s.statement && <Quote dark className="max-w-[58rem]">{s.statement}</Quote>}
+            {/* the statement starts on column 5, the left edge of the photo above, and sits over the calm part of the image */}
+            {s.statement && (
+              <div className="ed-grid w-full">
+                <Quote dark className="col-span-12 max-w-[58rem] lg:col-span-8 lg:col-start-5">{s.statement}</Quote>
+              </div>
+            )}
           </div>
         </section>
       )}
