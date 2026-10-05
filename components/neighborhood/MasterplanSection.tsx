@@ -1,50 +1,72 @@
-import Reveal from '@/components/Reveal';
 import ZoomImage from '@/components/area/ZoomImage';
-import { getImage } from '@/lib/images';
-import { GAP, Heading, Prose, Shell, Statement } from './ui';
-import type { Density, MasterplanData } from '@/lib/data/neighborhood-types';
-
-const SHOW_SLOTS = process.env.NODE_ENV !== 'production' || process.env.NEXT_PUBLIC_SHOW_IMAGE_SLOTS === '1';
+import BFImage from '@/components/BFImage';
+import Reveal from '@/components/Reveal';
+import { getAspect, getImage } from '@/lib/images';
+import { Heading, Prose, Quote, Section, type SectionProps } from './ui';
+import type { MasterplanData } from '@/lib/data/neighborhood-types';
 
 /**
- * Masterplan chapter. The plan is ALWAYS shown in full (object-contain, never cropped, ratio preserved)
- * and opens full-screen on click. A missing file never shows a fake plan in production.
+ * Masterplan chapter: a reading moment. Title (+ intro) on the grid, then the plan on the wide container (up to 1400px),
+ * ALWAYS shown in full (object-contain, true ratio, never cropped) and enlargeable.
+ * Text can sit before the plan (title 7 / intro 5) or after it (text 6 / statement 5).
  */
-export default function MasterplanSection({ s, density }: { s: MasterplanData; density: Density }) {
-  const dark = s.tone === 'dark';
-  const hasImage = Boolean(getImage(s.image).src);
-  const after = s.textPosition === 'after';
-  const text = s.paragraphs?.length ? <Prose paragraphs={s.paragraphs} dark={dark} /> : null;
+export default function MasterplanSection({ s, density, tone, join }: SectionProps<MasterplanData>) {
+  const dark = tone === 'dark';
+  const img = getImage(s.image);
+  const before = s.textPosition !== 'after';
+  const intro = before ? s.paragraphs : undefined;
+  const after = !before ? s.paragraphs : undefined;
 
   return (
-    <Shell id={s.id ?? 'masterplan'} tone={s.tone} density={density}>
-      <Heading eyebrow={s.eyebrow} title={s.title} dark={dark} />
-      {!after && text && <Reveal className="mt-8">{text}</Reveal>}
-      <Reveal className={GAP}>
-        {hasImage ? (
-          <ZoomImage slot={s.image} sizes="(min-width:1280px) 1200px, 100vw" />
-        ) : (
-          SHOW_SLOTS && (
-            <div className="grid aspect-[16/9] place-items-center border border-dashed border-champagne/60 text-sm text-stone">
-              Masterplan à fournir : {s.image}
-            </div>
-          )
-        )}
-        {s.caption && <p className="ed-caption mt-3 text-center text-stone">{s.caption}</p>}
-      </Reveal>
-      {after && (text || s.statement) && (
-        <div className="mt-14 grid gap-10 md:mt-20 lg:grid-cols-12 lg:gap-16">
-          {text && <Reveal className="lg:col-span-6">{text}</Reveal>}
-          {s.statement && (
-            <Reveal className="lg:col-span-6">
-              <Statement dark={dark}>{s.statement}</Statement>
+    <Section id={s.id} tone={tone} density={density} weight="major" join={join}>
+      <div className="ed-wrap">
+        <div className="ed-grid items-start gap-y-8">
+          <Heading
+            eyebrow={s.eyebrow}
+            title={s.title}
+            dark={dark}
+            className={`col-span-12 ${intro ? 'lg:col-span-6' : 'lg:col-span-9'}`}
+            titleClass={intro ? 'max-w-[34rem]' : 'max-w-[52rem]'}
+          />
+          {intro && (
+            <Reveal className="col-span-12 lg:col-span-5 lg:col-start-8 lg:pt-11">
+              <Prose paragraphs={intro} dark={dark} />
             </Reveal>
           )}
         </div>
+      </div>
+
+      <div className="ed-wide mt-12 md:mt-16">
+        <Reveal className="mx-auto max-w-[1400px] shadow-[0_40px_90px_-50px_rgba(27,26,24,0.45)]">
+          {img.src ? (
+            <ZoomImage slot={s.image} unconstrained sizes="(min-width:1536px) 1400px, 100vw" />
+          ) : process.env.NODE_ENV !== 'production' ? (
+            <div className="relative w-full overflow-hidden border border-dashed border-charcoal/30" style={{ aspectRatio: getAspect(s.image, '16 / 10') }}>
+              <BFImage slot={s.image} sizes="100vw" />
+            </div>
+          ) : null}
+        </Reveal>
+      </div>
+
+      {(s.caption || after || s.statement) && (
+        <div className="ed-wrap">
+          {s.caption && <p className="ed-caption mt-4 max-w-[44rem] text-stone">{s.caption}</p>}
+          {(after || s.statement) && (
+            <div className="ed-grid mt-12 items-start gap-y-10 md:mt-16">
+              {after && (
+                <Reveal className="col-span-12 lg:col-span-6">
+                  <Prose paragraphs={after} dark={dark} />
+                </Reveal>
+              )}
+              {s.statement && (
+                <Reveal className={`col-span-12 ${after ? 'lg:col-span-5 lg:col-start-8' : 'lg:col-span-8'}`}>
+                  <Quote dark={dark} accent className="border-l-2 border-champagne pl-6 md:pl-8">{s.statement}</Quote>
+                </Reveal>
+              )}
+            </div>
+          )}
+        </div>
       )}
-      {!after && s.statement && (
-        <Reveal className="mt-14 md:mt-20"><Statement dark={dark}>{s.statement}</Statement></Reveal>
-      )}
-    </Shell>
+    </Section>
   );
 }

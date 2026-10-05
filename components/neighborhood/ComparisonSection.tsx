@@ -1,33 +1,32 @@
 import BFImage from '@/components/BFImage';
 import Reveal from '@/components/Reveal';
-import { GAP, Heading, Shell } from './ui';
-import type { ComparisonData, ComparisonSide, Density } from '@/lib/data/neighborhood-types';
+import { Heading, Photo, Shell, type SectionProps } from './ui';
+import type { ComparisonData, ComparisonSide } from '@/lib/data/neighborhood-types';
 
-function Side({ side, dark, offset }: { side: ComparisonSide; dark: boolean; offset: boolean }) {
+/** One side of the comparison: same photo ratio, same label, same list rhythm on both sides, so the two columns line up exactly. */
+function Side({ side, dark, className }: { side: ComparisonSide; dark: boolean; className: string }) {
   return (
-    <Reveal className={offset ? 'md:mt-24' : ''}>
-      <div className="relative aspect-[4/3] w-full overflow-hidden">
-        <BFImage slot={side.image} sizes="(min-width:1280px) 580px, (min-width:768px) 45vw, 100vw" />
-      </div>
-      <h3 className="ed-h3 mt-8 uppercase tracking-[0.14em]">{side.label}</h3>
-      <ul className={`mt-5 divide-y border-y ${dark ? 'divide-ivory/15 border-ivory/15' : 'divide-stone-light/70 border-stone-light/70'}`}>
+    <Reveal className={className}>
+      <Photo ratio="4 / 3"><BFImage slot={side.image} sizes="(min-width:1360px) 624px, (min-width:1024px) 47vw, 100vw" /></Photo>
+      <h3 className="ed-h3 mt-8 border-t border-champagne pt-6">{side.label}</h3>
+      <ul className={`mt-5 divide-y ${dark ? 'divide-ivory/15' : 'divide-charcoal/10'}`}>
         {side.lines.map((l) => (
-          <li key={l} className="py-4 font-serif text-xl leading-snug md:text-2xl">{l}</li>
+          <li key={l} className="py-3 text-[1.0625rem] leading-snug text-charcoal/80 md:text-lg">{l}</li>
         ))}
       </ul>
     </Reveal>
   );
 }
 
-/** Two addresses, two ways to invest: two photos, two typographic lists. No table, no cards. */
-export default function ComparisonSection({ s, density }: { s: ComparisonData; density: Density }) {
-  const dark = s.tone === 'dark';
+/** Two options, side by side: two equal photos on 6 + 6 columns, label and list underneath. Typographic, no cards. */
+export default function ComparisonSection({ s, density, tone, join }: SectionProps<ComparisonData>) {
+  const dark = tone === 'dark';
   return (
-    <Shell id={s.id} tone={s.tone} density={density}>
-      <Heading eyebrow={s.eyebrow} title={s.title} dark={dark} />
-      <div className={`${GAP} grid gap-14 md:grid-cols-2 md:gap-12 lg:gap-20`}>
-        <Side side={s.left} dark={dark} offset={false} />
-        <Side side={s.right} dark={dark} offset />
+    <Shell id={s.id} tone={tone} density={density} join={join}>
+      <Heading eyebrow={s.eyebrow} title={s.title} dark={dark} titleClass="max-w-[40rem]" />
+      <div className="ed-grid mt-12 gap-y-14 md:mt-16">
+        <Side side={s.left} dark={dark} className="col-span-12 lg:col-span-6" />
+        <Side side={s.right} dark={dark} className="col-span-12 lg:col-span-6" />
       </div>
     </Shell>
   );

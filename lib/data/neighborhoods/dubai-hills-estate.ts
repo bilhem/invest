@@ -25,7 +25,7 @@ export const DUBAI_HILLS_STORY: NeighborhoodStory = {
     {
       type: 'editorial',
       layout: 'centered',
-      tone: 'sand',
+      tone: 'light',
       title: 'Une adresse pensée pour durer.',
       paragraphs: [
         'À Dubai, certains quartiers attirent pour leur spectaculaire.',
@@ -85,7 +85,7 @@ export const DUBAI_HILLS_STORY: NeighborhoodStory = {
     },
     {
       type: 'thesis',
-      tone: 'light',
+      tone: 'dark',
       eyebrow: 'Le regard BF Properties',
       title: 'Ici, l’investissement repose moins sur une promesse que sur une réalité.',
       lead: ['Creek Harbour est une histoire de transformation.', 'Dubai Hills est une histoire de qualité.'],

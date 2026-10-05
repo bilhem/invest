@@ -1,17 +1,28 @@
 import CtaLink from '@/components/CtaLink';
-import { PAD } from './ui';
+import Reveal from '@/components/Reveal';
+import { nb } from './ui';
 import type { Density } from '@/lib/data/neighborhood-types';
 
+/**
+ * Final conclusion of the page: the dominant element of the end of the page.
+ * Title on columns 1–7, text + button on columns 9–12, a fine gold rule above and below (it must stay distinct from the footer).
+ */
 export default function NeighborhoodCTA({
   slug, title, text, label, density,
 }: { slug: string; title: string; text?: string; label: string; density: Density }) {
   return (
-    <section className={`bg-charcoal text-ivory ${PAD[density]}`}>
-      <div className="wrap grid items-end gap-10 lg:grid-cols-12 lg:gap-16">
-        <h2 className="ed-h2 max-w-3xl text-balance lg:col-span-7">{title}</h2>
-        <div className="lg:col-span-5">
-          {text && <p className="ed-body text-ivory/75">{text}</p>}
-          <CtaLink href="/consultation" id={`area_${slug}`} className={`btn btn-gold ${text ? 'mt-8' : ''}`}>{label}</CtaLink>
+    <section data-w="major" data-d={density} className="ed-sec border-b border-champagne/40 bg-charcoal-800 text-ivory">
+      <div className="ed-wrap">
+        <div className="border-t border-champagne/50 pt-12 md:pt-16">
+          <div className="ed-grid items-end gap-y-10">
+            <Reveal className="col-span-12 lg:col-span-7">
+              <h2 className="ed-h2 max-w-[40rem] text-balance">{nb(title)}</h2>
+            </Reveal>
+            <Reveal className="col-span-12 lg:col-span-4 lg:col-start-9">
+              {text && <p className="ed-body text-ivory/75">{text}</p>}
+              <CtaLink href="/consultation" id={`area_${slug}`} className={`btn btn-gold ${text ? 'mt-8' : ''}`}>{label}</CtaLink>
+            </Reveal>
+          </div>
         </div>
       </div>
     </section>

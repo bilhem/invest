@@ -8,13 +8,15 @@ import { getAspect, getImage, type ImageKey } from '@/lib/images';
  * Shows an image IN FULL (object-contain, never cropped) at its true aspect ratio,
  * and opens it full-screen on click (native <dialog>: Esc closes, focus is handled by the browser).
  */
-export default function ZoomImage({ slot, sizes = '100vw' }: { slot: ImageKey; sizes?: string }) {
+export default function ZoomImage({
+  slot, sizes = '100vw', unconstrained = false, className = '',
+}: { slot: ImageKey; sizes?: string; /** Let the plan use the full width of its container (no viewport-height cap). */ unconstrained?: boolean; className?: string }) {
   const img = getImage(slot);
   const ref = useRef<HTMLDialogElement>(null);
   const aspect = getAspect(slot, '16 / 7');
   const ratio = img.width && img.height ? img.width / img.height : 16 / 7;
-  // Never taller than ~80% of the viewport: tall plans stay fully visible without cropping.
-  const maxW = `min(100%, calc(80vh * ${ratio.toFixed(3)}))`;
+  // Default: never taller than ~80% of the viewport. `unconstrained` plans take the whole container width (never cropped either way).
+  const maxW = unconstrained ? '100%' : `min(100%, calc(80vh * ${ratio.toFixed(3)}))`;
 
   if (!img.src) {
     return (
@@ -30,7 +32,7 @@ export default function ZoomImage({ slot, sizes = '100vw' }: { slot: ImageKey; s
         type="button"
         onClick={() => ref.current?.showModal()}
         aria-label="Agrandir le plan"
-        className="group relative mx-auto block w-full cursor-zoom-in border border-stone-light/70 bg-ivory"
+        className={`group relative mx-auto block w-full cursor-zoom-in border border-charcoal/10 bg-ivory ${className}`}
         style={{ maxWidth: maxW }}
       >
         <span className="relative block w-full" style={{ aspectRatio: aspect }}>

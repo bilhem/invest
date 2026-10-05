@@ -1,78 +1,80 @@
 import BFImage from '@/components/BFImage';
 import Reveal from '@/components/Reveal';
-import { getImage } from '@/lib/images';
-import { GAP, Eyebrow, Heading, PAD, Prose, Shell, Statement, muted } from './ui';
-import type { Density, ImageStatementData } from '@/lib/data/neighborhood-types';
+import { getAspect, getImage } from '@/lib/images';
+import { Heading, Photo, Prose, Quote, Shell, type SectionProps } from './ui';
+import type { ImageStatementData } from '@/lib/data/neighborhood-types';
 
-/** Photo-led chapter. Visuals are woven into the text (no card gallery). */
-export default function ImageStatement({ s, density }: { s: ImageStatementData; density: Density }) {
-  const dark = s.tone === 'dark';
+/**
+ * Photo-led chapter, three compositions on the 12-column grid:
+ *  side    = text 5 / image 7 (landscape) or text 5 / image 6 (portrait); `flip` puts the image on the right
+ *  overlay = full-bleed photo, text on columns 1–6 over a gradient
+ *  duo     = text 4 / main photo 5 / secondary photo 3: the three columns share the same top and bottom edges
+ */
+export default function ImageStatement({ s, density, tone, join }: SectionProps<ImageStatementData>) {
+  const dark = tone === 'dark';
+  const [a, b] = s.images;
 
   if (s.variant === 'overlay') {
-    const img = s.images[0];
     return (
-      <section id={s.id} className={`relative flex min-h-[78svh] items-end overflow-hidden bg-charcoal text-ivory ${PAD[density]}`}>
-        <BFImage slot={img.slot} overlay="strong" sizes="100vw" />
-        <div className="wrap relative">
-          <Reveal>
-            {s.eyebrow && <Eyebrow dark>{s.eyebrow}</Eyebrow>}
-            <h2 className={`ed-h2 ${s.eyebrow ? 'mt-5' : ''} max-w-3xl text-balance`}>{s.title}</h2>
-            <div className="mt-8 max-w-xl space-y-5">
-              {s.paragraphs.map((p) => <p key={p} className={`ed-body ${muted(true)}`}>{p}</p>)}
-            </div>
-          </Reveal>
+      <section className="relative isolate overflow-hidden bg-charcoal text-ivory">
+        <BFImage slot={a.slot} sizes="100vw" />
+        <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-charcoal/90 via-charcoal/55 to-charcoal/10 lg:bg-gradient-to-r lg:from-charcoal/90 lg:via-charcoal/55 lg:to-transparent" />
+        <div className="ed-wrap relative">
+          <div className="flex min-h-[36rem] flex-col justify-end py-16 md:min-h-[44rem] md:py-24 lg:min-h-[50rem] lg:max-w-[40rem]">
+            <Heading eyebrow={s.eyebrow} title={s.title} dark titleClass="max-w-[34rem]" />
+            <Reveal className="mt-8">
+              <Prose paragraphs={s.paragraphs} dark className="[&>p]:text-ivory/85" />
+            </Reveal>
+          </div>
         </div>
       </section>
     );
   }
 
   if (s.variant === 'duo') {
-    const [a, b] = s.images;
     return (
-      <Shell id={s.id} tone={s.tone} density={density}>
-        <Heading eyebrow={s.eyebrow} title={s.title} dark={dark} />
-        <div className={`${GAP} grid items-start gap-10 lg:grid-cols-12 lg:gap-16`}>
-          <div className="grid grid-cols-2 gap-4 sm:gap-6 lg:col-span-7">
-            <Reveal>
-              <div className="relative aspect-[3/4] w-full overflow-hidden"><BFImage slot={a.slot} sizes="(min-width:1024px) 340px, 45vw" /></div>
-            </Reveal>
-            {b && (
-              <Reveal className="mt-10 md:mt-16">
-                <div className="relative aspect-[3/4] w-full overflow-hidden"><BFImage slot={b.slot} sizes="(min-width:1024px) 340px, 45vw" /></div>
-              </Reveal>
-            )}
-          </div>
-          <Reveal className="lg:col-span-5 lg:pt-6">
+      <Shell id={s.id} tone={tone} density={density} join={join}>
+        <Heading eyebrow={s.eyebrow} title={s.title} dark={dark} titleClass="max-w-[48rem]" />
+        <div className="ed-grid mt-12 gap-y-10 md:mt-16">
+          <div className="order-2 col-span-12 flex flex-col justify-between gap-12 lg:order-1 lg:col-span-4">
             <Prose paragraphs={s.paragraphs} dark={dark} />
+            {s.quote && <Quote dark={dark} accent className="!text-[1.75rem] md:!text-[2rem]">{s.quote}</Quote>}
+          </div>
+          <Reveal className="order-1 col-span-12 lg:order-2 lg:col-span-5">
+            <Photo ratio="4 / 5"><BFImage slot={a.slot} sizes="(min-width:1360px) 514px, (min-width:1024px) 40vw, 100vw" /></Photo>
           </Reveal>
+          {b && (
+            <Reveal className="relative order-3 col-span-12 hidden lg:col-span-3 lg:block">
+              <div className="absolute inset-0 overflow-hidden bg-charcoal/10">
+                <BFImage slot={b.slot} sizes="(min-width:1360px) 296px, 24vw" />
+              </div>
+            </Reveal>
+          )}
         </div>
-        {s.quote && (
-          <Reveal className="mt-16 border-t border-stone-light/60 pt-12 md:mt-24 md:pt-16">
-            <Statement dark={dark}>{s.quote}</Statement>
-          </Reveal>
-        )}
       </Shell>
     );
   }
 
-  // side: image beside text. Portrait images take less width so they are never cropped hard.
-  const img = s.images[0];
-  const meta = getImage(img.slot);
-  const portrait = Boolean(meta.width && meta.height && meta.width < meta.height);
-  const ratio = meta.width && meta.height ? `${meta.width} / ${meta.height}` : '4 / 3';
+  // side: the photo keeps its real ratio, so the height follows the image and nothing is cropped
+  const portrait = (() => {
+    const i = getImage(a.slot);
+    return i.width && i.height ? i.width < i.height : false;
+  })();
+  const imgCols = portrait ? 'lg:col-span-6' : 'lg:col-span-7';
+  const imgPos = s.flip ? (portrait ? 'lg:col-start-7 lg:order-2' : 'lg:col-start-6 lg:order-2') : 'lg:order-1';
+  const textPos = s.flip ? 'lg:order-1' : `lg:order-2 ${portrait ? 'lg:col-start-8' : 'lg:col-start-8 lg:pl-4'}`;
   return (
-    <Shell id={s.id} tone={s.tone} density={density}>
-      <div className="grid items-center gap-10 lg:grid-cols-12 lg:gap-16">
-        <Reveal className={`${portrait ? 'lg:col-span-5' : 'lg:col-span-7'} ${s.flip ? 'lg:order-2' : ''}`}>
-          <div className="relative w-full overflow-hidden" style={{ aspectRatio: ratio }}>
-            <BFImage slot={img.slot} sizes={portrait ? '(min-width:1024px) 480px, 100vw' : '(min-width:1024px) 700px, 100vw'} />
-          </div>
+    <Shell id={s.id} tone={tone} density={density} join={join}>
+      <div className="ed-grid items-center gap-y-10">
+        <Reveal className={`col-span-12 ${imgCols} ${imgPos}`}>
+          <Photo ratio={getAspect(a.slot, '4 / 5')}>
+            <BFImage slot={a.slot} sizes="(min-width:1360px) 733px, (min-width:1024px) 58vw, 100vw" />
+          </Photo>
         </Reveal>
-        <div className={`${portrait ? 'lg:col-span-6 lg:col-start-7' : 'lg:col-span-5'} ${s.flip ? 'lg:order-1' : ''}`}>
-          <Heading eyebrow={s.eyebrow} title={s.title} dark={dark} />
+        <div className={`col-span-12 lg:col-span-5 ${textPos}`}>
+          <Heading eyebrow={s.eyebrow} title={s.title} dark={dark} titleClass="max-w-[34rem]" />
           <Reveal className="mt-8">
             <Prose paragraphs={s.paragraphs} dark={dark} />
-            {s.quote && <Statement dark={dark} className="mt-10">{s.quote}</Statement>}
           </Reveal>
         </div>
       </div>

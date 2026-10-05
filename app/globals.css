@@ -19,15 +19,30 @@
   .btn-outline-dark { @apply border border-charcoal/30 text-charcoal hover:border-charcoal hover:bg-charcoal/5; }
   .hairline { @apply border-t border-stone-light/60; }
   /* Editorial type scale shared by every district page (NeighborhoodPage):
-     eyebrow 13px · H1 (hero only) · H2 34→52px · H3 · statement 24→30px (never larger than H2) · body 17→18px · caption 12px */
+     eyebrow 13px · H1 (hero only) · H2 30→52px (identical on the whole page) · H3 · key quote 28→40px (always below H2) ·
+     secondary statement 24→30px · body 17→18px · caption 12px */
   .ed-eyebrow { @apply text-[0.8125rem] font-medium uppercase leading-snug tracking-[0.2em] text-champagne; }
-  .ed-h2 { @apply font-serif text-[1.875rem] font-medium leading-[1.12] tracking-tight sm:text-4xl md:text-[2.75rem] lg:text-[3.25rem]; }
+  .ed-h2 { @apply font-serif text-[1.875rem] font-medium leading-[1.17] tracking-tight sm:text-4xl md:text-[2.75rem] lg:text-[3.25rem]; }
   .ed-h3 { @apply font-serif text-[1.625rem] font-medium leading-[1.15] tracking-tight md:text-[2rem]; }
   .ed-lead { @apply text-[1.125rem] leading-[1.65] md:text-[1.25rem]; }
   .ed-body { @apply max-w-[38rem] text-[1.0625rem] leading-[1.75] md:text-[1.125rem]; }
+  .ed-quote { @apply font-serif text-[1.75rem] font-medium leading-[1.22] tracking-tight md:text-[2.125rem] lg:text-[2.5rem]; }
   .ed-statement { @apply max-w-[52rem] font-serif text-[1.5rem] font-medium leading-[1.3] tracking-tight md:text-[1.875rem]; }
   .ed-caption { @apply text-xs leading-relaxed; }
   .ed-figure { @apply font-serif text-[2.25rem] leading-none text-champagne-light md:text-[3.25rem]; }
+
+  /* District page grid: one container (content 1280px at ≥1360), one 12-column grid, one wide container for plans and big images. */
+  .ed-wrap { @apply mx-auto w-full max-w-[1360px] px-6 md:px-10; }
+  .ed-wide { @apply mx-auto w-full max-w-[1520px] px-4 md:px-8; }
+  .ed-grid { @apply grid grid-cols-12 gap-x-5 md:gap-x-6 lg:gap-x-8; }
+  /* Vertical rhythm: padding follows the viewport (≈ 120–160px "major", 100–140px "narrative" at 1440) and the district's density.
+     Two neighbouring sections on the same background halve the padding between them (data-jp / data-jn), so gaps never double. */
+  .ed-sec { --d: 1; --base: clamp(4rem, 2rem + 5.5vw, 8.5rem); padding-block: calc(var(--base) * var(--d)); }
+  .ed-sec[data-w='major'] { --base: clamp(4.5rem, 2.5rem + 6.5vw, 10rem); }
+  .ed-sec[data-d='airy'] { --d: 1.12; }
+  .ed-sec[data-d='dense'] { --d: 0.85; }
+  .ed-sec[data-jp='1'] { padding-top: calc(var(--base) * var(--d) * 0.5); }
+  .ed-sec[data-jn='1'] { padding-bottom: calc(var(--base) * var(--d) * 0.5); }
 }
 /* Per-breakpoint focal point for photos: --fp-sm below 768px, --fp-md from 768px up (set by BFImage). */
 .bf-img { object-position: var(--fp-sm, 50% 50%); }

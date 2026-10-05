@@ -85,17 +85,17 @@ export const IMAGES = {
   // Dubai Hills Estate — visual pack received 2026-10-05 (small originals: 418–752 px; cleaned of baked-in captions, smooth upscale). Replace with HD originals.
   'hills-hero': hillsHero,
   'hills-park': {
-    src: `${HILLS}/02-dubai-hills-park.webp`, width: 1245, height: 1176, rights: 'cleared',
+    src: `${HILLS}/02-dubai-hills-park.webp`, width: 1237, height: 1176, rights: 'cleared',
     alt: 'Vue aérienne de Dubai Hills Park et de ses résidences',
     kind: 'photo', tone: 'day',
   },
   'hills-golf': {
-    src: `${HILLS}/03-dubai-hills-golf.webp`, width: 1248, height: 1176, rights: 'cleared',
+    src: `${HILLS}/03-dubai-hills-golf.webp`, width: 1238, height: 1176, rights: 'cleared',
     alt: 'Golf, plan d’eau et villas de Dubai Hills Estate, avec la skyline de Downtown à l’horizon',
     kind: 'photo', tone: 'day',
   },
   'hills-mall': {
-    src: `${HILLS}/04-dubai-hills-mall.webp`, width: 1254, height: 1176, rights: 'cleared',
+    src: `${HILLS}/04-dubai-hills-mall.webp`, width: 1242, height: 1176, rights: 'cleared',
     alt: 'Façade de Dubai Hills Mall et ses fontaines',
     kind: 'photo', tone: 'day',
   },
@@ -112,7 +112,7 @@ export const IMAGES = {
   'hills-urban': {
     src: `${HILLS}/07-dubai-hills-urban.webp`, width: 867, height: 1203, rights: 'cleared',
     alt: 'Boulevard et terrasses de restaurants à Dubai Hills Estate',
-    kind: 'photo', tone: 'day',
+    kind: 'photo', tone: 'day', focal: '75% 50%',
   },
   'hills-signature': {
     src: `${HILLS}/08-dubai-hills-signature.webp`, width: 903, height: 1203, rights: 'cleared',
