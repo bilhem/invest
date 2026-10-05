@@ -13,7 +13,8 @@ import Catalysts from '@/components/area/Catalysts';
 import { InfraBoard, StatusLegend } from '@/components/area/Status';
 import { Maturation, Thesis, InvestorFit } from '@/components/area/Editorial';
 import Sources from '@/components/area/Sources';
-import AreaEditorial from '@/components/area/AreaEditorial';
+import NeighborhoodPage from '@/components/neighborhood/NeighborhoodPage';
+import { getImage } from '@/lib/images';
 import { buildMetadata, abs } from '@/lib/seo';
 import { getArea, getAreas, getStory } from '@/lib/cms';
 
@@ -28,6 +29,16 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   const { slug } = await params;
   const a = getArea(slug);
   if (!a) return {};
+  // Editorial districts carry their own SEO block (unique title + description, hero image for social cards).
+  if (a.story) {
+    const hero = getImage(a.story.hero.image);
+    return buildMetadata({
+      title: a.story.seo.title,
+      description: a.story.seo.description,
+      path: `/quartiers/${a.slug}`,
+      image: hero.src ? { src: hero.src, width: hero.width, height: hero.height, alt: hero.alt } : undefined,
+    });
+  }
   return buildMetadata({
     title: a.deep?.seo.title ?? `${a.name} : analyse pour investisseur`,
     description: a.deep?.seo.description ?? `${a.tagline} ${a.summary}`,
@@ -64,29 +75,30 @@ export default async function Page({ params }: { params: Promise<Params> }) {
     url,
     geo: { '@type': 'GeoCoordinates', latitude: a.coords.lat, longitude: a.coords.lng },
   };
-  // Enriched pages also declare a WebPage with its fact-check date, about the Place.
-  const pageLd = deep
+  // Enriched and editorial pages also declare a WebPage about the Place (dateModified only when a fact-check date exists).
+  const seo = a.story?.seo ?? deep?.seo;
+  const pageLd = seo
     ? {
         '@context': 'https://schema.org',
         '@type': 'WebPage',
-        name: deep.seo.title,
-        description: deep.seo.description,
+        name: seo.title,
+        description: seo.description,
         url,
         inLanguage: 'fr',
-        dateModified: deep.lastReviewed,
+        ...(deep?.lastReviewed ? { dateModified: deep.lastReviewed } : {}),
         about: { '@type': 'Place', name: a.name },
         publisher: { '@type': 'Organization', name: 'BF Properties', url: abs('/') },
       }
     : null;
 
-  // Enriched areas with an editorial block use the simplified 6-section layout.
-  if (deep?.editorial) {
+  // Districts with an editorial story use the shared NeighborhoodPage system (Creek, Dubai Hills, Downtown).
+  if (a.story) {
     return (
       <>
         <TrackEvent event="area_viewed" params={{ area: a.slug }} />
         <JsonLd data={placeLd} />
         {pageLd && <JsonLd data={pageLd} />}
-        <AreaEditorial area={a} deep={deep} editorial={deep.editorial} />
+        <NeighborhoodPage area={a} story={a.story} />
       </>
     );
   }

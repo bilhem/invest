@@ -1,4 +1,5 @@
 import type { ImageKey } from '@/lib/images';
+import type { NeighborhoodStory } from './neighborhood-types';
 
 /**
  * AREA MODEL.
@@ -43,60 +44,7 @@ export type Catalyst = {
   sourceIds: string[];
 };
 
-/**
- * Editorial layout for an enriched area page. When `deep.editorial` is present, the area page renders AreaEditorial
- * (hero, intro, masterplan, 3 catalysts, thesis, location, CTA) instead of the dense standard template.
- * Catalyst titles, statuses and images come from `deep.catalysts` (matched by id).
- */
-export type EditorialHead = { eyebrow: string; title: string; intro?: string };
-
-export type AreaEditorial = {
-  heroLine: string;
-  /** 1 · Discover */
-  intro: EditorialHead & {
-    items: { title: string; text: string; slot: ImageKey }[];
-    statement: string;
-  };
-  /** 2 · Understand the scale */
-  masterplan: EditorialHead & {
-    /** Shown before the caption while the image is only an extract of the plan. Remove once the full plan is supplied. */
-    extractLabel?: string;
-    caption: string;
-    insight: string;
-  };
-  /** 3 · Understand what is coming */
-  catalysts: EditorialHead & {
-    items: {
-      id: string;
-      headline: string;
-      paragraphs: string[];
-      /** Secondary visual elements: the figure serves the story, not the reverse. Each must be backed by a source. */
-      figures?: { value: string; unit?: string; label: string }[];
-      insight?: string;
-      imageNote: string;
-    }[];
-  };
-  /** 4 · The BF Properties thesis (dark editorial break) */
-  thesisBreak: {
-    eyebrow: string;
-    title: string;
-    paragraphs: string[];
-    statement: [string, string];
-  };
-  /** 5 · BF Properties: how we select */
-  approach: EditorialHead & {
-    interestTitle: string;
-    interest: string[];
-    analysisTitle: string;
-    analysis: string[];
-    conviction: string;
-  };
-  location: EditorialHead & { landmarks: { label: string; text: string }[] };
-  cta: { title: string; text: string; label: string };
-};
-
 export type AreaDeep = {
-  editorial?: AreaEditorial;
   seo: { title: string; description: string };
   heroSubtitle: string;
   lastReviewed: string; // ISO date of the last fact-check
@@ -150,4 +98,6 @@ export type Area = {
   bfView: string;
   storySlug?: string;
   deep?: AreaDeep;
+  /** Editorial page model (see neighborhood-types.ts). When present, the page uses NeighborhoodPage instead of the standard template. */
+  story?: NeighborhoodStory;
 };

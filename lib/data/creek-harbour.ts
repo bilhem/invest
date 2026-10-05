@@ -1,4 +1,5 @@
 import type { Area, AreaDeep, SourceRef } from './area-types';
+import { CREEK_HARBOUR_STORY } from './neighborhoods/creek-harbour';
 
 /**
  * DUBAI CREEK HARBOUR — reference area page.
@@ -81,142 +82,6 @@ const deep: AreaDeep = {
       'Analyse de Dubai Creek Harbour par BF Properties : master community waterfront d’Emaar, Dubai Square, future Blue Line, atouts, risques et profils d’investisseurs.',
   },
   heroSubtitle: 'Une master community waterfront développée par Emaar, entre Dubai Creek et la skyline de Downtown Dubai.',
-  editorial: {
-    heroLine: 'Une master community waterfront développée par Emaar, entre Dubai Creek et la skyline de Downtown Dubai.',
-    intro: {
-      eyebrow: 'Pourquoi Creek Harbour',
-      title: 'Au bord du Creek, face à Downtown : une centralité en devenir',
-      intro:
-        'Dubai Creek Harbour s’étend sur les rives de Dubai Creek, avec la skyline de Downtown Dubai et le Burj Khalifa en toile de fond. Portée principalement par Emaar, cette master community réunit résidences, promenades, espaces publics et nouvelles infrastructures. Ce qui est déjà là donne le ton ; ce qui arrive peut changer son échelle.',
-      items: [
-        {
-          title: 'Waterfront',
-          text: 'Promenades, résidences et espaces publics dessinent déjà une vie en bord d’eau, autour de Dubai Creek.',
-          slot: 'creek-lifestyle',
-        },
-        {
-          title: 'Downtown à l’horizon',
-          text: 'Burj Khalifa et skyline de Downtown ferment l’horizon : l’un des repères visuels les plus forts de Creek Harbour.',
-          slot: 'creek-downtown-view',
-        },
-      ],
-      statement:
-        'Le quartier existe déjà. Ce qui peut en faire une destination majeure est encore devant lui.',
-    },
-    masterplan: {
-      eyebrow: 'Masterplan',
-      title: 'Une master community pensée à l’échelle d’un quartier entier',
-      intro:
-        'The Island, The Sanctuary, plusieurs districts, l’Urban River, des parcs, le métro et The Tower : le plan dessine bien plus que quelques tours résidentielles. Chaque zone avance à son rythme, et c’est ce qui rend la lecture du plan décisive.',
-      caption:
-        'Masterplan de référence. Certains éléments représentés correspondent à des visions ou projets dont la configuration finale peut évoluer.',
-      insight:
-        'Deux biens de la même communauté peuvent offrir des perspectives très différentes selon leur micro-localisation. C’est sur le plan que l’analyse commence.',
-    },
-    catalysts: {
-      eyebrow: 'Les catalyseurs',
-      title: 'Ce qui peut changer l’échelle de Creek Harbour',
-      intro:
-        'Un centre de vie, une connexion métropolitaine, un marqueur dans la skyline : trois projets structurants, à des stades différents.',
-      items: [
-        {
-          id: 'dubai-square',
-          headline: 'Dubai Square : le futur cœur de vie de Creek Harbour.',
-          paragraphs: [
-            'Retail, restaurants, loisirs, hospitality, lieux de rencontre : Dubai Square doit apporter à Creek Harbour ce qui lui manque encore aujourd’hui, une raison de venir, de rester et de revenir.',
-            'Son développement peut transformer une communauté principalement résidentielle en véritable destination.',
-            'Pour l’investisseur, c’est le point clé : plus une destination crée ses propres raisons d’être fréquentée, plus elle gagne en profondeur urbaine.',
-          ],
-          figures: [
-            { value: '2,6 M', unit: 'm²', label: 'de surfaces retail, hospitality et commerciales annoncées' },
-            { value: '≈ 3', unit: 'ans', label: 'avant la fin de chantier annoncée par Emaar' },
-          ],
-          imageNote: 'Rendu conceptuel — programme et configuration finale susceptibles d’évoluer.',
-        },
-        {
-          id: 'blue-line',
-          headline: 'Connecter Creek Harbour au reste de Dubai.',
-          paragraphs: [
-            'Avec la Dubai Metro Blue Line, Creek Harbour s’apprête à franchir une nouvelle étape : celle de la connexion directe au réseau métropolitain de Dubai.',
-            'La future station doit relier la communauté à plusieurs pôles majeurs de la ville et réduire sa dépendance à la voiture.',
-            'Pour un quartier en pleine maturation, cette accessibilité est l’un des catalyseurs les plus importants de son développement.',
-          ],
-          figures: [
-            { value: '30', unit: 'km', label: 'de ligne' },
-            { value: '14', label: 'stations' },
-            { value: '2029', label: 'ouverture ciblée' },
-          ],
-          insight:
-            'La présence d’une station ne valorise pas uniformément tous les biens. La distance réelle à la station et la qualité de la micro-localisation resteront déterminantes.',
-          imageNote: 'Rendu conceptuel — design et emplacement définitifs de la station susceptibles d’évoluer.',
-        },
-        {
-          id: 'creek-tower',
-          headline: 'Une ambition iconique au cœur du masterplan.',
-          paragraphs: [
-            'Creek Tower fait partie de l’ambition historique portée autour de Dubai Creek Harbour : offrir à la destination un marqueur immédiatement identifiable dans la skyline de Dubai.',
-            'Au-delà de son architecture ou de sa configuration finale, le projet dit quelque chose de l’échelle visée pour le quartier.',
-            'Pour BF Properties, l’enjeu n’est pas de spéculer sur une tour, mais de comprendre l’ambition globale derrière la destination.',
-          ],
-          imageNote: 'Rendu conceptuel — design final et calendrier susceptibles d’évoluer.',
-        },
-      ],
-    },
-    thesisBreak: {
-      eyebrow: 'La thèse BF Properties',
-      title: 'Creek Harbour n’est pas encore une centralité mature de Dubai. C’est précisément ce qui rend son histoire intéressante.',
-      paragraphs: [
-        'Downtown Dubai est aujourd’hui une destination établie à l’échelle internationale.',
-        'Creek Harbour raconte une histoire différente : celle d’une master community Emaar dont une partie importante de l’écosystème reste encore à se construire.',
-        'Dubai Square, la Blue Line, les nouveaux districts et les futurs pôles d’attractivité peuvent progressivement changer l’échelle de la destination.',
-        'Pour l’investisseur, l’enjeu consiste à comprendre cette transformation avant qu’elle ne soit totalement visible.',
-      ],
-      statement: [
-        'Investir dans une destination mature, c’est acheter ce qu’elle est déjà.',
-        'Investir dans une destination en transformation, c’est aussi analyser ce qu’elle peut devenir.',
-      ],
-    },
-    approach: {
-      eyebrow: 'Le regard de BF Properties',
-      title: 'Entrer pendant la transformation, ou attendre la maturité ?',
-      intro:
-        'La communauté existe déjà ; son écosystème n’est pas encore à maturité. L’enjeu : savoir si entrer pendant cette phase peut offrir un meilleur potentiel que d’attendre que la destination soit établie, et à quelles conditions.',
-      interestTitle: 'Ce qui nous attire',
-      interest: [
-        'Une master community portée principalement par Emaar',
-        'Un environnement waterfront déjà identifiable',
-        'Une proximité visuelle et géographique avec Downtown',
-        'Des catalyseurs capables de renforcer progressivement la centralité du quartier',
-        'La possibilité d’entrer avant la pleine maturation de certaines zones',
-      ],
-      analysisTitle: 'Ce que nous analysons',
-      analysis: [
-        'La micro-localisation, au sein d’une communauté composée de plusieurs districts',
-        'Le projet et le bâtiment',
-        'La vue et l’environnement immédiat',
-        'Le prix d’entrée et le payment plan : une bonne histoire de quartier ne justifie pas n’importe quel prix',
-        'Le développeur',
-        'L’horizon d’investissement',
-      ],
-      conviction:
-        'À Creek Harbour, notre conviction ne porte pas sur l’achat de n’importe quel bien dans la communauté. Elle porte sur la sélection des actifs les mieux positionnés pour bénéficier de sa maturation.',
-    },
-    location: {
-      eyebrow: 'Localisation',
-      title: 'Creek Harbour dans Dubai',
-      intro: 'Entre la réserve naturelle de Ras Al Khor et la skyline de Downtown Dubai.',
-      landmarks: [
-        { label: 'Dubai Creek', text: 'Le quartier s’étend en bordure de Dubai Creek.' },
-        { label: 'Ras Al Khor', text: 'Réserve naturelle voisine, à environ 5 minutes selon Emaar.' },
-        { label: 'Downtown Dubai', text: 'À environ 15 minutes de Downtown et du Burj Khalifa selon Emaar, hors circulation.' },
-      ],
-    },
-    cta: {
-      title: 'Creek Harbour correspond-il à votre stratégie ?',
-      text: 'Prix d’entrée, horizon de détention, rendement recherché, potentiel de valorisation : nous comparons les opportunités et sélectionnons avec vous le projet le mieux positionné.',
-      label: 'Définir mon projet',
-    },
-  },
   lastReviewed: '2026-10-04',
   masterplanImage: 'creek-masterplan',
   masterplanCaption:
@@ -529,4 +394,5 @@ export const CREEK_HARBOUR: Area = {
   bfView: deep.bfView[0],
   storySlug: 'franck',
   deep,
+  story: CREEK_HARBOUR_STORY,
 };

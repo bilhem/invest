@@ -18,13 +18,16 @@
   .btn-outline-light { @apply border border-ivory/40 text-ivory hover:border-ivory hover:bg-ivory/10; }
   .btn-outline-dark { @apply border border-charcoal/30 text-charcoal hover:border-charcoal hover:bg-charcoal/5; }
   .hairline { @apply border-t border-stone-light/60; }
-  /* Editorial type scale for enriched area pages: eyebrow = .eyebrow, H1 = hero only, H2 = .h-section, then: */
+  /* Editorial type scale shared by every district page (NeighborhoodPage):
+     eyebrow 13px · H1 (hero only) · H2 34→52px · H3 · statement 24→30px (never larger than H2) · body 17→18px · caption 12px */
+  .ed-eyebrow { @apply text-[0.8125rem] font-medium uppercase leading-snug tracking-[0.2em] text-champagne; }
+  .ed-h2 { @apply font-serif text-[1.875rem] font-medium leading-[1.12] tracking-tight sm:text-4xl md:text-[2.75rem] lg:text-[3.25rem]; }
   .ed-h3 { @apply font-serif text-[1.625rem] font-medium leading-[1.15] tracking-tight md:text-[2rem]; }
-  .ed-sub { @apply font-serif text-[1.125rem] leading-snug md:text-[1.375rem]; }
-  .ed-lead { @apply max-w-[44rem] text-[1.0625rem] leading-[1.7] md:text-[1.1875rem]; }
-  .ed-body { @apply max-w-[36rem] text-base leading-[1.75] md:text-[1.0625rem]; }
+  .ed-lead { @apply text-[1.125rem] leading-[1.65] md:text-[1.25rem]; }
+  .ed-body { @apply max-w-[38rem] text-[1.0625rem] leading-[1.75] md:text-[1.125rem]; }
+  .ed-statement { @apply max-w-[52rem] font-serif text-[1.5rem] font-medium leading-[1.3] tracking-tight md:text-[1.875rem]; }
+  .ed-caption { @apply text-xs leading-relaxed; }
   .ed-figure { @apply font-serif text-[2.25rem] leading-none text-champagne-light md:text-[3.25rem]; }
-  .ed-statement { @apply max-w-[52rem] font-serif text-[1.5rem] font-medium leading-[1.3] tracking-tight md:text-[2rem]; }
 }
 /* Per-breakpoint focal point for photos: --fp-sm below 768px, --fp-md from 768px up (set by BFImage). */
 .bf-img { object-position: var(--fp-sm, 50% 50%); }

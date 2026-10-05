@@ -4,7 +4,7 @@
 import { readFileSync } from 'node:fs';
 
 const src = readFileSync(new URL('../lib/images.ts', import.meta.url), 'utf8');
-const unconfirmed = [...src.matchAll(/src: `\$\{CREEK\}\/([^`]+)`[^}]*?rights: 'unconfirmed'/g)].map((m) => m[1]);
+const unconfirmed = [...src.matchAll(/src: `\$\{[A-Z]+\}\/([^`]+)`[^}]*?rights: 'unconfirmed'/g)].map((m) => m[1]);
 const total = (src.match(/rights: 'unconfirmed'/g) || []).length;
 
 if (total === 0) {

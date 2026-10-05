@@ -1,5 +1,7 @@
 import type { Area } from './area-types';
 import { CREEK_HARBOUR } from './creek-harbour';
+import { DUBAI_HILLS_STORY } from './neighborhoods/dubai-hills-estate';
+import { DOWNTOWN_STORY } from './neighborhoods/downtown-dubai';
 
 /**
  * AREA CONTENT — qualitative, no market figures.
@@ -31,6 +33,7 @@ export const AREAS: Area[] = [
     strengths: ['Cadre résidentiel structuré', 'Équipements et services déjà présents', 'Offre diversifiée (appartements, villas)'],
     considerations: ['Prix d’entrée généralement plus élevés que dans d’autres zones', 'Sensibilité à l’offre de nouvelles livraisons', 'Trajets dépendants du trafic'],
     bfView: 'Convient à des investisseurs recherchant un environnement résidentiel établi et lisible. Le choix du sous-quartier et du type de bien est déterminant.',
+    story: DUBAI_HILLS_STORY,
   },
   {
     slug: 'downtown-dubai',
@@ -53,6 +56,7 @@ export const AREAS: Area[] = [
     strengths: ['Adresse reconnue internationalement', 'Quartier mature et déjà construit', 'Forte identité urbaine'],
     considerations: ['Prix d’entrée élevés', 'Charges de service à intégrer dans l’analyse', 'Écarts importants de qualité entre immeubles'],
     bfView: 'Adapté à un profil patrimonial recherchant une adresse de référence. L’analyse par immeuble est indispensable.',
+    story: DOWNTOWN_STORY,
   },
   {
     slug: 'business-bay',
