@@ -45,10 +45,16 @@ const creekWaterfront: ImageSlot = {
   tone: 'water',
 };
 
+// Dubai Hills Estate: PRODUCTION V2 pack (extracts of the official Emaar / Meraas Park Ridge brochure, 3841 px wide, native resolution,
+// no upscaling, received 2026-10-05) for hero, boulevard, mall, residential and lifestyle. Files are kept untouched (no sharpening, no filter):
+// next/image serves the right size. The brochure shows Park Ridge renders: they are declared `render`.
+// The pack has NO golf photograph and NO Dubai Hills masterplan: 03-dubai-hills-golf and 05-dubai-hills-masterplan come from the earlier
+// pack (small, temporary). Replace them when an authorised HD source is supplied; do not invent either.
+// 02-dubai-hills-park of the pack is the same file as 01 (it is not duplicated here).
 const hillsHero: ImageSlot = {
-  src: `${HILLS}/01-dubai-hills-hero.webp`, width: 1656, height: 1568, rights: 'cleared',
-  alt: 'Le parcours de golf de Dubai Hills Estate et la skyline de Dubai à l’horizon',
-  kind: 'photo', tone: 'day', focal: '50% 42%', focalMobile: '50% 40%',
+  src: `${HILLS}/01-dubai-hills-hero.webp`, width: 3841, height: 2161, rights: 'cleared',
+  alt: 'Parc central de Dubai Hills Estate et résidences environnantes, vus en hauteur',
+  kind: 'render', tone: 'day', focal: '50% 60%', focalMobile: '58% 55%',
 };
 const downtownHero: ImageSlot = {
   src: `${DOWNTOWN}/01-downtown-dubai-hero.webp`, width: 2130, height: 1422, rights: 'cleared',
@@ -98,42 +104,50 @@ export const IMAGES = {
     src: `${CREEK}/08-creek-tower.webp`, width: 2124, height: 825, kind: 'render', rights: 'cleared',
     alt: 'Rendu conceptuel d’une tour dominant une skyline, au bord de l’eau et de zones de mangrove', tone: 'dusk', focal: '48% 35%',
   },
-  // Dubai Hills Estate — visual pack received 2026-10-05 (small originals: 418–752 px; cleaned of baked-in captions, smooth upscale). Replace with HD originals.
+  // Dubai Hills Estate (see the V2 pack note above).
   'hills-hero': hillsHero,
-  'hills-park': {
-    src: `${HILLS}/02-dubai-hills-park.webp`, width: 1237, height: 1176, rights: 'cleared',
-    alt: 'Vue aérienne de Dubai Hills Park et de ses résidences',
-    kind: 'photo', tone: 'day',
+  'hills-boulevard': {
+    src: `${HILLS}/03-dubai-hills-boulevard.webp`, width: 3840, height: 2161, rights: 'cleared',
+    alt: 'Boulevard piéton de Dubai Hills, terrasses de cafés et commerces en rez-de-chaussée des résidences',
+    kind: 'render', tone: 'day', focal: '55% 50%',
   },
+  // Temporary (earlier pack, small): the V2 pack has no golf photograph.
   'hills-golf': {
     src: `${HILLS}/03-dubai-hills-golf.webp`, width: 1238, height: 1176, rights: 'cleared',
     alt: 'Golf, plan d’eau et villas de Dubai Hills Estate, avec la skyline de Downtown à l’horizon',
     kind: 'photo', tone: 'day',
   },
   'hills-mall': {
-    src: `${HILLS}/04-dubai-hills-mall.webp`, width: 1242, height: 1176, rights: 'cleared',
-    alt: 'Façade de Dubai Hills Mall et ses fontaines',
-    kind: 'photo', tone: 'day',
+    src: `${HILLS}/04-dubai-hills-mall.webp`, width: 3841, height: 2161, rights: 'cleared',
+    alt: 'Dubai Hills Mall vu de nuit : parvis, terrasses et enseigne lumineuse le long de l’avenue',
+    kind: 'render', tone: 'dusk', focal: '60% 45%', focalMobile: '80% 45%',
   },
+  // Temporary (earlier pack): the V2 pack has no Dubai Hills masterplan.
   'hills-masterplan': {
     src: `${HILLS}/05-dubai-hills-masterplan.webp`, width: 2235, height: 1425, rights: 'cleared',
     alt: 'Plan directeur de Dubai Hills Estate : parc, golf, mall, écoles et hôpital',
     kind: 'plan', tone: 'day',
   },
   'hills-lifestyle': {
-    src: `${HILLS}/06-dubai-hills-lifestyle.webp`, width: 933, height: 1203, rights: 'cleared',
-    alt: 'Famille se promenant dans un parc de Dubai Hills Estate',
-    kind: 'photo', tone: 'day',
+    src: `${HILLS}/06-dubai-hills-lifestyle.webp`, width: 3841, height: 2161, rights: 'cleared',
+    alt: 'Cheminement piéton paysager et terrasse de café au pied des résidences de Dubai Hills',
+    kind: 'render', tone: 'day', focal: '60% 50%',
   },
-  'hills-urban': {
-    src: `${HILLS}/07-dubai-hills-urban.webp`, width: 867, height: 1203, rights: 'cleared',
-    alt: 'Boulevard et terrasses de restaurants à Dubai Hills Estate',
-    kind: 'photo', tone: 'day', focal: '75% 50%',
+  'hills-residential': {
+    src: `${HILLS}/05-dubai-hills-residential.webp`, width: 3841, height: 2160, rights: 'cleared',
+    alt: 'Résidences de Dubai Hills au crépuscule, palmiers et fenêtres éclairées',
+    kind: 'render', tone: 'dusk', focal: '40% 50%',
   },
-  'hills-signature': {
-    src: `${HILLS}/08-dubai-hills-signature.webp`, width: 903, height: 1203, rights: 'cleared',
-    alt: 'Coucher de soleil sur le golf de Dubai Hills Estate et la skyline de Dubai',
-    kind: 'photo', tone: 'dusk', focal: '50% 35%',
+  // Supporting visuals of the V2 pack (available, not used on the page yet).
+  'hills-pool': {
+    src: `${HILLS}/07-dubai-hills-pool.webp`, width: 2057, height: 1194, rights: 'cleared',
+    alt: 'Piscine à débordement et terrasse en bois au pied d’une résidence, entourées d’arbres',
+    kind: 'render', tone: 'day',
+  },
+  'hills-amenities': {
+    src: `${HILLS}/08-dubai-hills-amenities.webp`, width: 2342, height: 975, rights: 'cleared',
+    alt: 'Espace bien-être ouvert sur la terrasse et la piscine d’une résidence',
+    kind: 'render', tone: 'day',
   },
   // Downtown Dubai — visual pack received 2026-10-05.
   'downtown-hero': downtownHero,

@@ -36,7 +36,7 @@ export const DUBAI_HILLS_STORY: NeighborhoodStory = {
     },
     {
       type: 'imageStatement',
-      variant: 'duo',
+      variant: 'side',
       tone: 'light',
       eyebrow: 'Qualité de vie',
       title: 'Le luxe de l’espace, au cœur de Dubai.',
@@ -45,11 +45,11 @@ export const DUBAI_HILLS_STORY: NeighborhoodStory = {
         'Cette respiration change profondément l’expérience résidentielle du quartier.',
       ],
       quote: 'On ne vient pas seulement dormir à Dubai Hills. On y construit son quotidien.',
-      images: [{ slot: 'hills-lifestyle' }, { slot: 'hills-urban' }],
+      images: [{ slot: 'hills-lifestyle' }],
     },
     {
       type: 'imageStatement',
-      variant: 'side',
+      variant: 'overlay',
       tone: 'sand',
       eyebrow: 'Destination',
       title: 'Une communauté qui n’a pas besoin de sortir d’elle-même.',
@@ -67,7 +67,7 @@ export const DUBAI_HILLS_STORY: NeighborhoodStory = {
       left: {
         label: 'Park',
         lines: ['Plus urbain.', 'Proximité des équipements.', 'Vie familiale.', 'Résidences et appartements.'],
-        image: 'hills-park',
+        image: 'hills-boulevard',
       },
       right: {
         label: 'Golf',
@@ -94,7 +94,7 @@ export const DUBAI_HILLS_STORY: NeighborhoodStory = {
         'L’enjeu n’est donc pas simplement d’acheter à Dubai Hills.',
         'Il est d’éviter de surpayer cette qualité et de sélectionner l’adresse dont le produit, la vue, la micro-localisation et le prix correspondent réellement à la stratégie de l’investisseur.',
       ],
-      image: 'hills-signature',
+      image: 'hills-residential',
     },
   ],
   cta: {

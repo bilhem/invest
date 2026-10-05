@@ -18,9 +18,9 @@ export default function ImageStatement({ s, density, tone, join }: SectionProps<
     return (
       <section className="relative isolate overflow-hidden bg-charcoal text-ivory">
         <BFImage slot={a.slot} sizes="100vw" />
-        <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-charcoal/90 via-charcoal/55 to-charcoal/10 lg:bg-gradient-to-r lg:from-charcoal/90 lg:via-charcoal/55 lg:to-transparent" />
+        <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-charcoal/95 via-charcoal/75 to-charcoal/10 lg:bg-gradient-to-r lg:from-charcoal/90 lg:via-charcoal/55 lg:to-transparent" />
         <div className="ed-wrap relative">
-          <div className="flex min-h-[36rem] flex-col justify-end py-16 md:min-h-[44rem] md:py-24 lg:min-h-[50rem] lg:max-w-[40rem]">
+          <div className="flex min-h-[44rem] flex-col justify-end py-16 md:py-24 lg:min-h-[50rem] lg:max-w-[40rem]">
             <Heading eyebrow={s.eyebrow} title={s.title} dark titleClass="max-w-[34rem]" />
             <Reveal className="mt-8">
               <Prose paragraphs={s.paragraphs} dark className="[&>p]:text-ivory/85" />
@@ -76,6 +76,11 @@ export default function ImageStatement({ s, density, tone, join }: SectionProps<
           <Reveal className="mt-8">
             <Prose paragraphs={s.paragraphs} dark={dark} />
           </Reveal>
+          {s.quote && (
+            <Reveal className="mt-10 md:mt-12">
+              <Quote dark={dark} accent className="!text-[1.75rem] md:!text-[2rem]">{s.quote}</Quote>
+            </Reveal>
+          )}
         </div>
       </div>
     </Shell>
