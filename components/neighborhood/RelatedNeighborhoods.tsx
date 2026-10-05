@@ -16,8 +16,11 @@ export default function RelatedNeighborhoods({ compare, strategies }: { compare:
           <nav aria-label="Comparer avec d’autres quartiers" className="flex flex-wrap items-baseline gap-x-8 gap-y-2">
             {compare.map((a) => (
               <Link key={a.slug} href={`/quartiers/${a.slug}`} className="group font-serif text-xl md:text-[1.375rem]">
-                Comparer avec {a.name}
-                <Arrow />
+                {`Comparer avec ${a.name.split(' ').slice(0, -1).join(' ')} `}
+                <span className="whitespace-nowrap">
+                  {a.name.split(' ').slice(-1)[0]}
+                  <Arrow />
+                </span>
               </Link>
             ))}
           </nav>

@@ -17,16 +17,17 @@ export const STRATEGIES = [
   { t: 'Payment Plans', d: 'Étaler l’engagement de capital selon un calendrier de paiement.', img: 'insight-1' },
   { t: 'Financing', d: 'Explorer le recours au financement lorsqu’il est pertinent.', img: 'insight-2' },
   { t: 'Portfolio Diversification', d: 'Positionner l’immobilier dans un patrimoine plus large.', img: 'insight-3' },
-  { t: 'Entrepreneurs & Companies', d: 'Aborder l’investissement dans un cadre patrimonial ou professionnel.', img: 'area-business-bay' },
+  { t: 'Entrepreneurs & Companies', d: 'Aborder l’investissement dans un cadre patrimonial ou professionnel.', img: 'area-downtown-dubai' },
 ] as const;
 export const AREAS = [
   { slug: 'dubai-creek-harbour', name: 'Dubai Creek Harbour', tag: 'Waterfront · Master community' },
   { slug: 'dubai-hills-estate', name: 'Dubai Hills Estate', tag: 'Résidentiel · Golf' },
   { slug: 'downtown-dubai', name: 'Downtown Dubai', tag: 'Centre urbain' },
-  { slug: 'business-bay', name: 'Business Bay', tag: 'Urbain · Canal' },
+  { slug: 'city-walk', name: 'City Walk', tag: 'Centre · Mer · Lifestyle' },
+  { slug: 'mina-rashid', name: 'Mina Rashid', tag: 'Marina · Héritage maritime' },
   { slug: 'dubai-marina', name: 'Dubai Marina', tag: 'Waterfront' },
-  { slug: 'dubai-south', name: 'Dubai South', tag: 'Développement futur' },
   { slug: 'palm-jebel-ali', name: 'Palm Jebel Ali', tag: 'Projet insulaire' },
+  { slug: 'dubai-islands', name: 'Dubai Islands', tag: 'Beachfront' },
 ] as const;
 export const INSIGHTS = [
   { slug: 'article-1', img: 'insight-1', cat: 'Market', title: '[Titre de l’analyse de marché]', date: '[Date]' },

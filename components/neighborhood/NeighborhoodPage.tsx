@@ -5,6 +5,7 @@ import MasterplanSection from './MasterplanSection';
 import FeaturesSection from './FeaturesSection';
 import ComparisonSection from './ComparisonSection';
 import CentralitySection from './CentralitySection';
+import LocationSection from './LocationSection';
 import InvestmentThesis from './InvestmentThesis';
 import RelatedNeighborhoods from './RelatedNeighborhoods';
 import NeighborhoodCTA from './NeighborhoodCTA';
@@ -21,6 +22,7 @@ const DEFAULT_TONE: Record<StorySection['type'], Tone> = {
   features: 'dark',
   comparison: 'light',
   centrality: 'dark',
+  location: 'sand',
   thesis: 'light',
 };
 
@@ -31,6 +33,7 @@ const toneOf = (s: StorySection): Tone => ('tone' in s && s.tone) || DEFAULT_TON
 function edges(s: StorySection): { start: Edge; end: Edge } {
   const tone = toneOf(s);
   if (s.type === 'imageStatement' && s.variant === 'overlay') return { start: 'image', end: 'image' };
+  if (s.type === 'imageStatement' && s.variant === 'banner') return { start: 'image', end: tone };
   if (s.type === 'centrality') return { start: 'image', end: 'image' };
   if (s.type === 'editorial' && s.layout === 'stagger') return { start: tone, end: 'image' };
   return { start: tone, end: tone };
@@ -46,11 +49,12 @@ function renderSection(s: StorySection, i: number, density: NeighborhoodStory['d
     case 'features': return <FeaturesSection key={i} s={s} {...p} />;
     case 'comparison': return <ComparisonSection key={i} s={s} {...p} />;
     case 'centrality': return <CentralitySection key={i} s={s} {...p} />;
+    case 'location': return <LocationSection key={i} s={s} {...p} />;
     case 'thesis': return <InvestmentThesis key={i} s={s} {...p} />;
   }
 }
 
-/** One design system, three stories: the story's `density`, section types, tones and layouts set the rhythm. */
+/** One design system, six stories: the story's `density`, section types, tones and layouts set the rhythm. */
 export default function NeighborhoodPage({ area, story }: { area: Area; story: NeighborhoodStory }) {
   const compare = story.compare.map((slug) => getArea(slug)).filter((a): a is Area => Boolean(a));
   const strategies = getStrategies().filter((s) => story.strategies.includes(s.slug));

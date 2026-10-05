@@ -2,13 +2,14 @@ import ZoomImage from '@/components/area/ZoomImage';
 import BFImage from '@/components/BFImage';
 import Reveal from '@/components/Reveal';
 import { getAspect, getImage } from '@/lib/images';
-import { Heading, Prose, Quote, Section, type SectionProps } from './ui';
+import { Eyebrow, Heading, Prose, Quote, Section, type SectionProps } from './ui';
 import type { MasterplanData } from '@/lib/data/neighborhood-types';
 
 /**
  * Masterplan chapter: a reading moment. Title (+ intro) on the grid, then the plan on the wide container (up to 1400px),
  * ALWAYS shown in full (object-contain, true ratio, never cropped) and enlargeable.
  * Text can sit before the plan (title 7 / intro 5) or after it (text 6 / statement 5).
+ * Without a title (a plan that follows its own chapter, e.g. City Walk → Crestlane) only the label (eyebrow) and the caption frame the plan.
  */
 export default function MasterplanSection({ s, density, tone, join }: SectionProps<MasterplanData>) {
   const dark = tone === 'dark';
@@ -19,24 +20,32 @@ export default function MasterplanSection({ s, density, tone, join }: SectionPro
 
   return (
     <Section id={s.id} tone={tone} density={density} weight="major" join={join}>
-      <div className="ed-wrap">
-        <div className="ed-grid items-start gap-y-8">
-          <Heading
-            eyebrow={s.eyebrow}
-            title={s.title}
-            dark={dark}
-            className={`col-span-12 ${intro ? 'lg:col-span-6' : 'lg:col-span-9'}`}
-            titleClass={intro ? 'max-w-[34rem]' : 'max-w-[52rem]'}
-          />
-          {intro && (
-            <Reveal className="col-span-12 lg:col-span-5 lg:col-start-8 lg:pt-11">
-              <Prose paragraphs={intro} dark={dark} />
-            </Reveal>
-          )}
+      {s.title ? (
+        <div className="ed-wrap">
+          <div className="ed-grid items-start gap-y-8">
+            <Heading
+              eyebrow={s.eyebrow}
+              title={s.title}
+              dark={dark}
+              className={`col-span-12 ${intro ? 'lg:col-span-6' : 'lg:col-span-9'}`}
+              titleClass={intro ? 'max-w-[34rem]' : 'max-w-[52rem]'}
+            />
+            {intro && (
+              <Reveal className="col-span-12 lg:col-span-5 lg:col-start-8 lg:pt-11">
+                <Prose paragraphs={intro} dark={dark} />
+              </Reveal>
+            )}
+          </div>
         </div>
-      </div>
+      ) : (
+        s.eyebrow && (
+          <div className="ed-wrap">
+            <Reveal><Eyebrow dark={dark}>{s.eyebrow}</Eyebrow></Reveal>
+          </div>
+        )
+      )}
 
-      <div className="ed-wide mt-12 md:mt-16">
+      <div className={`ed-wide ${s.title ? 'mt-12 md:mt-16' : 'mt-6 md:mt-8'}`}>
         <Reveal className="mx-auto max-w-[1400px] shadow-[0_40px_90px_-50px_rgba(27,26,24,0.45)]">
           {img.src ? (
             <ZoomImage slot={s.image} unconstrained sizes="(min-width:1536px) 1400px, 100vw" />

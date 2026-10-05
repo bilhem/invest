@@ -9,7 +9,7 @@ import type { Density } from '@/lib/data/neighborhood-types';
  */
 export default function NeighborhoodCTA({
   slug, title, text, label, density,
-}: { slug: string; title: string; text?: string; label: string; density: Density }) {
+}: { slug: string; title: string; text?: string | string[]; label: string; density: Density }) {
   return (
     <section data-w="major" data-d={density} className="ed-sec border-b border-champagne/40 bg-charcoal-800 text-ivory">
       <div className="ed-wrap">
@@ -19,7 +19,11 @@ export default function NeighborhoodCTA({
               <h2 className="ed-h2 max-w-[40rem] text-balance">{nb(title)}</h2>
             </Reveal>
             <Reveal className="col-span-12 lg:col-span-4 lg:col-start-9">
-              {text && <p className="ed-body text-ivory/75">{text}</p>}
+              {text && (
+                <div className="space-y-4">
+                  {(Array.isArray(text) ? text : [text]).map((t) => <p key={t} className="ed-body text-ivory/75">{t}</p>)}
+                </div>
+              )}
               <CtaLink href="/consultation" id={`area_${slug}`} className={`btn btn-gold ${text ? 'mt-8' : ''}`}>{label}</CtaLink>
             </Reveal>
           </div>

@@ -1,12 +1,13 @@
 import BFImage from '@/components/BFImage';
 import Reveal from '@/components/Reveal';
-import { Heading, Photo, Prose, Quote, Shell, type SectionProps } from './ui';
+import { Heading, Photo, Prose, Quote, Shell, Statement, type SectionProps } from './ui';
 import type { ThesisData } from '@/lib/data/neighborhood-types';
 
 /**
  * "Le regard BF Properties".
  *  with image    = title, lead lines and text on 7 columns, portrait photo on 4 (dark moment)
- *  typographic   = title 6 / text 5, then the key quote (and final line) centred on 900px: a real editorial moment
+ *  typographic   = title 6 / text 5, then (optional) the selection criteria, then the key quote (and final line) centred on 900px: a real editorial moment
+ *  criteria      = numbered list of what the selection looks at (four columns on desktop), closed by one statement
  */
 export default function InvestmentThesis({ s, density, tone, join }: SectionProps<ThesisData>) {
   const dark = tone === 'dark';
@@ -51,6 +52,22 @@ export default function InvestmentThesis({ s, density, tone, join }: SectionProp
           <Prose paragraphs={s.paragraphs} dark={dark} />
         </Reveal>
       </div>
+
+      {s.criteria && s.criteria.items.length > 0 && (
+        <Reveal className={`mt-16 border-t pt-10 md:mt-20 ${dark ? 'border-ivory/20' : 'border-charcoal/15'}`}>
+          <ol className="grid grid-cols-1 gap-x-8 sm:grid-cols-2 lg:grid-cols-4">
+            {s.criteria.items.map((item, i) => (
+              <li key={item} className={`flex items-baseline gap-4 border-b py-5 ${dark ? 'border-ivory/20' : 'border-charcoal/15'}`}>
+                <span className={`font-sans text-xs font-medium tracking-[0.2em] ${dark ? 'text-champagne-light' : 'text-champagne-dark'}`}>{String(i + 1).padStart(2, '0')}</span>
+                <span className="font-serif text-[1.375rem] leading-snug md:text-[1.5rem]">{item}</span>
+              </li>
+            ))}
+          </ol>
+          {s.criteria.closing && (
+            <Statement dark={dark} className="mt-12 max-w-[48rem] md:mt-14">{s.criteria.closing}</Statement>
+          )}
+        </Reveal>
+      )}
 
       {(s.quote || s.final) && (
         <Reveal className={`mt-16 max-w-[58rem] border-t pt-12 md:mx-auto md:mt-24 md:pt-16 md:text-center ${rule}`}>

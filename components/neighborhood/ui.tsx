@@ -16,10 +16,18 @@ export const TONE: Record<Tone, string> = {
   dark: 'bg-charcoal text-ivory',
 };
 
-/** Keeps hyphenated words such as « correspond-il » on one line (display only, the text is unchanged). */
+/**
+ * French typography, display only: a non-breaking space before « : ; ? ! » and inside « … », so a colon never starts a line.
+ * The wording is untouched; only the kind of space changes.
+ */
+export function fr(text: string): string {
+  return text.replace(/ ([:;?!»])/g, ' $1').replace(/(«) /g, '$1 ');
+}
+
+/** Keeps short hyphenated words such as « correspond-il » on one line; long ones may break after the hyphen (display only, the text is unchanged). */
 export function nb(text: string): React.ReactNode {
-  return text.split(' ').map((w, i, a) => (
-    <span key={i} className={w.includes('-') ? 'whitespace-nowrap' : undefined}>{w}{i < a.length - 1 ? ' ' : ''}</span>
+  return fr(text).split(' ').map((w, i, a) => (
+    <span key={i} className={w.includes('-') && w.length <= 14 ? 'whitespace-nowrap' : undefined}>{w}{i < a.length - 1 ? ' ' : ''}</span>
   ));
 }
 
@@ -80,7 +88,7 @@ export function Prose({ paragraphs, dark = false, center = false, className = ''
   return (
     <div className={`space-y-5 ${className}`}>
       {paragraphs.map((p) => (
-        <p key={p} className={`ed-body ${muted(dark)} ${center ? 'mx-auto' : ''}`}>{p}</p>
+        <p key={p} className={`ed-body ${muted(dark)} ${center ? 'mx-auto' : ''}`}>{fr(p)}</p>
       ))}
     </div>
   );

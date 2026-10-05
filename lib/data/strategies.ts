@@ -102,7 +102,7 @@ export const STRATEGIES: Strategy[] = [
     slug: 'entrepreneurs',
     title: 'Entrepreneurs & Companies',
     short: 'Aborder l’investissement dans un cadre patrimonial ou professionnel.',
-    img: 'area-business-bay',
+    img: 'area-downtown-dubai',
     objective: 'Étudier comment un entrepreneur peut explorer l’immobilier à Dubai dans une logique patrimoniale.',
     suits: 'Dirigeants et entrepreneurs disposant de capacités de trésorerie, personnelles ou professionnelles.',
     how: 'La structure (personnelle ou sociétaire) dépend de la situation juridique et fiscale de chacun et doit être validée par des conseillers qualifiés dans les juridictions concernées.',

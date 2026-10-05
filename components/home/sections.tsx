@@ -119,6 +119,23 @@ export function Strategies() {
   );
 }
 
+/**
+ * Home area grid on 6 columns: the first card is the big one (4 columns, 2 rows), the next two sit beside it, the rest follow in rows of three
+ * (lg) or two (md). The last row is stretched so it never leaves a hole, whatever the number of districts.
+ */
+function areaCardClass(i: number, total: number): string {
+  if (i === 0) return 'aspect-[16/10] md:col-span-4 md:row-span-2 md:aspect-auto md:min-h-[480px]';
+  if (i < 3) return 'aspect-[4/3] md:col-span-2';
+  const rest = total - 3;
+  const k = i - 3;
+  const last = k === rest - 1;
+  // md: two per row (the last one takes the full row when the count is odd); lg: three per row (the last two share the row when 2 remain)
+  const md = last && rest % 2 === 1 ? 'md:col-span-6' : 'md:col-span-3';
+  const rem = rest % 3;
+  const lg = rem === 1 && last ? 'lg:col-span-6' : rem === 2 && k >= rest - 2 ? 'lg:col-span-3' : 'lg:col-span-2';
+  return `aspect-[4/3] ${md} ${lg}`;
+}
+
 export function Areas() {
   return (
     <section className="section">
@@ -130,7 +147,7 @@ export function Areas() {
         <div className="mt-14 grid gap-4 md:grid-cols-6">
           {AREAS.map((a, i) => (
             <Link key={a.slug} href={`/quartiers/${a.slug}`}
-              className={`group relative block overflow-hidden text-ivory ${i === 0 ? 'aspect-[16/10] md:col-span-4 md:row-span-2 md:aspect-auto md:min-h-[480px]' : i < 3 ? 'aspect-[4/3] md:col-span-2' : 'aspect-[4/3] md:col-span-3 lg:col-span-2'}`}>
+              className={`group relative block overflow-hidden text-ivory ${areaCardClass(i, AREAS.length)}`}>
               <BFImage slot={`area-${a.slug}` as ImageKey} overlay="soft" sizes="(min-width:768px) 50vw, 100vw" className="transition-transform duration-[1400ms] group-hover:scale-[1.04]" />
               <div className="absolute inset-x-0 bottom-0 p-5 md:p-7">
                 <h3 className="font-serif text-2xl md:text-3xl">{a.name}</h3>

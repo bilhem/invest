@@ -44,6 +44,13 @@
   .ed-sec[data-jp='1'] { padding-top: calc(var(--base) * var(--d) * 0.5); }
   .ed-sec[data-jn='1'] { padding-bottom: calc(var(--base) * var(--d) * 0.5); }
 }
+/* Location maps: secondary reference labels only appear once the map is wide enough to carry them (the box is a size container, see ZoomImage). */
+.map-secondary { display: none; }
+@container (min-width: 600px) { .map-secondary { display: block; } }
+/* A long right-hand label moves to the left on a narrow map, so it never leaves the image. */
+@container (max-width: 599px) {
+  .map-flip-narrow { left: auto !important; right: 100% !important; transform: translate(calc(clamp(5px, 0.7cqw, 10px) * -1), -50%) !important; }
+}
 /* Per-breakpoint focal point for photos: --fp-sm below 768px, --fp-md from 768px up (set by BFImage). */
 .bf-img { object-position: var(--fp-sm, 50% 50%); }
 @media (min-width: 768px) { .bf-img { object-position: var(--fp-md, 50% 50%); } }

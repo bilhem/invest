@@ -91,7 +91,7 @@ export default async function Page({ params }: { params: Promise<Params> }) {
       }
     : null;
 
-  // Districts with an editorial story use the shared NeighborhoodPage system (Creek, Dubai Hills, Downtown).
+  // Districts with an editorial story use the shared NeighborhoodPage system (Creek, Dubai Hills, Downtown, City Walk, Mina Rashid, Dubai Islands).
   if (a.story) {
     return (
       <>

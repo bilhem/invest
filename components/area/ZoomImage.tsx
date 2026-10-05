@@ -7,10 +7,20 @@ import { getAspect, getImage, type ImageKey } from '@/lib/images';
 /**
  * Shows an image IN FULL (object-contain, never cropped) at its true aspect ratio,
  * and opens it full-screen on click (native <dialog>: Esc closes, focus is handled by the browser).
+ * `overlay` (optional) is drawn in the image's exact box, in the page AND in the enlarged view: positions in % stay true,
+ * and the box is a size container (`cqw` units) so annotations scale with the map.
+ * On phones the enlarged view is wider than the screen and can be panned, so small map labels stay readable.
  */
 export default function ZoomImage({
-  slot, sizes = '100vw', unconstrained = false, className = '',
-}: { slot: ImageKey; sizes?: string; /** Let the plan use the full width of its container (no viewport-height cap). */ unconstrained?: boolean; className?: string }) {
+  slot, sizes = '100vw', unconstrained = false, className = '', overlay,
+}: {
+  slot: ImageKey;
+  sizes?: string;
+  /** Let the plan use the full width of its container (no viewport-height cap). */
+  unconstrained?: boolean;
+  className?: string;
+  overlay?: React.ReactNode;
+}) {
   const img = getImage(slot);
   const ref = useRef<HTMLDialogElement>(null);
   const aspect = getAspect(slot, '16 / 7');
@@ -35,8 +45,9 @@ export default function ZoomImage({
         className={`group relative mx-auto block w-full cursor-zoom-in border border-charcoal/10 bg-ivory ${className}`}
         style={{ maxWidth: maxW }}
       >
-        <span className="relative block w-full" style={{ aspectRatio: aspect }}>
+        <span className="relative block w-full" style={{ aspectRatio: aspect, containerType: 'inline-size' }}>
           <Image src={img.src} alt={img.alt} fill sizes={sizes} quality={90} style={{ objectFit: 'contain' }} />
+          {overlay}
         </span>
         <span className="absolute bottom-3 right-3 bg-charcoal/80 px-3 py-1.5 text-[0.7rem] font-medium tracking-wide text-ivory transition-colors group-hover:bg-charcoal">
           Agrandir
@@ -48,16 +59,20 @@ export default function ZoomImage({
         className="m-0 h-full max-h-none w-full max-w-none bg-transparent p-0 backdrop:bg-charcoal/95"
         onClick={() => ref.current?.close()}
       >
-        <div className="flex h-full w-full items-center justify-center p-4 md:p-10">
+        <div className="flex h-full w-full overflow-auto p-4 md:p-10">
           <button
             type="button"
             onClick={() => ref.current?.close()}
-            className="absolute right-4 top-4 border border-ivory/40 px-4 py-2 text-xs font-medium tracking-wide text-ivory hover:border-ivory md:right-8 md:top-8"
+            className="fixed right-4 top-4 z-10 border border-ivory/40 bg-charcoal/60 px-4 py-2 text-xs font-medium tracking-wide text-ivory hover:border-ivory md:right-8 md:top-8"
           >
             Fermer
           </button>
-          <div className="relative w-full bg-ivory" style={{ aspectRatio: aspect, maxWidth: `min(100%, calc(92vh * ${ratio.toFixed(3)}))` }}>
+          <div
+            className="relative m-auto w-full min-w-[860px] bg-ivory md:min-w-0"
+            style={{ aspectRatio: aspect, maxWidth: `min(100%, calc(92vh * ${ratio.toFixed(3)}))`, containerType: 'inline-size' }}
+          >
             <Image src={img.src} alt={img.alt} fill sizes="100vw" quality={90} style={{ objectFit: 'contain' }} />
+            {overlay}
           </div>
         </div>
       </dialog>

@@ -1,6 +1,6 @@
 import BFImage from '@/components/BFImage';
 import Reveal from '@/components/Reveal';
-import { Heading, Photo, Prose, Quote, Section, Shell, muted, type SectionProps } from './ui';
+import { Heading, Photo, Prose, Quote, Section, Shell, fr, muted, type SectionProps } from './ui';
 import type { EditorialData } from '@/lib/data/neighborhood-types';
 
 /** Short closing lines at key-quote size: every line but the last is muted, the last one lands. */
@@ -30,7 +30,7 @@ export default function EditorialSection({ s, density, tone, join }: SectionProp
         <div className="mx-auto max-w-[56rem] md:text-center">
           <Heading eyebrow={s.eyebrow} title={s.title} dark={dark} center titleClass="max-w-[44rem]" />
           <Reveal className="mt-10 max-w-[36rem] space-y-5 md:mx-auto md:mt-12">
-            {s.paragraphs.map((p) => <p key={p} className={`ed-body md:mx-auto ${muted(dark)}`}>{p}</p>)}
+            {s.paragraphs.map((p) => <p key={p} className={`ed-body md:mx-auto ${muted(dark)}`}>{fr(p)}</p>)}
           </Reveal>
         </div>
         {s.statement && (

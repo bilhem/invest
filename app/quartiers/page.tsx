@@ -7,7 +7,7 @@ import { getAreas } from '@/lib/cms';
 
 export const metadata = buildMetadata({
   title: 'Quartiers de Dubai pour investir',
-  description: 'Dubai n’est pas un seul marché. Découvrez la dynamique, l’offre et le profil d’investisseur de chaque quartier : Creek Harbour, Dubai Hills, Downtown, Business Bay, Marina, Dubai South, Palm Jebel Ali.',
+  description: 'Dubai n’est pas un seul marché. Découvrez la dynamique, l’offre et le profil d’investisseur de chaque quartier : Creek Harbour, Dubai Hills, Downtown, City Walk, Mina Rashid, Dubai Marina, Palm Jebel Ali, Dubai Islands.',
   path: '/quartiers',
 });
 
