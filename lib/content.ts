@@ -11,13 +11,13 @@ export const STORIES = [
   { slug: 'investisseur-3', img: 'story-3', name: '[Prénom]', who: 'Investisseur — [Pays]', strategy: '[Stratégie]', area: '[Quartier]', invest: '[X AED]', evo: '[X %]' },
 ] as const;
 export const STRATEGIES = [
-  { t: 'Capital Appreciation', d: 'Investir dans une perspective de valorisation à moyen et long terme.', img: 'story-1' },
-  { t: 'Rental Income', d: 'Construire un projet orienté vers les revenus locatifs.', img: 'story-2' },
-  { t: 'Off-Plan', d: 'Comprendre les achats sur plan, leurs avantages et leurs risques.', img: 'story-3' },
-  { t: 'Payment Plans', d: 'Étaler l’engagement de capital selon un calendrier de paiement.', img: 'insight-1' },
-  { t: 'Financing', d: 'Explorer le recours au financement lorsqu’il est pertinent.', img: 'insight-2' },
-  { t: 'Portfolio Diversification', d: 'Positionner l’immobilier dans un patrimoine plus large.', img: 'insight-3' },
-  { t: 'Entrepreneurs & Companies', d: 'Aborder l’investissement dans un cadre patrimonial ou professionnel.', img: 'area-downtown-dubai' },
+  { t: 'Capital Appreciation', d: 'Investir dans une perspective de valorisation à moyen et long terme.', img: 'strategy-capital-appreciation' },
+  { t: 'Rental Income', d: 'Construire un projet orienté vers les revenus locatifs.', img: 'strategy-rental-income' },
+  { t: 'Off-Plan', d: 'Comprendre les achats sur plan, leurs avantages et leurs risques.', img: 'strategy-off-plan' },
+  { t: 'Payment Plans', d: 'Étaler l’engagement de capital selon un calendrier de paiement.', img: 'strategy-payment-plans' },
+  { t: 'Financing', d: 'Explorer le recours au financement lorsqu’il est pertinent.', img: 'strategy-financing' },
+  { t: 'Portfolio Diversification', d: 'Positionner l’immobilier dans un patrimoine plus large.', img: 'strategy-portfolio-diversification' },
+  { t: 'Entrepreneurs & Companies', d: 'Aborder l’investissement dans un cadre patrimonial ou professionnel.', img: 'strategy-entrepreneurs-companies' },
 ] as const;
 export const AREAS = [
   { slug: 'dubai-creek-harbour', name: 'Dubai Creek Harbour', tag: 'Waterfront · Master community' },

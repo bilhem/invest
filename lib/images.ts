@@ -481,7 +481,31 @@ export const IMAGES = {
     alt: 'Carte de localisation du matériel Sobha : Sobha Hartland II entouré de cercles de 1 à 5 km, entre Sobha Hartland, Ras Al Khor, Dubai Design District, Meydan Race Course, Nad Al Sheba, Downtown Dubai et Dubai Creek Harbour, avec une légende de temps de trajet indiqués par le promoteur',
     kind: 'plan', tone: 'dusk',
   },
-  hero: { alt: 'Skyline de Dubai au crépuscule', tone: 'dusk', focal: '50% 60%' },
+  // Home page pack (PRODUCTION V1, /public/images/home). Rights declared cleared by the client; files are served untouched (no sharpening, no filter).
+  // hero = a Nakheel / Meraas brochure render used as a visual for Dubai (the page never names the project). Desktop focal keeps the wheel, the island and the towers in frame;
+  // on phones the picture sits at the top of the hero and `focalMobile` centres the wheel and the waterfront (the text starts below it).
+  hero: {
+    src: '/images/home/01-home-hero-bluewaters.webp', width: 3097, height: 1439, kind: 'render', rights: 'cleared',
+    alt: 'Dubai en bord de mer au crépuscule : une grande roue, un front de mer et des tours résidentielles face au golfe',
+    tone: 'dusk', focal: '0% 50%', focalMobile: '42% 50%',
+  },
+  // home-philosophy = visual created for BF Properties (an investor looking at the Dubai skyline from a premium interior): reflection, projection, never a sales scene.
+  // It has its own key on purpose: `philosophy` is also used by the À propos page, which stays untouched (placeholder) until it gets its own picture.
+  'home-philosophy': {
+    src: '/images/home/02-home-philosophy-investor.webp', width: 1672, height: 941, kind: 'render', rights: 'cleared',
+    alt: 'Un homme en costume observe la skyline de Dubai au coucher du soleil depuis un salon aux grandes baies vitrées',
+    tone: 'dusk', focal: '42% 50%', focalMobile: '40% 50%',
+  },
+  // Strategy tiles of the home page. The seven supplied files are fixed-size crops of the reference sheet (03-strategy-icons-reference) whose frames are
+  // shifted and cut off at different edges; the tiles here are cut from that same sheet at each frame's exact edges (same pixels, no retouching, no enlargement),
+  // so the seven frames align. The sheet itself is never displayed. Small identity pictures only (≈ 64–84 px), never enlarged like photographs.
+  'strategy-capital-appreciation': { src: '/images/home/strategy-capital-appreciation.webp', width: 286, height: 276, kind: 'render', rights: 'cleared', alt: 'Graphique en hausse devant la silhouette d’une tour', tone: 'dusk' },
+  'strategy-rental-income': { src: '/images/home/strategy-rental-income.webp', width: 292, height: 279, kind: 'render', rights: 'cleared', alt: 'Immeuble résidentiel face à la skyline au crépuscule', tone: 'dusk' },
+  'strategy-off-plan': { src: '/images/home/strategy-off-plan.webp', width: 290, height: 279, kind: 'render', rights: 'cleared', alt: 'Contrat et stylo', tone: 'dusk' },
+  'strategy-payment-plans': { src: '/images/home/strategy-payment-plans.webp', width: 291, height: 278, kind: 'render', rights: 'cleared', alt: 'Calendrier et pièces', tone: 'dusk' },
+  'strategy-financing': { src: '/images/home/strategy-financing.webp', width: 275, height: 278, kind: 'render', rights: 'cleared', alt: 'Colonnes d’une institution et pièces', tone: 'dusk' },
+  'strategy-portfolio-diversification': { src: '/images/home/strategy-portfolio-diversification.webp', width: 279, height: 279, kind: 'render', rights: 'cleared', alt: 'Globe terrestre et lignes de connexion', tone: 'dusk' },
+  'strategy-entrepreneurs-companies': { src: '/images/home/strategy-entrepreneurs-companies.webp', width: 283, height: 279, kind: 'render', rights: 'cleared', alt: 'Mallette devant la skyline de nuit', tone: 'dusk' },
   philosophy: { alt: 'Architecture contemporaine à Dubai', tone: 'day', focal: '50% 50%' },
   lab: { alt: 'Interface de modélisation BF Investment Lab', tone: 'dusk' },
   cta: { alt: 'Dubai en bord de mer, vue de nuit', tone: 'water', focal: '50% 70%' },

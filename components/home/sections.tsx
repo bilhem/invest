@@ -1,17 +1,26 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import BFImage from '@/components/BFImage';
 import Reveal from '@/components/Reveal';
 import CtaLink from '@/components/CtaLink';
 import { METHOD, STORIES, STRATEGIES, AREAS, INSIGHTS } from '@/lib/content';
-import type { ImageKey } from '@/lib/images';
+import { getImage, type ImageKey } from '@/lib/images';
 
 export function Hero() {
   return (
-    <section className="relative flex min-h-[88svh] items-end bg-charcoal text-ivory lg:min-h-[100svh]">
-      <BFImage slot="hero" priority overlay="strong" />
-      <div className="wrap relative pb-14 pt-40 md:pb-20">
+    <section className="relative flex min-h-[88svh] items-end overflow-hidden bg-charcoal text-ivory">
+      {/* Phones and tablets: the picture takes the top of the screen (wheel, island and waterfront stay in view above the text) and fades into the charcoal where the text starts.
+          From 1024px: it fills the hero, shaded on the text side only (left) and along the bottom edge; the right of the picture is left untouched. The title is kept narrow
+          so that it ends before the wheel. */}
+      <div className="absolute inset-x-0 top-0 h-[52svh] lg:inset-0 lg:h-auto">
+        <BFImage slot="hero" priority sizes="(min-width:3097px) 3097px, 100vw" />
+      </div>
+      <div aria-hidden className="absolute inset-x-0 top-0 h-[52svh] bg-gradient-to-t from-charcoal from-10% via-charcoal/55 via-35% to-transparent lg:hidden" />
+      <div aria-hidden className="absolute inset-0 hidden lg:block lg:bg-[linear-gradient(90deg,rgba(27,26,24,0.88)_0%,rgba(27,26,24,0.66)_34%,rgba(27,26,24,0.26)_58%,rgba(27,26,24,0)_78%)]" />
+      <div aria-hidden className="absolute inset-x-0 bottom-0 hidden h-[45%] bg-gradient-to-t from-charcoal/80 to-transparent lg:block" />
+      <div className="wrap relative pb-14 pt-[32svh] md:pb-20 lg:pt-32">
         <p className="eyebrow">Dubai real estate investment advisory</p>
-        <h1 className="h-display mt-5 max-w-3xl">L’investissement qui vous ressemble.</h1>
+        <h1 className="h-display mt-5 max-w-3xl lg:max-w-[33rem]">L’investissement qui vous ressemble.</h1>
         <p className="mt-6 max-w-xl text-base leading-relaxed text-ivory/80 md:text-lg">
           À Dubai, chaque investisseur a des objectifs différents. BF Properties vous aide à comprendre le marché, définir votre stratégie et identifier les opportunités adaptées à votre situation.
         </p>
@@ -30,16 +39,19 @@ export function Hero() {
 export function Philosophy() {
   return (
     <section className="section">
-      <div className="wrap grid items-center gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:gap-20">
-        <Reveal>
-          <h2 className="h-section max-w-xl">Nous ne commençons pas par vous montrer des propriétés.</h2>
+      <div className="wrap grid items-center gap-12 lg:grid-cols-12 lg:gap-x-12 xl:gap-x-16">
+        <Reveal className="lg:col-span-5">
+          <h2 className="h-section max-w-xl lg:leading-[1.1]">Nous ne commençons pas par vous montrer des propriétés.</h2>
           <p className="mt-8 font-serif text-2xl text-champagne-dark">Nous commençons par comprendre votre situation.</p>
           <p className="mt-5 max-w-md leading-relaxed text-charcoal/75">
             Votre capital, vos objectifs, votre horizon et vos contraintes déterminent les opportunités qui méritent réellement votre attention.
           </p>
           <CtaLink href="/a-propos" id="philosophy" className="btn btn-outline-dark mt-9">Notre approche</CtaLink>
         </Reveal>
-        <div className="relative aspect-[4/5] w-full lg:aspect-[3/4]"><BFImage slot="philosophy" sizes="(min-width:1024px) 40vw, 100vw" /></div>
+        {/* Large editorial picture (5 columns of text / 7 of picture on desktop); edge to edge on phones and tablets so it never reads as a small card. */}
+        <div className="relative -mx-6 aspect-[4/3] md:-mx-10 md:aspect-[16/10] lg:col-span-7 lg:mx-0 lg:aspect-[4/3]">
+          <BFImage slot="home-philosophy" sizes="(min-width:1280px) 660px, (min-width:1024px) 58vw, 100vw" />
+        </div>
       </div>
     </section>
   );
@@ -92,24 +104,38 @@ export function Stories() {
   );
 }
 
+/**
+ * Small identity picture of a strategy (56 → 80 px): decorative (the title sits right beside it), shown whole in its own frame, never enlarged like a photograph.
+ * The tile frames are part of the pictures (see lib/images.ts), hence `object-fill` on a box of the same shape: nothing is cropped, the seven frames line up.
+ */
+function StrategyIcon({ slot }: { slot: ImageKey }) {
+  const img = getImage(slot);
+  if (!('src' in img) || !img.src) return <span aria-hidden className="block h-14 w-14 shrink-0 sm:h-[4.5rem] sm:w-[4.5rem] lg:h-20 lg:w-20" />;
+  return (
+    <span className="block h-14 w-14 shrink-0 overflow-hidden rounded-[5px] transition-transform duration-500 group-hover:scale-[1.04] sm:h-[4.5rem] sm:w-[4.5rem] sm:rounded-md lg:h-20 lg:w-20">
+      <Image src={img.src} alt="" width={img.width} height={img.height} sizes="(min-width:1024px) 80px, (min-width:640px) 72px, 56px" quality={85} className="h-full w-full object-fill" />
+    </span>
+  );
+}
+
 export function Strategies() {
   return (
     <section className="bg-charcoal section text-ivory">
       <div className="wrap grid gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20">
         <Reveal className="lg:sticky lg:top-32 lg:self-start">
-          <h2 className="h-section">Plusieurs objectifs. Plusieurs façons d’investir.</h2>
+          <h2 className="h-section lg:leading-[1.1]">Plusieurs objectifs. Plusieurs façons d’investir.</h2>
           <CtaLink href="/strategies" id="strategies" className="btn btn-gold mt-9">Explorer les stratégies</CtaLink>
         </Reveal>
         <ul>
           {STRATEGIES.map((s) => (
-            <li key={s.t} className="border-t border-ivory/15 last:border-b">
-              <Link href="/strategies" className="group flex items-center gap-5 py-5">
-                <span className="relative h-16 w-16 shrink-0 sm:h-20 sm:w-20"><BFImage slot={s.img as ImageKey} sizes="80px" /></span>
-                <span className="flex-1">
+            <li key={s.t} className="border-t border-ivory/[0.14] last:border-b">
+              <Link href="/strategies" className="group -mx-3 flex items-center gap-4 px-3 py-5 transition-colors duration-500 hover:bg-ivory/[0.04] sm:-mx-4 sm:gap-6 sm:px-4 sm:py-6">
+                <StrategyIcon slot={s.img as ImageKey} />
+                <span className="min-w-0 flex-1">
                   <span className="block font-serif text-xl sm:text-2xl">{s.t}</span>
-                  <span className="mt-1 block text-sm text-ivory/60">{s.d}</span>
+                  <span className="mt-1 block text-sm leading-relaxed text-ivory/60">{s.d}</span>
                 </span>
-                <span aria-hidden className="text-champagne transition-transform group-hover:translate-x-1">→</span>
+                <span aria-hidden className="shrink-0 text-champagne/80 transition-all duration-500 group-hover:translate-x-1 group-hover:text-champagne">→</span>
               </Link>
             </li>
           ))}
