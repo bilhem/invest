@@ -27,6 +27,8 @@ export type Developer = {
   ready: boolean;
   /** Logo file name (without folder). */
   logo: string;
+  /** `large` when the supplied file is mostly empty background around a small mark (Select Group's brochure crop): the plate is taller so the mark reads at the same size as the others. */
+  logoSize?: 'large';
   /** Extra link that already exists (never to a future page). */
   context?: { label: string; href: string };
   layout: DeveloperLayout;
@@ -207,6 +209,7 @@ export const DEVELOPERS: Developer[] = [
     cta: 'Comprendre Select Group',
     ready: false,
     logo: 'select-group',
+    logoSize: 'large',
     context: { label: 'Voir l’Investor Story de Franck', href: '/investor-stories/franck-peninsula-five' },
     layout: 'split',
     tone: 'sand',

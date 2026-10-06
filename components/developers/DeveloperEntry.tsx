@@ -27,14 +27,14 @@ function Head({ d, stacked = false }: { d: Developer; stacked?: boolean }) {
     return (
       <div>
         {text}
-        <DeveloperLogo file={d.logo} name={d.name} className="mt-5 !justify-start [&>img]:object-left" />
+        <DeveloperLogo file={d.logo} name={d.name} size={d.logoSize} className="mt-5 !justify-start [&>img]:object-left" />
       </div>
     );
   }
   return (
     <div className="flex items-end justify-between gap-6 border-b border-charcoal/20 pb-5">
       {text}
-      <DeveloperLogo file={d.logo} name={d.name} />
+      <DeveloperLogo file={d.logo} name={d.name} size={d.logoSize} />
     </div>
   );
 }
