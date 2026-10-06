@@ -19,6 +19,11 @@ export type ImageSlot = {
   rights?: 'cleared' | 'unconfirmed';
   /** Discreet label drawn over the picture's corner when a component asks for it (`BFImage tag`): « Rendu du projet — illustration promoteur ». */
   note?: string;
+  /**
+   * Photographic page hero only (`PageHero`): strength (0–1) of the dark veil behind the text. `bottom` darkens the lower band, `left` the left side,
+   * `top` the very top (site header). Slots without `veil` keep the historical « strong » overlay of `PageHero`.
+   */
+  veil?: { bottom: number; left: number; top: number; /** How far (% of the width, default 72) the left veil reaches before fading out. */ reach?: number };
 };
 
 /**
@@ -137,6 +142,28 @@ const palmHero: ImageSlot = {
   src: `${PALM}/01-palm-jebel-ali-hero.webp`, width: 3416, height: 2434, rights: 'cleared',
   alt: 'Vue aérienne de Palm Jebel Ali : une plage de sable en arc de cercle au pied de résidences et de jardins, un frond et le Golfe au loin',
   kind: 'render', tone: 'water', focal: '50% 28%', focalMobile: '40% 45%',
+};
+
+// Editorial page heroes (PRODUCTION V1, /public/images/editorial): /investir-a-dubai, /strategies, /investor-stories, /insights. One picture per page, never reused.
+// Extracts of official developer brochures (renders), cropped 16:7 by the pack, native resolution, no upscaling, no filter, no sharpening. Rights declared cleared by the client.
+// They are editorial illustrations of the Dubai investment universe: the pages never name a project or a developer. The picture sits behind the H1, which carries the meaning,
+// so the hero image is decorative (alt = ''). `veil` replaces the historical « strong » overlay of PageHero for these four photographic heroes only.
+const EDITORIAL = '/images/editorial';
+const editorialInvest: ImageSlot = {
+  src: `${EDITORIAL}/01-investir-dubai.webp`, width: 2350, height: 1028, kind: 'render', rights: 'cleared',
+  alt: '', tone: 'dusk', focal: '50% 50%', focalMobile: '45% 50%', veil: { bottom: 0.78, left: 0.6, top: 0.3 },
+};
+const editorialStrategies: ImageSlot = {
+  src: `${EDITORIAL}/02-strategies.webp`, width: 2555, height: 1117, kind: 'render', rights: 'cleared',
+  alt: '', tone: 'dusk', focal: '50% 50%', focalMobile: '60% 50%', veil: { bottom: 0.72, left: 0.55, top: 0.3 },
+};
+const editorialStories: ImageSlot = {
+  src: `${EDITORIAL}/03-investor-stories.webp`, width: 4217, height: 1844, kind: 'render', rights: 'cleared',
+  alt: '', tone: 'day', focal: '0% 50%', focalMobile: '22% 50%', veil: { bottom: 0.78, left: 0.72, top: 0.3, reach: 92 },
+};
+const editorialInsights: ImageSlot = {
+  src: `${EDITORIAL}/04-insights.webp`, width: 3133, height: 1370, kind: 'render', rights: 'cleared',
+  alt: '', tone: 'dusk', focal: '50% 50%', focalMobile: '48% 50%', veil: { bottom: 0.74, left: 0.55, top: 0.3 },
 };
 
 export const IMAGES = {
@@ -525,12 +552,12 @@ export const IMAGES = {
   'insight-2': { alt: 'Guide investisseur', tone: 'day' },
   'insight-3': { alt: 'Analyse de quartier', tone: 'water' },
   // Page heroes
-  'hero-invest': { alt: 'Vue architecturale de Dubai', tone: 'dusk', focal: '50% 60%' },
-  'hero-strategies': { alt: 'Architecture contemporaine', tone: 'day' },
+  'hero-invest': editorialInvest,
+  'hero-strategies': editorialStrategies,
   'hero-entrepreneurs': { alt: 'Quartier d’affaires de Dubai', tone: 'dusk' },
   'hero-areas': { alt: 'Dubai, vue d’ensemble des quartiers', tone: 'water' },
-  'hero-stories': { alt: 'Résidence contemporaine à Dubai', tone: 'day' },
-  'hero-insights': { alt: 'Dubai, lumière du matin', tone: 'dusk' },
+  'hero-stories': editorialStories,
+  'hero-insights': editorialInsights,
   'hero-about': { alt: 'Skyline de Dubai', tone: 'dusk' },
   'hero-consult': { alt: 'Dubai la nuit', tone: 'water' },
   'hero-lab': { alt: 'BF Investment Lab', tone: 'dusk' },

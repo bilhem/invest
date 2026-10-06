@@ -61,6 +61,21 @@
 /* Per-breakpoint focal point for photos: --fp-sm below 768px, --fp-md from 768px up (set by BFImage). */
 .bf-img { object-position: var(--fp-sm, 50% 50%); }
 @media (min-width: 768px) { .bf-img { object-position: var(--fp-md, 50% 50%); } }
+/* Photographic page hero (PageHero, slots with `veil`): dark behind the text (bottom, then left from tablet up), clear elsewhere so the picture shows.
+   Strengths --v-b / --v-l / --v-t (and the left reach --v-r, default 72%) come from the slot in lib/images.ts. Charcoal = #1B1A18 (27 26 24). */
+.hero-veil {
+  background:
+    linear-gradient(to top, rgb(27 26 24 / var(--v-b)) 0%, rgb(27 26 24 / calc(var(--v-b) * .78)) 40%, rgb(27 26 24 / calc(var(--v-b) * .3)) 74%, rgb(27 26 24 / 0) 100%),
+    linear-gradient(to bottom, rgb(27 26 24 / var(--v-t)) 0%, rgb(27 26 24 / 0) 26%);
+}
+@media (min-width: 768px) {
+  .hero-veil {
+    background:
+      linear-gradient(to top, rgb(27 26 24 / var(--v-b)) 0%, rgb(27 26 24 / calc(var(--v-b) * .5)) 34%, rgb(27 26 24 / 0) 72%),
+      linear-gradient(to right, rgb(27 26 24 / var(--v-l)) 0%, rgb(27 26 24 / calc(var(--v-l) * .55)) calc(var(--v-r, 72%) * .53), rgb(27 26 24 / 0) var(--v-r, 72%)),
+      linear-gradient(to bottom, rgb(27 26 24 / var(--v-t)) 0%, rgb(27 26 24 / 0) 26%);
+  }
+}
 .reveal { opacity: 0; transform: translateY(14px); transition: opacity .9s ease, transform .9s ease; }
 .reveal.is-in { opacity: 1; transform: none; }
 @media (prefers-reduced-motion: reduce) {
