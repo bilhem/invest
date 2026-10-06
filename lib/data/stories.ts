@@ -42,6 +42,7 @@ export type Story = {
   /** Indexes of `selection` paragraphs set as a serif statement (the idea of the section). Display only. */
   selectionStress?: number[];
   regard: { headline?: string; paragraphs: string[] };
+  /** Compact amounts (3.285M AED, 770K AED) and French editorial dates (DÉC. 2022, SEPT. 2026): the key figures keep the exact amounts. */
   timeline: { from: TimelineNode; between?: string; to: TimelineNode };
   quote: string;
   /** District page to link to. Only used when that page exists (checked at render time). */
@@ -109,9 +110,9 @@ export const STORIES: Story[] = [
       ],
     },
     timeline: {
-      from: { when: 'DEC 2022', label: 'Acquisition', value: '3.285M AED' },
+      from: { when: 'DÉC. 2022', label: 'Acquisition', value: '3.285M AED' },
       between: 'construction / payment plan 50/50',
-      to: { when: 'MAR 2026', label: 'Revente', value: '4.500M AED' },
+      to: { when: 'MARS 2026', label: 'Revente', value: '4.500M AED' },
     },
     quote: '« La performance ne venait pas uniquement du projet. Elle venait aussi de l’unité choisie à l’intérieur du projet. »',
     seo: {
@@ -162,9 +163,9 @@ export const STORIES: Story[] = [
       ],
     },
     timeline: {
-      from: { when: 'MAR 2022', label: 'Acquisition', value: '2 331 000 AED' },
+      from: { when: 'MARS 2022', label: 'Acquisition', value: '2.331M AED' },
       between: 'Actif conservé',
-      to: { when: 'AUJOURD’HUI', label: 'Valeur comparable observée', value: '3 700 000 AED' },
+      to: { when: 'AUJOURD’HUI', label: 'Valeur comparable observée', value: '3.700M AED' },
     },
     quote: '« Une belle performance ne nécessite pas toujours une sortie. »',
     areaSlug: 'city-walk',
@@ -214,9 +215,9 @@ export const STORIES: Story[] = [
       ],
     },
     timeline: {
-      from: { when: 'AVR 2022', label: 'Acquisition', value: '770 000 AED' },
+      from: { when: 'AVR. 2022', label: 'Acquisition', value: '770K AED' },
       between: 'Actif conservé',
-      to: { when: 'AUJOURD’HUI', label: 'Valeur comparable observée', value: '1 375 000 AED' },
+      to: { when: 'AUJOURD’HUI', label: 'Valeur comparable observée', value: '1.375M AED' },
     },
     quote: '« Toutes les opportunités ne se trouvent pas dans les quartiers les plus chers de Dubai. »',
     seo: {
@@ -264,8 +265,8 @@ export const STORIES: Story[] = [
       ],
     },
     timeline: {
-      from: { when: 'MAI 2022', label: 'Acquisition', value: '2 021 888 AED' },
-      to: { when: 'SEP 2026', label: 'Revente', value: '2 980 000 AED' },
+      from: { when: 'MAI 2022', label: 'Acquisition', value: '2.022M AED' },
+      to: { when: 'SEPT. 2026', label: 'Revente', value: '2.980M AED' },
     },
     quote: '« La liquidité n’empêche pas la performance. Elle faisait partie de la stratégie dès le départ. »',
     areaSlug: 'dubai-creek-harbour',
