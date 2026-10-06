@@ -5,6 +5,7 @@ import { DOWNTOWN_STORY } from './neighborhoods/downtown-dubai';
 import { CITY_WALK_STORY } from './neighborhoods/city-walk';
 import { MINA_RASHID_STORY } from './neighborhoods/mina-rashid';
 import { DUBAI_ISLANDS_STORY } from './neighborhoods/dubai-islands';
+import { PALM_JEBEL_ALI_STORY } from './neighborhoods/palm-jebel-ali';
 
 /**
  * AREA CONTENT — qualitative, no market figures.
@@ -133,23 +134,24 @@ export const AREAS: Area[] = [
     slug: 'palm-jebel-ali',
     name: 'Palm Jebel Ali',
     img: 'area-palm-jebel-ali',
-    tagline: 'Un projet insulaire d’envergure, encore à ses débuts.',
-    summary: 'Un projet de long terme annoncé par Nakheel, dont le calendrier de livraison reste à suivre de près.',
-    tags: ['Projet insulaire', 'Très long terme', 'Prestige'],
+    tagline: 'La naissance d’une nouvelle icône de Dubai.',
+    summary: 'Une nouvelle Palm, plus au sud de la côte de Dubai : une destination à grande échelle, à étudier sur un horizon long et sans en présumer la performance.',
+    tags: ['Beachfront', 'Destination à long terme', 'Sud de Dubai'],
     coords: { lat: 25.003, lng: 54.98 },
-    overview: 'Palm Jebel Ali est un projet insulaire de grande ampleur annoncé par Nakheel, positionné comme un développement de long terme.',
-    masterplan: 'Un plan directeur ambitieux, dont la réalisation se fera par phases sur de nombreuses années.',
-    location: 'Sur la côte, au sud-ouest de Dubai, près de Jebel Ali.',
-    connectivity: 'Infrastructures dépendantes de l’avancement du projet.',
-    lifestyle: 'Vision d’un cadre de vie balnéaire de prestige ; la réalité dépendra des livraisons effectives.',
-    market: 'Phase initiale : l’offre se limite à des lancements précoces, dont le calendrier doit être vérifié.',
-    profiles: ['Villas et résidences en première ligne', 'Projets en lancement'],
-    rental: 'Aucune base historique : la demande locative est à ce stade hypothétique.',
-    pipeline: 'Projet en phase de lancement ; les échéances officielles doivent être confirmées auprès du promoteur.',
+    overview: 'Palm Jebel Ali est une nouvelle Palm de Nakheel, plus au sud que Palm Jumeirah, qui porte l’ambition de faire émerger une nouvelle destination internationale sur la côte de Dubai.',
+    masterplan: 'Une destination qui doit progressivement réunir habitat, beachfront, espaces publics, hospitality, loisirs et services.',
+    location: 'Sur la côte de Dubai, plus au sud que Palm Jumeirah, dans le prolongement du développement de la ville vers le sud.',
+    connectivity: 'Les temps de trajet publiés par le promoteur sont des indications : ils sont à vérifier au moment de l’analyse.',
+    lifestyle: 'Beachfront, espaces paysagers, bien-être, hospitality et loisirs : un écosystème qui reste en grande partie à construire.',
+    market: 'Destination en développement : l’offre dépend des projets lancés, comme Palm Central, l’une de ses expressions résidentielles, et de leur calendrier de livraison.',
+    profiles: ['Résidences beachfront', 'Résidences sur un frond ou sur la spine'],
+    rental: 'Aucune base historique à ce stade : la performance dépend de l’actif et ne doit pas être supposée.',
+    pipeline: 'Projets à différents stades ; les calendriers sont à confirmer auprès du promoteur.',
     developers: ['Nakheel'],
-    strengths: ['Projet d’envergure porté par un grand promoteur', 'Potentiel de différenciation à long terme', 'Positionnement balnéaire'],
-    considerations: ['Aucun recul historique', 'Risque lié au calendrier et à l’exécution', 'Horizon d’investissement très long'],
-    bfView: 'À aborder avec la plus grande prudence et un horizon très long. Ce n’est pas un point d’entrée par défaut.',
+    strengths: ['Rareté beachfront', 'Géographie iconique', 'Développement de Dubai vers le sud'],
+    considerations: ['Une partie importante de la destination reste à construire', 'Thèse de long terme', 'Valeur très variable selon la micro-localisation'],
+    bfView: 'Une thèse de destination et de long terme : la position dans la Palm, l’accès réel au beachfront, le développeur, le prix d’entrée, le calendrier de livraison et l’horizon de sortie comptent autant que l’adresse.',
+    story: PALM_JEBEL_ALI_STORY,
   },
   {
     slug: 'dubai-islands',

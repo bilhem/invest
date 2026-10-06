@@ -4,7 +4,7 @@ import Reveal from '@/components/Reveal';
 import { getAspect, getImage } from '@/lib/images';
 import MapMarkers from './MapMarkers';
 import SituationDiagram from './SituationDiagram';
-import { Eyebrow, Heading, Prose, Quote, Section, muted, type SectionProps } from './ui';
+import { Eyebrow, Heading, Prose, Quote, Section, fr, muted, type SectionProps } from './ui';
 import type { LocationData } from '@/lib/data/neighborhood-types';
 
 /**
@@ -12,7 +12,7 @@ import type { LocationData } from '@/lib/data/neighborhood-types';
  * Title on columns 1–6, short text (and reading lines) on 8–12, then the map on the wide container (up to 1400px):
  * ALWAYS shown in full (object-contain, true ratio, never cropped), enlargeable, optionally annotated. Without an official graphic,
  * a schematic (`situation`: sea / district / centre, no map, no distances) takes its place.
- * Under the map: a chain of reference points, a caption, then the text and the key statement.
+ * Under the map: a chain of reference points, a caption, then (optional) two questions side by side, the text and the key statement.
  */
 export default function LocationSection({ s, density, tone, join }: SectionProps<LocationData>) {
   const dark = tone === 'dark';
@@ -86,6 +86,26 @@ export default function LocationSection({ s, density, tone, join }: SectionProps
               ))}
             </ol>
           </Reveal>
+        )}
+
+        {s.questions && s.questions.length > 0 && (
+          <div className={`ed-grid mt-14 items-start gap-y-12 border-t pt-10 md:mt-20 md:pt-14 ${rule}`}>
+            {s.questions.map((q, i) => {
+              const last = i === s.questions!.length - 1;
+              return (
+                <Reveal key={q.text} className={`col-span-12 lg:col-span-6 ${i % 2 === 1 ? 'lg:col-start-7' : ''}`}>
+                  <p className={`ed-body ${muted(dark)}`}>{fr(q.lead)}</p>
+                  <Quote
+                    dark={dark}
+                    accent={last}
+                    className={`mt-4 max-w-[34rem] !text-[1.75rem] md:!text-[2rem] ${last ? 'border-l-2 border-champagne pl-6 md:pl-8' : dark ? '!text-ivory/60' : '!text-charcoal/55'}`}
+                  >
+                    {q.text}
+                  </Quote>
+                </Reveal>
+              );
+            })}
+          </div>
         )}
 
         {((s.after && s.after.length > 0) || s.statement) && (

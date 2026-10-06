@@ -1,5 +1,5 @@
 import Reveal from '@/components/Reveal';
-import type { Density, Tone } from '@/lib/data/neighborhood-types';
+import type { Density, TextInsert, Tone } from '@/lib/data/neighborhood-types';
 
 /**
  * Shared building blocks of the district pages: one container, one 12-column grid (.ed-grid), one vertical rhythm (.ed-sec),
@@ -24,10 +24,10 @@ export function fr(text: string): string {
   return text.replace(/ ([:;?!»])/g, ' $1').replace(/(«) /g, '$1 ');
 }
 
-/** Keeps short hyphenated words such as « correspond-il » on one line; long ones may break after the hyphen (display only, the text is unchanged). */
+/** Keeps short hyphenated words such as « correspond-il » or « deviendra-t-elle » on one line; long ones may break after the hyphen (display only, the text is unchanged). */
 export function nb(text: string): React.ReactNode {
   return fr(text).split(' ').map((w, i, a) => (
-    <span key={i} className={w.includes('-') && w.length <= 14 ? 'whitespace-nowrap' : undefined}>{w}{i < a.length - 1 ? ' ' : ''}</span>
+    <span key={i} className={w.includes('-') && w.length <= 16 ? 'whitespace-nowrap' : undefined}>{w}{i < a.length - 1 ? ' ' : ''}</span>
   ));
 }
 
@@ -74,11 +74,11 @@ export function Eyebrow({ children, dark = false, className = '' }: { children: 
 
 /** eyebrow → H2. Used at the top of every chapter. `className` positions the block in the grid, `titleClass` sets the title measure. */
 export function Heading({
-  eyebrow, title, dark = false, center = false, className = '', titleClass = 'max-w-[56rem]',
-}: { eyebrow?: string; title: string; dark?: boolean; center?: boolean; className?: string; titleClass?: string }) {
+  eyebrow, title, dark = false, center = false, className = '', titleClass = 'max-w-[56rem]', eyebrowClass = '',
+}: { eyebrow?: string; title: string; dark?: boolean; center?: boolean; className?: string; titleClass?: string; eyebrowClass?: string }) {
   return (
     <Reveal className={`${center ? 'md:text-center' : ''} ${className}`}>
-      {eyebrow && <Eyebrow dark={dark}>{eyebrow}</Eyebrow>}
+      {eyebrow && <Eyebrow dark={dark} className={eyebrowClass}>{eyebrow}</Eyebrow>}
       <h2 className={`ed-h2 ${eyebrow ? 'mt-5' : ''} text-balance ${titleClass} ${center ? 'md:mx-auto' : ''}`}>{nb(title)}</h2>
     </Reveal>
   );
@@ -90,6 +90,48 @@ export function Prose({ paragraphs, dark = false, center = false, className = ''
       {paragraphs.map((p) => (
         <p key={p} className={`ed-body ${muted(dark)} ${center ? 'mx-auto' : ''}`}>{fr(p)}</p>
       ))}
+    </div>
+  );
+}
+
+const ROW_COLS = { 1: '', 2: 'sm:grid-cols-2', 3: 'sm:grid-cols-2 lg:grid-cols-3' } as const;
+
+/** Short lines as a ruled serif list (fine rules, no cards, no numbers): the copy keeps its own punctuation. */
+export function Rows({ items, dark = false, cols = 1, className = '' }: { items: string[]; dark?: boolean; cols?: 1 | 2 | 3; className?: string }) {
+  const rule = dark ? 'border-ivory/25' : 'border-charcoal/15';
+  return (
+    <ul className={`grid grid-cols-1 gap-x-8 border-t font-serif text-[1.25rem] leading-snug md:text-[1.5rem] ${ROW_COLS[cols]} ${rule} ${dark ? 'text-ivory' : 'text-charcoal'} ${className}`}>
+      {items.map((w) => (
+        <li key={w} className={`border-b py-3 ${rule}`}>{fr(w)}</li>
+      ))}
+    </ul>
+  );
+}
+
+/** The same lines set as one serif sentence (a run of short beats). */
+export function Flow({ items, dark = false, className = '' }: { items: string[]; dark?: boolean; className?: string }) {
+  return (
+    <p className={`font-serif text-[1.375rem] leading-[1.4] md:text-[1.625rem] ${dark ? 'text-ivory' : 'text-charcoal'} ${className}`}>
+      {items.map((w) => fr(w)).join(' ')}
+    </p>
+  );
+}
+
+/** Paragraphs with `inserts` (rows / flow) slipped in after the paragraph they follow in the supplied copy. Without inserts it is `Prose`. */
+export function Body({
+  paragraphs, inserts, dark = false, className = '',
+}: { paragraphs: string[]; inserts?: TextInsert[]; dark?: boolean; className?: string }) {
+  if (!inserts || inserts.length === 0) return <Prose paragraphs={paragraphs} dark={dark} className={className} />;
+  return (
+    <div className={`space-y-5 ${className}`}>
+      {paragraphs.flatMap((p, i) => [
+        <p key={`p${i}`} className={`ed-body ${muted(dark)}`}>{fr(p)}</p>,
+        ...inserts.filter((x) => x.after === i).map((x, j) =>
+          x.as === 'flow'
+            ? <Flow key={`i${i}-${j}`} items={x.items} dark={dark} className="!mt-7 !mb-7" />
+            : <Rows key={`i${i}-${j}`} items={x.items} dark={dark} cols={x.cols} className="!mt-7 !mb-7" />,
+        ),
+      ])}
     </div>
   );
 }

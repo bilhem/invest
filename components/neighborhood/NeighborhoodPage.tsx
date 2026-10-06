@@ -33,7 +33,7 @@ const toneOf = (s: StorySection): Tone => ('tone' in s && s.tone) || DEFAULT_TON
 function edges(s: StorySection): { start: Edge; end: Edge } {
   const tone = toneOf(s);
   if (s.type === 'imageStatement' && s.variant === 'overlay') return { start: 'image', end: 'image' };
-  if (s.type === 'imageStatement' && s.variant === 'banner') return { start: 'image', end: tone };
+  if (s.type === 'imageStatement' && s.variant === 'banner') return s.textFirst ? { start: tone, end: 'image' } : { start: 'image', end: tone };
   if (s.type === 'centrality') return { start: 'image', end: 'image' };
   if (s.type === 'editorial' && s.layout === 'stagger') return { start: tone, end: 'image' };
   return { start: tone, end: tone };

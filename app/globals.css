@@ -22,7 +22,7 @@
      eyebrow 13px · H1 (hero only) · H2 30→52px (identical on the whole page) · H3 · key quote 28→40px (always below H2) ·
      secondary statement 24→30px · body 17→18px · caption 12px */
   .ed-eyebrow { @apply text-[0.8125rem] font-medium uppercase leading-snug tracking-[0.2em] text-champagne; }
-  .ed-h2 { @apply font-serif text-[1.875rem] font-medium leading-[1.17] tracking-tight sm:text-4xl md:text-[2.75rem] lg:text-[3.25rem]; }
+  .ed-h2 { @apply font-serif text-[1.875rem] font-medium leading-[1.17] tracking-tight sm:text-[2.25rem] md:text-[2.75rem] lg:text-[3.25rem]; }
   .ed-h3 { @apply font-serif text-[1.625rem] font-medium leading-[1.15] tracking-tight md:text-[2rem]; }
   .ed-lead { @apply text-[1.125rem] leading-[1.65] md:text-[1.25rem]; }
   .ed-body { @apply max-w-[38rem] text-[1.0625rem] leading-[1.75] md:text-[1.125rem]; }

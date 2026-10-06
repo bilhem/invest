@@ -83,6 +83,12 @@ const downtownHero: ImageSlot = {
 const CITYWALK = '/images/neighborhoods/city-walk';
 const MINA = '/images/neighborhoods/mina-rashid';
 const ISLANDS = '/images/neighborhoods/dubai-islands';
+// Palm Jebel Ali: PRODUCTION V1 pack (extracts of the Nakheel Palm Central / Palm Jebel Ali brochure, received 2026-10-06), rights declared cleared.
+//   01 hero, 02 fronds, 03 aerial, 04 evening, 05 waterfront, 06 beachfront are renders (no upscaling, no filters).
+//   07 is the full brochure location page (5 760 px, shown whole, never cropped): the developer's own travel times are captioned as such.
+//   08 is a Palm-wide REFERENCE visual (brochure page), NOT a technical or legal masterplan: it is captioned "plan de référence / vision d’ensemble".
+//   Palm Central appears in the brochure pages (logo, English text): it is only an example of the destination taking shape, never the subject of the page.
+const PALM = '/images/neighborhoods/palm-jebel-ali';
 const cityWalkHero: ImageSlot = {
   src: `${CITYWALK}/01-city-walk-hero.webp`, width: 2386, height: 1689, rights: 'cleared',
   alt: 'Résidences de Crestlane à City Walk : jardins paysagers, bassins et allées entre les immeubles',
@@ -97,6 +103,11 @@ const islandsHero: ImageSlot = {
   src: `${ISLANDS}/01-dubai-islands-hero-v2.webp`, width: 3500, height: 1973, rights: 'cleared',
   alt: 'Vue aérienne d’un front de plage de Dubai Islands : lagon turquoise, plage de sable et résidences',
   kind: 'render', tone: 'water', focal: '50% 55%', focalMobile: '30% 50%',
+};
+const palmHero: ImageSlot = {
+  src: `${PALM}/01-palm-jebel-ali-hero.webp`, width: 3416, height: 2434, rights: 'cleared',
+  alt: 'Vue aérienne de Palm Jebel Ali : une plage de sable en arc de cercle au pied de résidences et de jardins, un frond et le Golfe au loin',
+  kind: 'render', tone: 'water', focal: '50% 28%', focalMobile: '40% 45%',
 };
 
 export const IMAGES = {
@@ -306,6 +317,43 @@ export const IMAGES = {
     alt: 'Salon lumineux ouvert par de grandes baies vitrées sur un balcon face à l’eau',
     kind: 'render', tone: 'day', focal: '50% 50%',
   },
+  // Palm Jebel Ali (PRODUCTION V1).
+  'palm-hero': palmHero,
+  'palm-fronds': {
+    src: `${PALM}/02-palm-jebel-ali-fronds.webp`, width: 3706, height: 2626, rights: 'cleared',
+    alt: 'Vue aérienne de plusieurs fronds de Palm Jebel Ali : plages de sable, eau claire entre les fronds et skyline de Dubai à l’horizon',
+    kind: 'render', tone: 'water', focal: '50% 50%',
+  },
+  'palm-aerial': {
+    src: `${PALM}/03-palm-jebel-ali-aerial.webp`, width: 2932, height: 2046, rights: 'cleared',
+    alt: 'Vue aérienne de l’ensemble de Palm Jebel Ali : le tronc central, les fronds et le croissant, dans les eaux du Golfe, avec la côte au premier plan',
+    kind: 'render', tone: 'water', focal: '45% 55%',
+  },
+  'palm-evening': {
+    src: `${PALM}/04-palm-jebel-ali-evening.webp`, width: 3302, height: 1847, rights: 'cleared',
+    alt: 'Résidences éclairées au crépuscule sur un frond de Palm Jebel Ali, avec la skyline de Dubai au loin',
+    kind: 'render', tone: 'dusk', focal: '50% 55%', focalMobile: '40% 55%',
+  },
+  'palm-waterfront': {
+    src: `${PALM}/05-palm-jebel-ali-waterfront.webp`, width: 3480, height: 2276, rights: 'cleared',
+    alt: 'Terrasse face à une baie : salons extérieurs, végétation, plage et fronds voisins avec la skyline de Dubai à l’horizon',
+    kind: 'render', tone: 'day', focal: '50% 55%',
+  },
+  'palm-beachfront': {
+    src: `${PALM}/06-palm-jebel-ali-beachfront.webp`, width: 3707, height: 2400, rights: 'cleared',
+    alt: 'Plage de sable au pied de résidences, avec baigneurs, cabanons et véliplanchiste sur une eau turquoise',
+    kind: 'render', tone: 'water', focal: '50% 60%',
+  },
+  'palm-location': {
+    src: `${PALM}/07-palm-jebel-ali-location.webp`, width: 5760, height: 4140, rights: 'cleared',
+    alt: 'Carte de localisation de la brochure Nakheel : Palm Jebel Ali sur le littoral de Dubai, au sud de Palm Jumeirah, avec le Burj Al Arab, les grands axes routiers, l’aéroport Al Maktoum et les temps de trajet indiqués par le promoteur',
+    kind: 'plan', tone: 'water',
+  },
+  'palm-reference': {
+    src: `${PALM}/08-palm-jebel-ali-masterplan-reference.webp`, width: 5760, height: 4140, rights: 'cleared',
+    alt: 'Plan de référence de Palm Jebel Ali : vue aérienne de l’ensemble de la Palm, avec trois repères numérotés (centre communautaire et mosquée, centre sportif et de bien-être, parc), page de la brochure Nakheel',
+    kind: 'plan', tone: 'water',
+  },
   hero: { alt: 'Skyline de Dubai au crépuscule', tone: 'dusk', focal: '50% 60%' },
   philosophy: { alt: 'Architecture contemporaine à Dubai', tone: 'day', focal: '50% 50%' },
   lab: { alt: 'Interface de modélisation BF Investment Lab', tone: 'dusk' },
@@ -318,7 +366,7 @@ export const IMAGES = {
   'area-city-walk': cityWalkHero,
   'area-mina-rashid': minaHero,
   'area-dubai-marina': { alt: 'Dubai Marina', tone: 'water' },
-  'area-palm-jebel-ali': { alt: 'Palm Jebel Ali', tone: 'water' },
+  'area-palm-jebel-ali': palmHero,
   'area-dubai-islands': islandsHero,
   'insight-1': { alt: 'Analyse de marché', tone: 'dusk' },
   'insight-2': { alt: 'Guide investisseur', tone: 'day' },

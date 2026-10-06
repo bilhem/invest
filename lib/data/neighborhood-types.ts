@@ -9,7 +9,7 @@ import type { InfraStatus } from './area-types';
  *   Dubai Hills   = breathing room (airy density, centred text, large images)
  *   Downtown      = dense, iconic, metropolitan (dense density, dark chapters, columns)
  * City Walk = geography (dark location chapter, annotated map), Mina Rashid = maritime heritage (airy, small-source photos kept at their true size),
- * Dubai Islands = scale (full-bleed bands, location chain, numbered selection criteria).
+ * Dubai Islands = scale (full-bleed bands, location chain, numbered selection criteria), Palm Jebel Ali = monumental (wide aerials, the whole Palm in its true ratio, very large reference visual and map, a text-only pause, a typographic thesis).
  * Copy is supplied by BF Properties and must not be rewritten in code.
  */
 export type Tone = 'light' | 'sand' | 'dark';
@@ -45,6 +45,13 @@ export type EditorialData = Head & {
   flip?: boolean;
 };
 
+/**
+ * A short run of lines slipped into a text block, right after paragraph `after` (0-based), so the copy keeps its supplied order.
+ *  rows = ruled serif list (`cols`: 1–3 columns on desktop), flow = the same lines set as one serif sentence.
+ * Display only: the wording and the punctuation of the copy are untouched.
+ */
+export type TextInsert = { after: number; items: string[]; as?: 'rows' | 'flow'; cols?: 1 | 2 | 3 };
+
 /** A discreet figure shown under a photo. Only figures published by the developer / official source, never estimates. */
 export type StoryFigure = { value: string; label: string };
 
@@ -52,21 +59,29 @@ export type StoryFigure = { value: string; label: string };
  * Photo-led chapter.
  *  side    = image beside text (true ratio, never cropped); `flip` puts the image on the other side, `imageCols` sets its width on the 12-column grid
  *  overlay = text over a full-bleed image; `align` puts the text on the left (default) or on the right
- *  banner  = full-bleed photo band, then the text on the grid underneath
+ *  banner  = full-bleed photo band, then the text on the grid underneath (`textFirst`: the text, then the band; `ratio` sets the band)
  *  duo     = two portrait images beside text
+ *  spread  = title across, then text on 4 columns + one large photo on 8 (`flip`: photo first), key idea and closing text under the pair
+ *  atlas   = one very large photo in its true ratio with the title laid over its calm part (sea) on desktop, then text / list on two columns
  * Optional text blocks (all rendered in the order of the supplied copy): `lead` (statement-size lines before the text),
  * `words` (a short run of keywords), `paragraphs`, `quote` (key idea), `figures` (+ `figuresNote`, under the photo).
  */
 export type ImageStatementData = Head & {
   type: 'imageStatement';
-  variant: 'side' | 'overlay' | 'duo' | 'banner';
+  variant: 'side' | 'overlay' | 'duo' | 'banner' | 'spread' | 'atlas';
   tone?: Tone;
   images: StoryImage[];
   paragraphs: string[];
+  /** Lines slipped into `paragraphs` (see TextInsert). */
+  inserts?: TextInsert[];
+  /** banner: the text comes first and the band closes the chapter. */
+  textFirst?: boolean;
+  /** banner: height of the band on desktop (cinema = 21:9, wide = 16:9). */
+  ratio?: 'cinema' | 'wide';
   lead?: string[];
   words?: string[];
   quote?: string;
-  /** Paragraphs that come AFTER the key idea (side only). */
+  /** Paragraphs that come AFTER the key idea (side, banner, spread). */
   outro?: string[];
   flip?: boolean;
   imageCols?: 5 | 6 | 7;
@@ -115,7 +130,14 @@ export type CentralityData = Head & {
 };
 
 /** A short list of selection criteria (Dubai Islands): numbered, two rows of four on desktop, then an optional closing line. */
-export type ThesisCriteria = { items: string[]; closing?: string };
+export type ThesisCriteria = {
+  items: string[];
+  closing?: string;
+  /** Lead-in line above the list (« Nous analysons : »). */
+  intro?: string;
+  /** numbered (default, four columns) or plain (the items as they are written, three columns). */
+  style?: 'numbered' | 'plain';
+};
 
 export type ThesisData = Head & {
   type: 'thesis';
@@ -123,6 +145,7 @@ export type ThesisData = Head & {
   /** Short lines at statement size, before the paragraphs. */
   lead?: string[];
   paragraphs: string[];
+  inserts?: TextInsert[];
   criteria?: ThesisCriteria;
   quote?: string;
   final?: string;
@@ -180,6 +203,8 @@ export type LocationData = Head & {
   /** Text under the map, on the left. */
   after?: string[];
   statement?: string;
+  /** Two questions under the map, side by side: what the investor asks first (muted) and what he should also ask (accent). */
+  questions?: { lead: string; text: string }[];
 };
 
 export type StorySection =
