@@ -69,16 +69,17 @@ const downtownHero: ImageSlot = {
   kind: 'photo', tone: 'dusk', focal: '50% 55%', focalMobile: '49% 50%',
 };
 
-// City Walk, Mina Rashid and Dubai Islands: PRODUCTION V1 packs (extracts of the official Meraas, Emaar and Nakheel brochures, native resolution,
-// no upscaling, received 2026-10-05). Rights declared cleared by the client. Files are kept untouched (no sharpening, no filter) except where noted.
-// City Walk: `citywalk-location` is a web-map screenshot (not a brochure graphic): its interface buttons were removed (bottom strip cropped, sea
-//   buttons filled with the sea colour); the reference points drawn on it are HTML (lib/data/neighborhoods/city-walk.ts), positions are indicative.
-//   `citywalk-crestlane-masterplan` is the CRESTLANE masterplan, never the full City Walk plan. 04 (skyline, 1 089 px) and 07 (green lifestyle) are not used.
-// Mina Rashid: the pack's 02-mina-rashid-marina.webp is a blank white image (broken asset): `mina-marina` uses 06 (waterfront living) instead.
-//   Replace it with the real marina visual and keep the slot. The location map carries the developer's own travel times: always captioned as such.
-//   Most photos are 910–1 666 px wide: they are shown no wider than their pixels support (5–6 columns), the hero is the only full-bleed image.
-//   05 (green lifestyle) is not used: the page already has its promenade visual.
-// Dubai Islands: 08 is Island B / Bay Grove context (1 920 px), NOT the five-island masterplan: its caption says so. 04 and 06 are not used.
+// City Walk (V1 pack), Mina Rashid and Dubai Islands (PRODUCTION V2 packs, received 2026-10-06, replacing V1): extracts of the official Meraas, Emaar and
+// Nakheel brochures at native resolution, no upscaling. Rights declared cleared by the client. Files are kept untouched (no sharpening, no filter).
+// V2 files carry a `-v2` suffix so no browser or image-optimizer cache can serve a V1 file.
+// City Walk: `citywalk-crestlane-masterplan` is the CRESTLANE masterplan, never the full City Walk plan. 04 (skyline, 1 089 px) and 07 (green lifestyle) are not used.
+//   The pack's 02 "location" file is a screenshot of a third-party web map (interface buttons visible): it is NOT used. The location chapter shows a schematic
+//   (components/neighborhood/LocationSection.tsx, `situation`) until the official Meraas location graphic is supplied: add it as `citywalk-location` and set `image`.
+// Mina Rashid: all eight V2 files are real. Photos are 990–1 666 px wide: shown no wider than their pixels support (5–7 columns); the hero (1 665 px) stops at its
+//   native width on very wide screens. 05 (park lifestyle) and 06 (balcony view) are registered but not placed: the page keeps its validated structure.
+//   The location graphic carries the developer's own travel times: always captioned as such. No berth count (400 or 430) appears anywhere on the page.
+// Dubai Islands: 08 is Island B / Bay Grove context (6 934 px page render of the Nakheel brochure, Bay Grove mark and page number included), NOT the five-island
+//   masterplan: its caption says so. 04 and 06 are registered but not placed.
 const CITYWALK = '/images/neighborhoods/city-walk';
 const MINA = '/images/neighborhoods/mina-rashid';
 const ISLANDS = '/images/neighborhoods/dubai-islands';
@@ -88,12 +89,12 @@ const cityWalkHero: ImageSlot = {
   kind: 'render', tone: 'day', focal: '50% 55%', focalMobile: '42% 55%',
 };
 const minaHero: ImageSlot = {
-  src: `${MINA}/01-mina-rashid-hero.webp`, width: 1666, height: 836, rights: 'cleared',
-  alt: 'Marina de Rashid Yachts & Marina : yachts amarrés au premier plan, bord de l’eau et promenade à l’horizon',
-  kind: 'render', tone: 'water', focal: '50% 55%', focalMobile: '40% 55%',
+  src: `${MINA}/01-mina-rashid-hero-v2.webp`, width: 1665, height: 838, rights: 'cleared',
+  alt: 'Vue aérienne de la marina de Rashid Yachts & Marina : yachts amarrés le long d’une promenade bordée de palmiers, au pied d’un immeuble résidentiel',
+  kind: 'render', tone: 'water', focal: '55% 55%', focalMobile: '72% 55%',
 };
 const islandsHero: ImageSlot = {
-  src: `${ISLANDS}/01-dubai-islands-hero.webp`, width: 3500, height: 1973, rights: 'cleared',
+  src: `${ISLANDS}/01-dubai-islands-hero-v2.webp`, width: 3500, height: 1973, rights: 'cleared',
   alt: 'Vue aérienne d’un front de plage de Dubai Islands : lagon turquoise, plage de sable et résidences',
   kind: 'render', tone: 'water', focal: '50% 55%', focalMobile: '30% 50%',
 };
@@ -209,11 +210,6 @@ export const IMAGES = {
   },
   // City Walk (see the PRODUCTION V1 note above).
   'citywalk-hero': cityWalkHero,
-  'citywalk-location': {
-    src: `${CITYWALK}/02-city-walk-location.webp`, width: 4203, height: 1984, rights: 'cleared',
-    alt: 'Carte de Dubai : City Walk entre le littoral de Jumeirah à l’ouest, et Downtown Dubai, le DIFC et l’axe Sheikh Zayed Road à l’est',
-    kind: 'plan', tone: 'day',
-  },
   'citywalk-urban': {
     src: `${CITYWALK}/03-city-walk-urban-lifestyle.webp`, width: 1777, height: 1777, rights: 'cleared',
     alt: 'Rue piétonne de City Walk au crépuscule : pergolas en bois, commerces et passants, avec le Burj Khalifa à l’horizon',
@@ -234,60 +230,81 @@ export const IMAGES = {
     alt: 'Masterplan de Crestlane à City Walk, vue aérienne : les phases Crestlane 2 et Crestlane 3 et leur environnement urbain',
     kind: 'plan', tone: 'day',
   },
-  // Mina Rashid / Rashid Yachts & Marina.
+  // Mina Rashid / Rashid Yachts & Marina (PRODUCTION V2).
   'mina-hero': minaHero,
   'mina-heritage': {
-    src: `${MINA}/03-mina-rashid-centrality.webp`, width: 910, height: 838, rights: 'cleared',
-    alt: 'Vue de nuit depuis un balcon sur une allée d’eau bordée de palmiers entre les résidences, avec la skyline de Downtown Dubai et le Burj Khalifa au loin',
-    kind: 'render', tone: 'dusk', focal: '50% 50%',
+    src: `${MINA}/03-mina-rashid-heritage-waterfront-v2.webp`, width: 990, height: 925, rights: 'cleared',
+    alt: 'Tour à vent traditionnelle en bois sculpté, sous des palmes de palmier, sur un ciel bleu clair',
+    kind: 'photo', tone: 'day', focal: '50% 50%',
   },
-  // Stand-in for the blank 02-mina-rashid-marina.webp of the pack (see the note above).
   'mina-marina': {
-    src: `${MINA}/06-mina-rashid-waterfront-living.webp`, width: 911, height: 836, rights: 'cleared',
-    alt: 'Résidences en bord de canal avec une embarcation amarrée à un ponton privé, au crépuscule',
-    kind: 'render', tone: 'water', focal: '50% 50%',
+    src: `${MINA}/02-mina-rashid-marina-v2.webp`, width: 1666, height: 836, rights: 'cleared',
+    alt: 'Yachts amarrés aux pontons de la marina, avec les immeubles du bord de l’eau et un voilier à l’horizon',
+    kind: 'render', tone: 'water', focal: '50% 55%',
   },
   'mina-masterplan': {
-    src: `${MINA}/08-mina-rashid-masterplan.webp`, width: 4252, height: 2268, rights: 'cleared',
+    src: `${MINA}/08-mina-rashid-masterplan-v2.webp`, width: 4607, height: 2457, rights: 'cleared',
     alt: 'Plan directeur officiel Emaar de Rashid Yachts & Marina : la marina et la promenade, le canal, l’hôtellerie sur l’eau, le musée, la station de ferry et le club de plage, numérotés de 1 à 13',
     kind: 'plan', tone: 'water',
   },
   'mina-location': {
-    src: `${MINA}/07-mina-rashid-location.webp`, width: 4252, height: 2268, rights: 'cleared',
+    src: `${MINA}/07-mina-rashid-location-v2.webp`, width: 4607, height: 2457, rights: 'cleared',
     alt: 'Carte de localisation officielle Emaar : Rashid Yachts & Marina sur le littoral de Dubai, avec Downtown Dubai, Dubai Creek Harbour et l’aéroport international, et les temps de trajet indiqués par le promoteur',
     kind: 'plan', tone: 'water',
   },
   'mina-promenade': {
-    src: `${MINA}/04-mina-rashid-promenade.webp`, width: 910, height: 838, rights: 'cleared',
-    alt: 'Promenade piétonne bordée de cafés et de commerces, terrasses et passants en bord de marina',
+    src: `${MINA}/04-mina-rashid-promenade-v2.webp`, width: 1664, height: 838, rights: 'cleared',
+    alt: 'Promenade en bord de marina : immeubles résidentiels, palmiers, piétons et poussettes, yachts amarrés à droite',
     kind: 'render', tone: 'day', focal: '50% 50%',
   },
-  // Dubai Islands.
+  // Registered, not placed on the page (see the notes above).
+  'mina-lifestyle': {
+    src: `${MINA}/05-mina-rashid-lifestyle-v2.webp`, width: 1666, height: 837, rights: 'cleared',
+    alt: 'Parc paysager au pied des résidences : pelouse, palmiers, promeneurs et cycliste',
+    kind: 'render', tone: 'day', focal: '50% 50%',
+  },
+  'mina-living': {
+    src: `${MINA}/06-mina-rashid-waterfront-living-v2.webp`, width: 1563, height: 785, rights: 'cleared',
+    alt: 'Salon et chambre ouverts sur un balcon face à la marina, avec la skyline de Dubai au loin',
+    kind: 'render', tone: 'day', focal: '50% 50%',
+  },
+  // Dubai Islands (PRODUCTION V2).
   'islands-hero': islandsHero,
   'islands-beachfront': {
-    src: `${ISLANDS}/02-dubai-islands-beachfront.webp`, width: 3500, height: 1974, rights: 'cleared',
+    src: `${ISLANDS}/02-dubai-islands-beachfront-v2.webp`, width: 3500, height: 1974, rights: 'cleared',
     alt: 'Plage de sable et lagon aux eaux claires au pied de résidences, parasols et palmiers',
     kind: 'render', tone: 'water', focal: '50% 55%', focalMobile: '45% 55%',
   },
   'islands-waterfront': {
-    src: `${ISLANDS}/03-dubai-islands-waterfront.webp`, width: 3500, height: 1971, rights: 'cleared',
+    src: `${ISLANDS}/03-dubai-islands-waterfront-v2.webp`, width: 3500, height: 1971, rights: 'cleared',
     alt: 'Hors-bord sur une eau turquoise devant des résidences en bord de mer, plage et digue de pierre',
     kind: 'render', tone: 'water', focal: '60% 55%',
   },
   'islands-pool': {
-    src: `${ISLANDS}/05-dubai-islands-pool-lifestyle.webp`, width: 4000, height: 2255, rights: 'cleared',
+    src: `${ISLANDS}/05-dubai-islands-pool-lifestyle-v2.webp`, width: 4000, height: 2255, rights: 'cleared',
     alt: 'Piscine à débordement face à la mer au crépuscule, au pied d’une résidence et de ses palmiers',
     kind: 'render', tone: 'dusk', focal: '60% 55%', focalMobile: '35% 55%',
   },
   'islands-location': {
-    src: `${ISLANDS}/07-dubai-islands-location.webp`, width: 6400, height: 3600, rights: 'cleared',
+    src: `${ISLANDS}/07-dubai-islands-location-v2.webp`, width: 6934, height: 3900, rights: 'cleared',
     alt: 'Carte de localisation officielle Nakheel : Dubai Islands et Island B au large de Deira, avec Port Rashid, l’Infinity Bridge, Dubai Creek, l’aéroport international de Dubai, Dubai Mall, Downtown Dubai et Jumeirah',
     kind: 'plan', tone: 'water',
   },
   'islands-island-b': {
-    src: `${ISLANDS}/08-dubai-islands-island-b-masterplan.webp`, width: 1920, height: 1082, rights: 'cleared',
-    alt: 'Vue aérienne d’Island B (Bay Grove) à Dubai Islands : îlots résidentiels, plans d’eau et marinas au coucher du soleil',
+    src: `${ISLANDS}/08-dubai-islands-island-b-context-v2.webp`, width: 6934, height: 3900, rights: 'cleared',
+    alt: 'Vue aérienne d’Island B (Bay Grove) à Dubai Islands, page de la brochure Nakheel : îlots résidentiels, plans d’eau et marinas au coucher du soleil',
     kind: 'render', tone: 'water',
+  },
+  // Registered, not placed on the page (see the notes above).
+  'islands-lifestyle': {
+    src: `${ISLANDS}/04-dubai-islands-lifestyle-v2.webp`, width: 3496, height: 1968, rights: 'cleared',
+    alt: 'Plan d’eau turquoise, chemin piéton et pelouse au pied de résidences en bord de plage, palmiers au premier plan',
+    kind: 'render', tone: 'water', focal: '50% 55%',
+  },
+  'islands-residential': {
+    src: `${ISLANDS}/06-dubai-islands-residential-view-v2.webp`, width: 3956, height: 2222, rights: 'cleared',
+    alt: 'Salon lumineux ouvert par de grandes baies vitrées sur un balcon face à l’eau',
+    kind: 'render', tone: 'day', focal: '50% 50%',
   },
   hero: { alt: 'Skyline de Dubai au crépuscule', tone: 'dusk', focal: '50% 60%' },
   philosophy: { alt: 'Architecture contemporaine à Dubai', tone: 'day', focal: '50% 50%' },

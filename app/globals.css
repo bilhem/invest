@@ -51,6 +51,13 @@
 @container (max-width: 599px) {
   .map-flip-narrow { left: auto !important; right: 100% !important; transform: translate(calc(clamp(5px, 0.7cqw, 10px) * -1), -50%) !important; }
 }
+/* Hero kept at its photo's native pixel size (`hero.native`): the box stops at the photo's width and height; on screens wider than that, the sides fade
+   into the section background (--f grows from 0 once the screen is wider than the photo, up to 160px). Taller heroes fade out through the bottom overlay. */
+.hero-capped {
+  --f: clamp(0px, calc((100vw - var(--native-w)) * 0.5), 160px);
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 var(--f), #000 calc(100% - var(--f)), transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0, #000 var(--f), #000 calc(100% - var(--f)), transparent 100%);
+}
 /* Per-breakpoint focal point for photos: --fp-sm below 768px, --fp-md from 768px up (set by BFImage). */
 .bf-img { object-position: var(--fp-sm, 50% 50%); }
 @media (min-width: 768px) { .bf-img { object-position: var(--fp-md, 50% 50%); } }

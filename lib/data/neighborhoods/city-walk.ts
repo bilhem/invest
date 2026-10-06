@@ -2,7 +2,7 @@ import type { NeighborhoodStory } from '../neighborhood-types';
 
 /**
  * CITY WALK — geography as the thesis: central Dubai + the sea + a premium urban lifestyle + greenery.
- * Rhythm: a dark location chapter (the annotated map is the first thing to understand), then alternating photo/text compositions,
+ * Rhythm: a dark location chapter (a schematic of the position, sea / City Walk / centre, until the official Meraas location graphic is supplied), then alternating photo/text compositions,
  * the Crestlane masterplan on its own (it is NOT the full City Walk masterplan), a typographic thesis.
  * Copy supplied by BF Properties: do not rewrite. No distances, no returns, no prices.
  */
@@ -35,18 +35,13 @@ export const CITY_WALK_STORY: NeighborhoodStory = {
         'Jumeirah et ses plages.',
         'Sheikh Zayed Road et les grands axes de la ville.',
       ],
-      image: 'citywalk-location',
-      // Positions in % of the map (4203 × 1984): indicative, placed on the map's own landmarks (The Green Planet for City Walk,
-      // Museum of the Future for the DIFC, Sheikh Zayed Road, the Jumeirah shoreline). The caption says so.
-      markers: [
-        { label: 'City Walk', x: 63.1, y: 38.3, kind: 'focus', side: 'top' },
-        { label: 'Jumeirah · la côte', x: 57.3, y: 37.5, kind: 'poi', side: 'left', link: true },
-        { label: 'DIFC', x: 70.8, y: 34.3, kind: 'poi', side: 'right', link: true },
-        { label: 'Downtown · Burj Khalifa', x: 68.2, y: 48.1, kind: 'poi', side: 'right', link: true, flipNarrow: true },
-        { label: 'Sheikh Zayed Road', x: 64.2, y: 52.4, kind: 'poi', side: 'left', link: true, secondary: true },
-        { label: 'Le Golfe', x: 46, y: 28, kind: 'zone', secondary: true },
-      ],
-      caption: 'Carte de localisation de City Walk. Repères placés par BF Properties : positions indicatives, sans distances ni temps de trajet.',
+      // No official location graphic yet (the pack's 02 is a third-party web-map screenshot, not used): a schematic of the position, no map, no distances.
+      situation: {
+        left: { label: 'La mer', items: ['Jumeirah · la côte', 'Le Golfe'] },
+        focus: 'City Walk',
+        right: { label: 'Le centre', items: ['Downtown · Burj Khalifa', 'DIFC', 'Sheikh Zayed Road'] },
+      },
+      caption: 'Schéma de situation, sans échelle ni distances : il illustre la position de City Walk entre la côte et le centre. Ce n’est pas une carte.',
       after: [
         'City Walk se trouve à l’intersection de plusieurs des environnements les plus recherchés de Dubai.',
         'Et c’est probablement sa caractéristique la plus difficile à reproduire.',

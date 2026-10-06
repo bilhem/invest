@@ -4,8 +4,8 @@ import type { NeighborhoodStory } from '../neighborhood-types';
  * MINA RASHID (Rashid Yachts & Marina, Emaar) — a historic maritime address becoming a premium marina destination.
  * Rhythm: airy and calm, photos kept at the width their pixels support, two large maps (masterplan, location), a typographic thesis.
  * Not a Creek Harbour page (future centrality) and not a Seascape sales page.
- * Copy supplied by BF Properties: do not rewrite. Marina figures come from Emaar's own page (400 wet berths, yachts up to 100 m): the
- * 430 figure of the 2019 launch coverage is no longer the current one. The travel times on the location map are the developer's.
+ * Copy supplied by BF Properties: do not rewrite. No berth count anywhere: Emaar's own documents disagree and the thesis does not need it.
+ * The travel times on the location graphic are the developer's marketing indications, never restated in the text.
  */
 export const MINA_RASHID_STORY: NeighborhoodStory = {
   density: 'airy',
@@ -25,6 +25,8 @@ export const MINA_RASHID_STORY: NeighborhoodStory = {
     cta: 'Définir mon projet',
     image: 'mina-hero',
     size: 'standard',
+    native: true, // 1 665 × 838 px source: never enlarged
+    veil: true,
   },
   sections: [
     {
@@ -44,7 +46,7 @@ export const MINA_RASHID_STORY: NeighborhoodStory = {
       ],
       quote: 'celle d’une destination résidentielle waterfront.',
       images: [{ slot: 'mina-heritage' }],
-      imageCols: 6,
+      imageCols: 5, // 990 px source: never wider than 5 columns
     },
     {
       type: 'imageStatement',
@@ -60,12 +62,9 @@ export const MINA_RASHID_STORY: NeighborhoodStory = {
       ],
       quote: 'La marina n’est pas un décor du quartier. Elle est le cœur de son identité.',
       images: [{ slot: 'mina-marina' }],
-      imageCols: 5,
-      figures: [
-        { value: '400', label: 'postes à quai' },
-        { value: '100 m', label: 'longueur maximale des yachts' },
-      ],
-      figuresNote: 'Capacités annoncées par Emaar.',
+      imageCols: 7,
+      figures: [{ value: '100 m', label: 'longueur maximale des yachts' }],
+      figuresNote: 'Longueur maximale annoncée par Emaar.',
     },
     {
       type: 'masterplan',
@@ -103,7 +102,7 @@ export const MINA_RASHID_STORY: NeighborhoodStory = {
       ],
       quote: 'une partie de la valeur d’usage de la destination reste encore à se construire.',
       images: [{ slot: 'mina-promenade' }],
-      imageCols: 6,
+      imageCols: 7,
     },
     {
       type: 'thesis',

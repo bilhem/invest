@@ -3,18 +3,20 @@ import BFImage from '@/components/BFImage';
 import Reveal from '@/components/Reveal';
 import { getAspect, getImage } from '@/lib/images';
 import MapMarkers from './MapMarkers';
+import SituationDiagram from './SituationDiagram';
 import { Eyebrow, Heading, Prose, Quote, Section, muted, type SectionProps } from './ui';
 import type { LocationData } from '@/lib/data/neighborhood-types';
 
 /**
  * Location chapter: the visitor must understand WHERE the district sits before reading anything else.
  * Title on columns 1–6, short text (and reading lines) on 8–12, then the map on the wide container (up to 1400px):
- * ALWAYS shown in full (object-contain, true ratio, never cropped), enlargeable, optionally annotated.
+ * ALWAYS shown in full (object-contain, true ratio, never cropped), enlargeable, optionally annotated. Without an official graphic,
+ * a schematic (`situation`: sea / district / centre, no map, no distances) takes its place.
  * Under the map: a chain of reference points, a caption, then the text and the key statement.
  */
 export default function LocationSection({ s, density, tone, join }: SectionProps<LocationData>) {
   const dark = tone === 'dark';
-  const img = getImage(s.image);
+  const img = s.image ? getImage(s.image) : undefined;
   const hasText = Boolean(s.paragraphs?.length || s.lines?.length);
   const rule = dark ? 'border-ivory/25' : 'border-charcoal/15';
 
@@ -46,22 +48,28 @@ export default function LocationSection({ s, density, tone, join }: SectionProps
         </div>
       </div>
 
-      <div className="ed-wide mt-12 md:mt-16">
-        <Reveal className={`mx-auto max-w-[1400px] ${dark ? 'shadow-[0_40px_90px_-50px_rgba(0,0,0,0.7)]' : 'shadow-[0_40px_90px_-50px_rgba(27,26,24,0.45)]'}`}>
-          {img.src ? (
-            <ZoomImage
-              slot={s.image}
-              unconstrained
-              sizes="(min-width:1536px) 1400px, 100vw"
-              overlay={s.markers && s.markers.length > 0 ? <MapMarkers markers={s.markers} /> : undefined}
-            />
-          ) : process.env.NODE_ENV !== 'production' ? (
-            <div className="relative w-full overflow-hidden border border-dashed border-charcoal/30" style={{ aspectRatio: getAspect(s.image, '16 / 8') }}>
-              <BFImage slot={s.image} sizes="100vw" />
-            </div>
-          ) : null}
-        </Reveal>
-      </div>
+      {s.image && img ? (
+        <div className="ed-wide mt-12 md:mt-16">
+          <Reveal className={`mx-auto max-w-[1400px] ${dark ? 'shadow-[0_40px_90px_-50px_rgba(0,0,0,0.7)]' : 'shadow-[0_40px_90px_-50px_rgba(27,26,24,0.45)]'}`}>
+            {img.src ? (
+              <ZoomImage
+                slot={s.image}
+                unconstrained
+                sizes="(min-width:1536px) 1400px, 100vw"
+                overlay={s.markers && s.markers.length > 0 ? <MapMarkers markers={s.markers} /> : undefined}
+              />
+            ) : process.env.NODE_ENV !== 'production' ? (
+              <div className="relative w-full overflow-hidden border border-dashed border-charcoal/30" style={{ aspectRatio: getAspect(s.image, '16 / 8') }}>
+                <BFImage slot={s.image} sizes="100vw" />
+              </div>
+            ) : null}
+          </Reveal>
+        </div>
+      ) : s.situation ? (
+        <div className="ed-wrap mt-12 md:mt-16">
+          <SituationDiagram d={s.situation} dark={dark} />
+        </div>
+      ) : null}
 
       <div className="ed-wrap">
         {s.caption && <p className={`ed-caption mt-4 max-w-[48rem] ${dark ? 'text-ivory/60' : 'text-stone'}`}>{s.caption}</p>}

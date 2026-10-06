@@ -24,6 +24,10 @@ export type StoryHero = {
   cta: string;
   image: ImageKey;
   size?: 'tall' | 'standard';
+  /** The photo is never shown above its native pixel size (a source narrower than very wide or tall heroes): it stops at that width and height, its sides and bottom fade into the section. */
+  native?: boolean;
+  /** Extra text-side shading for a busy photo (a gradient on the side where the text sits, never a filter on the photo). */
+  veil?: boolean;
 };
 
 type Head = { id?: string; eyebrow?: string; title: string };
@@ -145,6 +149,13 @@ export type MapMarker = {
   flipNarrow?: boolean;
 };
 
+/** Left side, the district, right side: a reading aid, not a map. */
+export type SituationData = {
+  left: { label: string; items: string[] };
+  focus: string;
+  right: { label: string; items: string[] };
+};
+
 /**
  * Location chapter: title + short text on the grid, then the map ALWAYS shown in full on the wide container (object-contain,
  * enlargeable), then the reading aids (`path`, `after`, `statement`). The first thing the visitor must understand is where the district sits.
@@ -152,7 +163,10 @@ export type MapMarker = {
 export type LocationData = Head & {
   type: 'location';
   tone?: Tone;
-  image: ImageKey;
+  /** The official location graphic (shown in full, enlargeable). Optional: without it, `situation` is drawn instead. */
+  image?: ImageKey;
+  /** Schematic of the position (no map, no scale, no distances), used while no official location graphic is available. */
+  situation?: SituationData;
   /** Text beside the title (columns 8–12). */
   paragraphs?: string[];
   /** Short reading lines under the text, one per row (the reference points). */
