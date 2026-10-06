@@ -10,8 +10,9 @@ import { STRATEGIES, type Strategy } from './data/strategies';
 import { STORIES, type Story } from './data/stories';
 import { ARTICLES, type Article } from './data/articles';
 import { INVEST_FAQ, type Faq } from './data/faq';
+import { DEVELOPERS, DEVELOPERS_PAGE, type Developer } from './data/developers';
 
-export type { Area, Strategy, Story, Article, Faq };
+export type { Area, Strategy, Story, Article, Faq, Developer };
 
 export const getAreas = (): Area[] => AREAS;
 export const getArea = (slug: string): Area | undefined => getAreaBySlug(slug);
@@ -25,6 +26,11 @@ export const getArticles = (): Article[] => ARTICLES;
 export const getArticle = (slug: string): Article | undefined => ARTICLES.find((a) => a.slug === slug);
 
 export const getInvestFaq = (): Faq[] => INVEST_FAQ;
+
+export const getDevelopers = (): Developer[] => DEVELOPERS;
+/** Developers whose own page (/insights/developers/<slug>) has final content: only these get a public link and a sitemap entry. */
+export const getDevelopersPage = () => DEVELOPERS_PAGE;
+export const getReadyDevelopers = (): Developer[] => DEVELOPERS.filter((d) => d.ready);
 
 /** Only content that is real and approved should be indexed or listed in the sitemap. */
 export const isPublishable = (x: { placeholder: boolean }) => !x.placeholder;

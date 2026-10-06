@@ -14,6 +14,9 @@ export type Block =
 export type ArticleCategory = 'Market' | 'Investment' | 'Areas' | 'Developers' | 'Guides';
 export const ARTICLE_CATEGORIES: ArticleCategory[] = ['Market', 'Investment', 'Areas', 'Developers', 'Guides'];
 
+/** A category with its own editorial page: its button on /insights leads there instead of filtering the list. */
+export const CATEGORY_PAGES: Partial<Record<ArticleCategory, string>> = { Developers: '/insights/developers' };
+
 export type Article = {
   slug: string;
   placeholder: boolean;

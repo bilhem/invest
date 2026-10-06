@@ -1,10 +1,10 @@
 import PageHero from '@/components/ui/PageHero';
 import CtaBand from '@/components/ui/CtaBand';
 import InsightsExplorer from '@/components/InsightsExplorer';
-import { DraftNotice } from '@/components/ui/Bits';
 import { buildMetadata } from '@/lib/seo';
-import { getArticles } from '@/lib/cms';
-import { ARTICLE_CATEGORIES } from '@/lib/data/articles';
+import { getArticles, getDevelopersPage, isPublishable } from '@/lib/cms';
+import { ARTICLE_CATEGORIES, CATEGORY_PAGES } from '@/lib/data/articles';
+import { DEVELOPERS_PATH } from '@/lib/data/developers';
 
 export const metadata = buildMetadata({
   title: 'BF Insights : analyses du marché immobilier de Dubai',
@@ -13,7 +13,11 @@ export const metadata = buildMetadata({
 });
 
 export default function Page() {
-  const articles = getArticles();
+  // Demonstration articles (placeholder: true) are never listed publicly; only real, approved analyses are.
+  const articles = getArticles().filter(isPublishable);
+  const dev = getDevelopersPage();
+  // Editorial verticals with a page of their own, built from that page's own supplied copy.
+  const featured = [{ eyebrow: dev.hero.eyebrow, title: dev.hero.title, text: dev.hero.intro[0], href: DEVELOPERS_PATH, cta: 'Lire l’analyse' }];
   return (
     <>
       <PageHero
@@ -21,10 +25,9 @@ export default function Page() {
         title="Comprendre le marché. Mieux investir."
         crumbs={[{ label: 'Insights' }]}
       />
-      {articles.some((a) => a.placeholder) && <DraftNotice>Articles de démonstration : les titres et contenus seront remplacés par des analyses réelles.</DraftNotice>}
       <section className="section">
         <div className="wrap">
-          <InsightsExplorer articles={articles} categories={ARTICLE_CATEGORIES} />
+          <InsightsExplorer articles={articles} categories={ARTICLE_CATEGORIES} categoryLinks={CATEGORY_PAGES} featured={featured} />
         </div>
       </section>
       <CtaBand id="insights_page" title="Une question sur votre projet ?" text="Les analyses éclairent. La consultation les relie à votre situation." />
