@@ -1,12 +1,15 @@
-import type { ImageKey } from '@/lib/images';
+import { INSIGHT_ARTICLES } from './insights';
 
 /**
- * ARTICLES — demonstration content. `placeholder: true` articles are noindex and absent from the sitemap.
+ * BF Insights articles. The 30 articles of the « SEO 30 Articles V1 » pack live in ./insights.ts (supplied copy, verbatim).
  * Block types let editors compose tables, key figures and quotes without touching components.
  */
 export type Block =
   | { type: 'h2'; text: string }
-  | { type: 'p'; text: string }
+  /** `bf`: « Le regard BF Properties » (pull statement). `note`: tax caveat, shown as a call-out. */
+  | { type: 'p'; text: string; variant?: 'bf' | 'note' }
+  /** A chain written with arrows (« Stratégie → marché → … »), shown as a sequence. */
+  | { type: 'flow'; text: string }
   | { type: 'quote'; text: string; by: string }
   | { type: 'figures'; items: { label: string; value: string }[] }
   | { type: 'table'; head: string[]; rows: string[][] };
@@ -18,74 +21,45 @@ export const ARTICLE_CATEGORIES: ArticleCategory[] = ['Market', 'Investment', 'A
 export const CATEGORY_PAGES: Partial<Record<ArticleCategory, string>> = { Developers: '/insights/developers' };
 
 export type Article = {
+  /** Position in the supplied pack (01–30): the order of the hub. */
+  n: number;
   slug: string;
-  placeholder: boolean;
   category: ArticleCategory;
+  /** H1 and meta title, as supplied. */
   title: string;
-  excerpt: string;
-  img: ImageKey;
-  published: string | null; // ISO date, null while a draft
-  updated: string | null;
-  readingTime: string;
-  author: string;
+  /** The supplied one-sentence summary: standfirst on the page, meta description, hub excerpt. */
+  standfirst: string;
+  /** Computed from the word count at generation time (never entered by hand). */
+  readingMinutes: number;
   body: Block[];
+  /** Slugs of other articles (contextual « Pour aller plus loin »). */
+  related: string[];
+  /** Links to routes that exist (never to a page that is not built). */
+  links?: { label: string; href: string }[];
+  /** True when the Franck / Peninsula Five Investor Story is relevant (off-plan, payment plan, resale, unit choice, Geneva). */
+  story?: true;
+  /** Overrides INSIGHT_SOURCES for this article. */
+  sources?: string;
+  /** Keeps this article noindex and out of the sitemap even once `INSIGHTS_PUBLICATION.reviewedOn` is set. */
+  hold?: true;
 };
 
-export const ARTICLES: Article[] = [
-  {
-    slug: 'article-1',
-    placeholder: true,
-    category: 'Market',
-    title: '[Titre de l’analyse de marché]',
-    excerpt: '[Résumé en deux phrases de l’analyse.]',
-    img: 'insight-1',
-    published: null,
-    updated: null,
-    readingTime: '[X] min',
-    author: 'BF Properties',
-    body: [
-      { type: 'p', text: '[Introduction : poser la question à laquelle l’article répond.]' },
-      { type: 'h2', text: '[Premier angle d’analyse]' },
-      { type: 'p', text: '[Paragraphe d’analyse. Toute donnée chiffrée doit citer sa source.]' },
-      { type: 'figures', items: [{ label: '[Indicateur 1]', value: '[X]' }, { label: '[Indicateur 2]', value: '[X]' }, { label: '[Indicateur 3]', value: '[X]' }] },
-      { type: 'h2', text: '[Deuxième angle d’analyse]' },
-      { type: 'table', head: ['[Critère]', '[Option A]', '[Option B]'], rows: [['[Ligne 1]', '[…]', '[…]'], ['[Ligne 2]', '[…]', '[…]']] },
-      { type: 'quote', text: '[Citation d’un expert ou d’un document source.]', by: '[Source]' },
-      { type: 'p', text: '[Conclusion et mise en perspective pour l’investisseur.]' },
-    ],
-  },
-  {
-    slug: 'article-2',
-    placeholder: true,
-    category: 'Guides',
-    title: '[Titre du guide investisseur]',
-    excerpt: '[Résumé en deux phrases du guide.]',
-    img: 'insight-2',
-    published: null,
-    updated: null,
-    readingTime: '[X] min',
-    author: 'BF Properties',
-    body: [
-      { type: 'p', text: '[Introduction du guide.]' },
-      { type: 'h2', text: '[Première partie]' },
-      { type: 'p', text: '[Contenu pédagogique.]' },
-    ],
-  },
-  {
-    slug: 'article-3',
-    placeholder: true,
-    category: 'Areas',
-    title: '[Titre de l’analyse de quartier]',
-    excerpt: '[Résumé en deux phrases de l’analyse de quartier.]',
-    img: 'insight-3',
-    published: null,
-    updated: null,
-    readingTime: '[X] min',
-    author: 'BF Properties',
-    body: [
-      { type: 'p', text: '[Introduction de l’analyse de quartier.]' },
-      { type: 'h2', text: '[Forces et points d’attention]' },
-      { type: 'p', text: '[Analyse équilibrée.]' },
-    ],
-  },
-];
+/**
+ * PUBLICATION GATE for BF Insights.
+ * The supplied sources are « à valider avant publication » and market figures are time-sensitive (DLD Q1 2026, DLD Rental 2025,
+ * Service Charge Index, Al Jaddaf freehold…). So the articles are noindex and absent from the sitemap until `reviewedOn` is set.
+ *   - reviewedOn: ISO date (YYYY-MM-DD) on which the figures and sources were checked. Shown as « Dernière revue », used as dateModified,
+ *     and it is what turns indexing on. null = « [date] » placeholder on the page and noindex.
+ *   - publishedOn: ISO date of first publication (datePublished). null = not shown, not in the structured data.
+ * Set `hold: true` on an article to keep it noindex while the others go live.
+ */
+export const INSIGHTS_PUBLICATION: { reviewedOn: string | null; publishedOn: string | null } = {
+  reviewedOn: null,
+  publishedOn: null,
+};
+
+export const INSIGHTS_AUTHOR = 'BF Properties';
+
+export const isIndexable = (a: Pick<Article, 'hold'>) => INSIGHTS_PUBLICATION.reviewedOn !== null && !a.hold;
+
+export const ARTICLES: Article[] = INSIGHT_ARTICLES;

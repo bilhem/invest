@@ -1,27 +1,25 @@
 'use client';
 import Link from 'next/link';
 import { useState } from 'react';
-import BFImage from '@/components/BFImage';
 import type { Article, ArticleCategory } from '@/lib/data/articles';
 
 /** An editorial page of its own (a « vertical »), shown first on the « Tout » view. */
 export type Featured = { eyebrow: string; title: string; text: string; href: string; cta: string };
 
+/** Only what the cards show (the client component never receives the article bodies). */
+export type ArticleCard = Pick<Article, 'slug' | 'category' | 'title' | 'standfirst' | 'readingMinutes'>;
+
 type Props = {
-  articles: Article[];
+  articles: ArticleCard[];
   categories: ArticleCategory[];
   /** Categories that have their own page: their button leads there instead of filtering. */
   categoryLinks?: Partial<Record<ArticleCategory, string>>;
   featured?: Featured[];
 };
 
-const fmt = (iso: string | null) =>
-  iso ? new Date(iso).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }) : '[Date]';
-
 export default function InsightsExplorer({ articles, categories, categoryLinks = {}, featured = [] }: Props) {
   const [cat, setCat] = useState<ArticleCategory | 'all'>('all');
   const list = cat === 'all' ? articles : articles.filter((a) => a.category === cat);
-  const [lead, ...rest] = list;
 
   return (
     <div>
@@ -62,36 +60,22 @@ export default function InsightsExplorer({ articles, categories, categoryLinks =
         </Link>
       ))}
 
-      {!lead ? (
+      {list.length === 0 ? (
         (cat !== 'all' || featured.length === 0) && <p className="mt-12 text-charcoal/70">Aucune analyse dans cette catégorie pour le moment.</p>
       ) : (
-        <>
-          <Link href={`/insights/${lead.slug}`} className="group mt-12 grid overflow-hidden bg-white md:grid-cols-[1.3fr_1fr]">
-            <div className="relative aspect-[16/10] md:aspect-auto md:min-h-[380px]">
-              <BFImage slot={lead.img} sizes="(min-width:768px) 60vw, 100vw" className="transition-transform duration-[1400ms] group-hover:scale-[1.03]" />
-            </div>
-            <div className="flex flex-col justify-center p-8 md:p-12">
-              <p className="text-xs text-champagne-dark">{lead.category} — {fmt(lead.published)}</p>
-              <h2 className="mt-3 font-serif text-3xl leading-tight md:text-4xl">{lead.title}</h2>
-              <p className="mt-4 text-charcoal/70">{lead.excerpt}</p>
-              <span className="mt-6 text-sm font-medium text-champagne-dark">Lire l’analyse</span>
-            </div>
-          </Link>
-
-          {rest.length > 0 && (
-            <div className="mt-12 grid gap-8 md:grid-cols-3">
-              {rest.map((a) => (
-                <Link key={a.slug} href={`/insights/${a.slug}`} className="group block">
-                  <div className="relative aspect-[3/2]">
-                    <BFImage slot={a.img} sizes="(min-width:768px) 33vw, 100vw" className="transition-transform duration-[1200ms] group-hover:scale-[1.03]" />
-                  </div>
-                  <p className="mt-5 text-xs text-champagne-dark">{a.category} — {fmt(a.published)}</p>
-                  <h3 className="mt-2 font-serif text-2xl leading-snug group-hover:text-champagne-dark">{a.title}</h3>
-                </Link>
-              ))}
-            </div>
-          )}
-        </>
+        /* Text-first cards: no illustration was supplied for the articles and none is invented. */
+        <ul className="mt-12 grid gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
+          {list.map((a) => (
+            <li key={a.slug}>
+              <Link href={`/insights/${a.slug}`} className="group flex h-full flex-col border-t border-charcoal/25 pt-5">
+                <p className="text-xs text-champagne-dark">{a.category} — Lecture : {a.readingMinutes} min</p>
+                <h2 className="mt-3 text-balance font-serif text-[1.5rem] leading-[1.2] transition-colors group-hover:text-champagne-dark">{a.title}</h2>
+                <p className="mt-4 text-[0.95rem] leading-relaxed text-charcoal/70">{a.standfirst}</p>
+                <span className="mt-6 pt-1 text-sm font-medium text-champagne-dark">Lire l’analyse<span aria-hidden className="ml-1.5 inline-block transition-transform duration-300 group-hover:translate-x-1">→</span></span>
+              </Link>
+            </li>
+          ))}
+        </ul>
       )}
     </div>
   );

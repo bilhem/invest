@@ -229,7 +229,7 @@ export function Insights() {
           {INSIGHTS.map((a) => (
             <Link key={a.slug} href={`/insights/${a.slug}`} className="group block">
               <div className="relative aspect-[3/2]"><BFImage slot={a.img as ImageKey} sizes="(min-width:768px) 33vw, 100vw" className="transition-transform duration-[1200ms] group-hover:scale-[1.03]" /></div>
-              <p className="mt-5 text-xs text-champagne-dark">{a.cat} · {a.date}</p>
+              <p className="mt-5 text-xs text-champagne-dark">{a.cat} · {a.meta}</p>
               <h3 className="mt-2 font-serif text-2xl leading-snug group-hover:text-champagne-dark">{a.title}</h3>
             </Link>
           ))}

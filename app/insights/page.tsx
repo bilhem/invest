@@ -2,7 +2,7 @@ import PageHero from '@/components/ui/PageHero';
 import CtaBand from '@/components/ui/CtaBand';
 import InsightsExplorer from '@/components/InsightsExplorer';
 import { buildMetadata } from '@/lib/seo';
-import { getArticles, getDevelopersPage, isPublishable } from '@/lib/cms';
+import { getArticles, getDevelopersPage } from '@/lib/cms';
 import { ARTICLE_CATEGORIES, CATEGORY_PAGES } from '@/lib/data/articles';
 import { DEVELOPERS_PATH } from '@/lib/data/developers';
 
@@ -13,8 +13,7 @@ export const metadata = buildMetadata({
 });
 
 export default function Page() {
-  // Demonstration articles (placeholder: true) are never listed publicly; only real, approved analyses are.
-  const articles = getArticles().filter(isPublishable);
+  const articles = getArticles().map(({ slug, category, title, standfirst, readingMinutes }) => ({ slug, category, title, standfirst, readingMinutes }));
   const dev = getDevelopersPage();
   // Editorial verticals with a page of their own, built from that page's own supplied copy.
   const featured = [{ eyebrow: dev.hero.eyebrow, title: dev.hero.title, text: dev.hero.intro[0], href: DEVELOPERS_PATH, cta: 'Lire l’analyse' }];

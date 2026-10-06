@@ -1,16 +1,17 @@
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
-import PageHero from '@/components/ui/PageHero';
 import CtaBand from '@/components/ui/CtaBand';
 import JsonLd from '@/components/ui/JsonLd';
 import TrackEvent from '@/components/TrackEvent';
 import ArticleBody from '@/components/ArticleBody';
-import BFImage from '@/components/BFImage';
-import { Disclaimer, DraftNotice } from '@/components/ui/Bits';
+import ArticleHero from '@/components/insights/ArticleHero';
+import ArticleAside from '@/components/insights/ArticleAside';
+import { Disclaimer } from '@/components/ui/Bits';
 import { buildMetadata, abs } from '@/lib/seo';
 import { SITE } from '@/lib/site';
-import { getArticle, getArticles } from '@/lib/cms';
+import { getArticle, getArticles, getRelatedArticles, getStory, isIndexable, isPublishable } from '@/lib/cms';
+import { INSIGHTS_AUTHOR, INSIGHTS_PUBLICATION } from '@/lib/data/articles';
+import { INSIGHT_CTA, INSIGHT_METHOD, INSIGHT_PAST_PERFORMANCE, INSIGHT_SOURCES } from '@/lib/data/insights';
 
 type Params = { slug: string };
 
@@ -23,69 +24,76 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   const { slug } = await params;
   const a = getArticle(slug);
   if (!a) return {};
-  return buildMetadata({ title: a.title, description: a.excerpt, path: `/insights/${a.slug}`, noindex: a.placeholder });
+  const { publishedOn, reviewedOn } = INSIGHTS_PUBLICATION;
+  return buildMetadata({
+    title: a.title,
+    description: a.standfirst,
+    path: `/insights/${a.slug}`,
+    noindex: !isIndexable(a),
+    article: { section: a.category, ...(publishedOn ? { publishedTime: publishedOn } : {}), ...(reviewedOn ? { modifiedTime: reviewedOn } : {}) },
+  });
 }
 
-const fmt = (iso: string | null, fallback: string) =>
-  iso ? new Date(iso).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }) : fallback;
+/** The supplied call to action reads « Définir mon projet / faire analyser une opportunité » → the existing qualification CTA (/consultation). */
+const CTA_LABEL = INSIGHT_CTA.split(' / ')[0] ?? 'Définir mon projet';
 
 export default async function Page({ params }: { params: Promise<Params> }) {
   const { slug } = await params;
   const a = getArticle(slug);
   if (!a) notFound();
-  const related = getArticles().filter((x) => x.slug !== a.slug).slice(0, 2);
 
-  const ld = a.published && !a.placeholder ? {
+  const related = getRelatedArticles(a);
+  const franck = a.story ? getStory('franck-peninsula-five') : undefined;
+  const story = franck && isPublishable(franck) ? franck : undefined;
+  const { publishedOn, reviewedOn } = INSIGHTS_PUBLICATION;
+
+  // Article + (in the hero) BreadcrumbList. No image, author or date is invented: the dates appear once they are set in INSIGHTS_PUBLICATION.
+  const ld = {
     '@context': 'https://schema.org',
     '@type': 'Article',
     headline: a.title,
-    description: a.excerpt,
-    datePublished: a.published,
-    dateModified: a.updated ?? a.published,
-    author: { '@type': 'Organization', name: a.author },
+    description: a.standfirst,
+    inLanguage: 'fr',
+    articleSection: a.category,
+    author: { '@type': 'Organization', name: INSIGHTS_AUTHOR, url: SITE.url },
     publisher: { '@type': 'Organization', name: SITE.name, url: SITE.url },
-    mainEntityOfPage: abs(`/insights/${a.slug}`),
-  } : null;
+    mainEntityOfPage: { '@type': 'WebPage', '@id': abs(`/insights/${a.slug}`) },
+    ...(publishedOn ? { datePublished: publishedOn } : {}),
+    ...(reviewedOn ? { dateModified: reviewedOn } : {}),
+  };
 
   return (
     <>
-      {ld && <JsonLd data={ld} />}
-      <PageHero
-        image={a.img}
-        eyebrow={a.category}
-        title={a.title}
-        crumbs={[{ label: 'Insights', href: '/insights' }, { label: a.category }]}
-      />
-      {a.placeholder && <DraftNotice>Article de démonstration : contenu à remplacer.</DraftNotice>}
+      <JsonLd data={ld} />
+      <ArticleHero a={a} />
 
-      <article className="section">
-        <div className="wrap max-w-3xl">
-          <p className="border-b border-stone-light/70 pb-6 text-sm text-stone">
-            {a.author} — Publié le {fmt(a.published, '[date de publication]')}
-            {' '}— Mis à jour le {fmt(a.updated, '[date de mise à jour]')} — Lecture : {a.readingTime}
-          </p>
-          <div className="mt-10"><ArticleBody blocks={a.body} /></div>
-          <TrackEvent event="article_read" params={{ article: a.slug }} when="visible" />
-          <Disclaimer>Contenu à visée informative. Il ne constitue pas un conseil juridique, fiscal ou financier.</Disclaimer>
-        </div>
-      </article>
-
-      <section className="section bg-ivory-200">
+      <div className="py-14 md:py-20 lg:py-24">
         <div className="wrap">
-          <h2 className="font-serif text-3xl">À lire aussi</h2>
-          <div className="mt-8 grid gap-8 md:grid-cols-2">
-            {related.map((r) => (
-              <Link key={r.slug} href={`/insights/${r.slug}`} className="group block">
-                <div className="relative aspect-[3/2]"><BFImage slot={r.img} sizes="(min-width:768px) 50vw, 100vw" className="transition-transform duration-[1200ms] group-hover:scale-[1.03]" /></div>
-                <p className="mt-4 text-xs text-champagne-dark">{r.category}</p>
-                <h3 className="mt-1 font-serif text-2xl group-hover:text-champagne-dark">{r.title}</h3>
-              </Link>
-            ))}
+          <div className="ed-grid gap-y-14">
+            <article className="col-span-12 lg:col-span-7">
+              <ArticleBody blocks={a.body} />
+              <TrackEvent event="article_read" params={{ article: a.slug }} when="visible" />
+
+              <section aria-label="Sources et méthodologie" className="mt-14 max-w-[40rem] border-t border-charcoal/10 pt-5 text-xs leading-relaxed text-stone">
+                <h2 className="text-[0.7rem] font-medium uppercase tracking-[0.18em]">Sources &amp; méthodologie</h2>
+                <p className="mt-2">Sources : {a.sources ?? INSIGHT_SOURCES}</p>
+                <p className="mt-1">{INSIGHT_METHOD}</p>
+              </section>
+              <div className="max-w-[40rem]">
+                <Disclaimer>
+                  Contenu à visée informative. Il ne constitue pas un conseil juridique, fiscal ou financier. {INSIGHT_PAST_PERFORMANCE}
+                </Disclaimer>
+              </div>
+            </article>
+
+            <div className="col-span-12 lg:col-span-4 lg:col-start-9">
+              <ArticleAside a={a} related={related} story={story} />
+            </div>
           </div>
         </div>
-      </section>
+      </div>
 
-      <CtaBand id={`article_${a.slug}`} title="Cette analyse soulève une question pour votre projet ?" />
+      <CtaBand id={`article_${a.slug}`} title="Cette analyse soulève une question pour votre projet ?" label={CTA_LABEL} />
     </>
   );
 }

@@ -25,8 +25,10 @@ export const schemas = [
     { name: 'testimonial', type: 'reference', to: [{ type: 'testimonial' }] }, image, seo,
   ] },
   { name: 'article', type: 'document', fields: [
-    { name: 'title', type: 'string' }, { name: 'slug', type: 'slug' }, { name: 'category', type: 'string' }, { name: 'excerpt', type: 'text' },
-    { name: 'published', type: 'datetime' }, { name: 'updated', type: 'datetime' }, { name: 'readingTime', type: 'string' },
+    { name: 'title', type: 'string' }, { name: 'slug', type: 'slug' }, { name: 'category', type: 'string' }, { name: 'standfirst', type: 'text', description: 'One sentence: standfirst, meta description and hub excerpt.' },
+    { name: 'published', type: 'datetime' }, { name: 'reviewedOn', type: 'date', description: 'Dernière revue of figures and sources. Required before the article is indexed.' }, { name: 'readingMinutes', type: 'number' },
+    { name: 'related', type: 'array', of: [{ type: 'reference', to: [{ type: 'article' }] }] }, { name: 'links', type: 'array', of: [{ type: 'object' }], description: 'Links to routes that exist only.' },
+    { name: 'story', type: 'boolean', description: 'Show the link to the Franck / Peninsula Five Investor Story.' }, { name: 'hold', type: 'boolean', description: 'Keep noindex even after the review date is set.' },
     { name: 'body', type: 'array', of: [{ type: 'block' }, { type: 'figures' }, { type: 'table' }, { type: 'quote' }] }, image, seo,
   ] },
   { name: 'developer', type: 'document', fields: [{ name: 'name', type: 'string' }, { name: 'description', type: 'text' }, { name: 'logo', type: 'image' }] },

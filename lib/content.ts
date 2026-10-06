@@ -1,4 +1,6 @@
 // Home content. Everything not yet verified is a structured placeholder: [X].
+import { ARTICLES } from './data/articles';
+
 export const METHOD = [
   { n: '01', t: 'Comprendre', d: 'Situation financière, objectifs, horizon et attentes.' },
   { n: '02', t: 'Analyser', d: 'Marché, quartiers, promoteurs, structures de paiement et opportunités.' },
@@ -26,8 +28,13 @@ export const AREAS = [
   { slug: 'nad-al-sheba-gardens', name: 'Nad Al Sheba Gardens', tag: 'Villas · Vie familiale' },
   { slug: 'sobha-hartland-ii', name: 'Sobha Hartland II', tag: 'Waterfront · Lagoons' },
 ] as const;
-export const INSIGHTS = [
-  { slug: 'article-1', img: 'insight-1', cat: 'Market', title: '[Titre de l’analyse de marché]', date: '[Date]' },
-  { slug: 'article-2', img: 'insight-2', cat: 'Guides', title: '[Titre du guide investisseur]', date: '[Date]' },
-  { slug: 'article-3', img: 'insight-3', cat: 'Areas', title: '[Titre de l’analyse de quartier]', date: '[Date]' },
+// Three of the BF Insights articles (lib/data/insights.ts), one per category. The visual is the existing tone placeholder: no picture was supplied.
+const HOME_INSIGHTS = [
+  'investir-a-dubai-en-2026-le-guide-de-l-investisseur',
+  'dubai-construit-il-trop-comprendre-le-risque-de-sur-offre',
+  'al-jaddaf-pourquoi-cette-localisation-merite-une-deuxieme-lecture',
 ] as const;
+export const INSIGHTS = HOME_INSIGHTS.flatMap((slug, i) => {
+  const a = ARTICLES.find((x) => x.slug === slug);
+  return a ? [{ slug, img: `insight-${i + 1}`, cat: a.category, title: a.title, meta: `Lecture : ${a.readingMinutes} min` }] : [];
+});
