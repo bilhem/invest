@@ -238,7 +238,7 @@ export default async function Page({ params }: { params: Promise<Params> }) {
             <div className="relative aspect-[4/3]"><BFImage slot={story.img} sizes="(min-width:768px) 50vw, 100vw" /></div>
             <div>
               <h2 className="h-section">Un parcours d’investisseur ici</h2>
-              <p className="mt-4 text-charcoal/75">{story.name}, {story.country} : {story.strategy}.</p>
+              <p className="mt-4 text-charcoal/75">{story.name}, {story.city} : {story.strategy}.</p>
               <Link href={`/investor-stories/${story.slug}`} className="btn btn-outline-dark mt-8">Découvrir son histoire</Link>
             </div>
           </div>

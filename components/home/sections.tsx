@@ -3,7 +3,9 @@ import Image from 'next/image';
 import BFImage from '@/components/BFImage';
 import Reveal from '@/components/Reveal';
 import CtaLink from '@/components/CtaLink';
-import { METHOD, STORIES, STRATEGIES, AREAS, INSIGHTS } from '@/lib/content';
+import { METHOD, STRATEGIES, AREAS, INSIGHTS } from '@/lib/content';
+import { getStories } from '@/lib/cms';
+import { STORY_NOTES } from '@/lib/data/stories';
 import { getImage, type ImageKey } from '@/lib/images';
 
 export function Hero() {
@@ -76,29 +78,35 @@ export function Method() {
   );
 }
 
+/**
+ * Home: three of the four real case studies (Sonia stays on the Investor Stories page). Same card grid as before; the content comes from lib/data/stories.ts
+ * (name — city, project · district, strategy, and one headline figure that carries its own label).
+ */
 export function Stories() {
+  const stories = getStories().filter((s) => s.home);
   return (
     <section className="section">
       <div className="wrap">
         <Reveal><h2 className="h-section max-w-2xl">Des investisseurs. Des stratégies. Des résultats.</h2></Reveal>
         <div className="mt-14 grid gap-6 md:grid-cols-3">
-          {STORIES.map((s) => (
+          {stories.map((s) => (
             <article key={s.slug} className="group flex flex-col bg-white">
-              <div className="relative aspect-[4/3]"><BFImage slot={s.img as ImageKey} sizes="(min-width:768px) 33vw, 100vw" className="transition-transform duration-[1200ms] group-hover:scale-[1.03]" /></div>
+              <div className="relative aspect-[4/3]"><BFImage slot={s.img} sizes="(min-width:1240px) 400px, (min-width:768px) 33vw, 100vw" className="transition-transform duration-[1200ms] group-hover:scale-[1.03]" /></div>
               <div className="flex flex-1 flex-col p-6">
-                <h3 className="font-serif text-2xl">{s.name}</h3>
-                <p className="text-sm text-stone">{s.who}</p>
+                <h3 className="font-serif text-2xl">{s.name} — {s.city}</h3>
+                <p className="text-sm text-stone">{s.project} · {s.area}</p>
                 <dl className="mt-5 space-y-2 border-t border-stone-light/60 pt-4 text-sm">
-                  {([['Stratégie', s.strategy], ['Quartier', s.area], ['Investissement', s.invest], ['Évolution observée', s.evo]] as const).map(([k, v]) => (
+                  {([['Stratégie', s.strategy], [s.home!.label, s.home!.value]] as const).map(([k, v]) => (
                     <div key={k} className="flex justify-between gap-4"><dt className="text-stone">{k}</dt><dd className="text-right">{v}</dd></div>
                   ))}
                 </dl>
-                <Link href={`/investor-stories/${s.slug}`} className="mt-6 text-sm font-medium text-champagne-dark underline-offset-4 hover:underline">Découvrir son histoire</Link>
+                <Link href={`/investor-stories/${s.slug}`} className="mt-6 text-sm font-medium text-champagne-dark underline-offset-4 hover:underline">Découvrir le cas<span className="sr-only"> : {s.name}</span></Link>
               </div>
             </article>
           ))}
         </div>
-        <p className="mt-6 text-xs text-stone">Données illustratives en attente de validation. Les performances passées ne garantissent pas les performances futures.</p>
+        <Link href="/investor-stories" className="btn btn-outline-dark mt-10">Découvrir toutes les Investor Stories</Link>
+        <p className="mt-6 max-w-4xl text-xs leading-relaxed text-stone">{STORY_NOTES.general}</p>
       </div>
     </section>
   );

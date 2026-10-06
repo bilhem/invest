@@ -1,58 +1,60 @@
-import Link from 'next/link';
 import PageHero from '@/components/ui/PageHero';
 import CtaBand from '@/components/ui/CtaBand';
-import BFImage from '@/components/BFImage';
-import { DraftNotice } from '@/components/ui/Bits';
+import StoryFeature from '@/components/stories/StoryFeature';
+import StoryNotes from '@/components/stories/StoryNotes';
+import { fr } from '@/components/neighborhood/ui';
 import { buildMetadata } from '@/lib/seo';
 import { getStories } from '@/lib/cms';
+import type { StoryTone } from '@/lib/data/stories';
 
 export const metadata = buildMetadata({
   title: 'Investor Stories',
-  description: 'Découvrez comment des investisseurs ont abordé leur projet immobilier à Dubai avec BF Properties : situation, options étudiées, décision et suivi.',
+  description: 'Investor Stories présente des cas réels pour montrer comment un objectif d’investissement peut se traduire en stratégie, puis en sélection d’un quartier, d’un projet et finalement d’une unité.',
   path: '/investor-stories',
 });
 
+const INTRO = [
+  'Certains investisseurs recherchent la valorisation du capital. D’autres privilégient le revenu, la liquidité ou la construction patrimoniale.',
+  'Investor Stories présente des cas réels pour montrer comment un objectif d’investissement peut se traduire en stratégie, puis en sélection d’un quartier, d’un projet et finalement d’une unité.',
+];
+
 export default function Page() {
   const stories = getStories();
-  const hasDraft = stories.some((s) => s.placeholder);
+  // Light / sand alternate from the intro on (the notes follow the last case on the opposite background).
+  const tones: StoryTone[] = stories.map((_, i) => (i % 2 === 0 ? 'sand' : 'light'));
+  const notesTone: StoryTone = tones.length && tones[tones.length - 1] === 'light' ? 'sand' : 'light';
+  const kinds = (['sold', 'held'] as const).filter((k) => stories.some((s) => s.outcome === k));
   return (
     <>
       <PageHero
         image="hero-stories"
-        title="Des stratégies réelles. Des parcours différents."
-        subtitle="Découvrez comment des investisseurs ont abordé leur projet immobilier à Dubai avec BF Properties."
+        eyebrow="Investor Stories"
+        title={'Des stratégies réelles. Des\u00A0parcours\u00A0réels.'}
+        subtitle="Il n’existe pas une seule façon d’investir à Dubai."
         crumbs={[{ label: 'Investor Stories' }]}
       />
-      {hasDraft && <DraftNotice>Contenu de démonstration : les parcours et chiffres ci-dessous seront remplacés par des cas réels, vérifiés et approuvés avant publication.</DraftNotice>}
-      <section className="section">
-        <div className="wrap grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {stories.map((s) => (
-            <article key={s.slug} className="group flex flex-col bg-white">
-              <div className="relative aspect-[4/3]">
-                <BFImage slot={s.img} sizes="(min-width:1024px) 33vw, (min-width:768px) 50vw, 100vw" className="transition-transform duration-[1200ms] group-hover:scale-[1.03]" />
-              </div>
-              <div className="flex flex-1 flex-col p-6">
-                <h2 className="font-serif text-2xl">{s.name}</h2>
-                <p className="text-sm text-stone">Investisseur — {s.country}</p>
-                <dl className="mt-5 space-y-2 border-t border-stone-light/60 pt-4 text-sm">
-                  <Row k="Stratégie" v={s.strategy} />
-                  <Row k="Quartier" v={s.areaName} />
-                  <Row k="Investissement" v={s.acquisition.price} />
-                </dl>
-                <Link href={`/investor-stories/${s.slug}`} className="mt-6 text-sm font-medium text-champagne-dark underline-offset-4 hover:underline">Découvrir son histoire</Link>
-              </div>
-            </article>
+
+      <section className="bg-ivory py-14 md:py-20">
+        <div className="wrap grid gap-6 md:grid-cols-2 md:gap-14">
+          {INTRO.map((p) => (
+            <p key={p} className="ed-body text-charcoal/75">{fr(p)}</p>
           ))}
         </div>
-        <p className="wrap mt-10 text-xs text-stone">Les parcours ne sont pas classés. Les performances passées ne garantissent pas les performances futures.</p>
       </section>
+
+      {stories.map((s, i) => (
+        <StoryFeature
+          key={s.slug}
+          story={s}
+          index={i}
+          tone={tones[i]}
+          flip={i % 2 === 1}
+          join={{ prev: i === 0 ? false : tones[i - 1] === tones[i], next: i < tones.length - 1 ? tones[i + 1] === tones[i] : false }}
+        />
+      ))}
+
+      <StoryNotes kinds={[...kinds]} tone={notesTone} join={{ prev: tones.length > 0 && tones[tones.length - 1] === notesTone }} />
       <CtaBand id="stories_page" title="Construisons votre propre stratégie." />
     </>
-  );
-}
-
-function Row({ k, v }: { k: string; v: string }) {
-  return (
-    <div className="flex justify-between gap-4"><dt className="text-stone">{k}</dt><dd className="text-right">{v}</dd></div>
   );
 }

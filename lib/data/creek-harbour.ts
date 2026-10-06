@@ -392,7 +392,7 @@ export const CREEK_HARBOUR: Area = {
     'Performance très dépendante du projet et de son emplacement dans la master community',
   ],
   bfView: deep.bfView[0],
-  storySlug: 'franck',
+  storySlug: 'nawal-creek-palace',
   deep,
   story: CREEK_HARBOUR_STORY,
 };

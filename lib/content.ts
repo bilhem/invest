@@ -5,11 +5,6 @@ export const METHOD = [
   { n: '03', t: 'Sélectionner', d: 'BF Properties réduit le marché à une sélection ciblée d’opportunités.' },
   { n: '04', t: 'Accompagner', d: 'Comparaison, acquisition et suivi de l’investissement.' },
 ];
-export const STORIES = [
-  { slug: 'franck', img: 'story-1', name: 'Franck', who: 'Investisseur — Suisse', strategy: 'Capital appreciation', area: 'Dubai Creek Harbour', invest: '[X AED]', evo: '[X %]' },
-  { slug: 'investisseur-2', img: 'story-2', name: '[Prénom]', who: 'Investisseur — [Pays]', strategy: '[Stratégie]', area: '[Quartier]', invest: '[X AED]', evo: '[X %]' },
-  { slug: 'investisseur-3', img: 'story-3', name: '[Prénom]', who: 'Investisseur — [Pays]', strategy: '[Stratégie]', area: '[Quartier]', invest: '[X AED]', evo: '[X %]' },
-] as const;
 export const STRATEGIES = [
   { t: 'Capital Appreciation', d: 'Investir dans une perspective de valorisation à moyen et long terme.', img: 'strategy-capital-appreciation' },
   { t: 'Rental Income', d: 'Construire un projet orienté vers les revenus locatifs.', img: 'strategy-rental-income' },

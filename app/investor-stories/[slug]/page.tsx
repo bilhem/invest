@@ -1,12 +1,19 @@
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
-import PageHero from '@/components/ui/PageHero';
 import CtaBand from '@/components/ui/CtaBand';
 import TrackEvent from '@/components/TrackEvent';
-import { Disclaimer, DraftNotice } from '@/components/ui/Bits';
+import StoryHero from '@/components/stories/StoryHero';
+import StoryFigures from '@/components/stories/StoryFigures';
+import StoryTimeline from '@/components/stories/StoryTimeline';
+import StoryNarrative, { ProjectFacts } from '@/components/stories/StoryNarrative';
+import StoryNotes from '@/components/stories/StoryNotes';
+import StoryNav from '@/components/stories/StoryNav';
+import StoryQuote from '@/components/stories/StoryQuote';
+import { Shell } from '@/components/neighborhood/ui';
 import { buildMetadata } from '@/lib/seo';
+import { getImage } from '@/lib/images';
 import { getStories, getStory, getArea } from '@/lib/cms';
+import type { StoryTone } from '@/lib/data/stories';
 
 type Params = { slug: string };
 
@@ -19,116 +26,89 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   const { slug } = await params;
   const s = getStory(slug);
   if (!s) return {};
+  const img = getImage(s.img);
+  // Share image only when the project picture exists (Franck and Sonia have none yet).
+  const image = img.src ? { src: img.src, width: img.width, height: img.height, alt: img.alt } : undefined;
   return buildMetadata({
-    title: `${s.name}, investisseur — ${s.strategy}`,
-    description: `Le parcours d’un investisseur (${s.country}) à Dubai : situation de départ, options étudiées, décision et suivi.`,
+    title: s.seo.title,
+    description: s.seo.description,
     path: `/investor-stories/${s.slug}`,
     noindex: s.placeholder,
+    image,
   });
 }
+
+type Key = 'figures' | 'timeline' | 'start' | 'selection' | 'regard' | 'quote' | 'notes' | 'nav';
 
 export default async function Page({ params }: { params: Promise<Params> }) {
   const { slug } = await params;
   const s = getStory(slug);
   if (!s) notFound();
-  const area = getArea(s.areaSlug);
+  const L = s.layout;
+  const area = s.areaSlug ? getArea(s.areaSlug) : undefined; // the link only exists if the district page does
+  const others = getStories().filter((o) => o.slug !== s.slug);
+
+  // Section order, then backgrounds: forced tones where the design asks for them, otherwise light / sand alternate (after the dark hero or a dark band, start light).
+  const order: { key: Key; tone?: StoryTone }[] = [{ key: 'figures', tone: L.figures }];
+  if (L.timelineFirst) order.push({ key: 'timeline' });
+  order.push({ key: 'start' }, { key: 'selection' });
+  if (!L.timelineFirst) order.push({ key: 'timeline' });
+  order.push({ key: 'regard', tone: L.regard === 'dark' ? 'dark' : 'sand' });
+  if (L.quote === 'band') order.push({ key: 'quote' });
+  order.push({ key: 'notes' }, { key: 'nav' });
+  let prev: StoryTone = 'dark'; // the hero
+  const tones = order.map((o) => {
+    const t: StoryTone = o.tone ?? (prev === 'light' ? 'sand' : 'light');
+    prev = t;
+    return t;
+  });
+  const join = (i: number) => ({ prev: (i === 0 ? 'dark' : tones[i - 1]) === tones[i], next: i < tones.length - 1 ? tones[i + 1] === tones[i] : false });
+
+  const render = (key: Key, i: number) => {
+    const tone = tones[i];
+    const j = join(i);
+    switch (key) {
+      case 'figures':
+        return <StoryFigures key={key} story={s} tone={tone} join={j} />;
+      case 'timeline':
+        return <StoryTimeline key={key} story={s} tone={tone} join={j} />;
+      case 'start':
+        return <StoryNarrative key={key} id="point-de-depart" title="Le point de départ" paragraphs={s.start} tone={tone} join={j} flip={L.flip} />;
+      case 'selection':
+        return (
+          <StoryNarrative
+            key={key} id="selection" title="La sélection" paragraphs={s.selection} stress={s.selectionStress} tone={tone} join={j} flip={L.flip}
+            aside={<ProjectFacts project={s.project} area={s.area} unit={s.unit} developer={s.developer} areaLink={area ? { href: `/quartiers/${area.slug}`, name: area.name } : undefined} dark={tone === 'dark'} />}
+          />
+        );
+      case 'regard':
+        return (
+          <StoryNarrative
+            key={key} id="regard-bf" title="Le regard BF Properties" head={s.regard.headline} paragraphs={s.regard.paragraphs}
+            quote={L.quote === 'inline' ? s.quote : undefined} tone={tone} join={j} flip={L.flip}
+          />
+        );
+      case 'quote':
+        return (
+          <Shell key={key} tone={tone} density="standard" join={j}>
+            <blockquote className="mx-auto max-w-[56rem] text-center">
+              <span aria-hidden className="mx-auto mb-8 block h-px w-16 bg-champagne" />
+              <StoryQuote>{s.quote}</StoryQuote>
+            </blockquote>
+          </Shell>
+        );
+      case 'notes':
+        return <StoryNotes key={key} kinds={[s.outcome]} tone={tone} join={j} />;
+      case 'nav':
+        return <StoryNav key={key} stories={others} tone={tone} join={j} />;
+    }
+  };
 
   return (
     <>
       <TrackEvent event="investor_story_viewed" params={{ story: s.slug }} />
-      <PageHero
-        image={s.img}
-        eyebrow={`${s.strategy} — ${s.country}`}
-        title={`${s.name}, investisseur`}
-        subtitle={`Stratégie : ${s.strategy}. Quartier : ${s.areaName}.`}
-        crumbs={[{ label: 'Investor Stories', href: '/investor-stories' }, { label: s.name }]}
-      />
-      {s.placeholder && <DraftNotice>Cas de démonstration : toutes les données sont des espaces réservés, en attente d’un parcours réel vérifié et approuvé.</DraftNotice>}
-
-      <section className="section">
-        <div className="wrap max-w-5xl">
-          <h2 className="h-section">Situation initiale</h2>
-          <dl className="mt-10 grid gap-x-12 sm:grid-cols-2">
-            {([['Capital disponible', s.situation.capital], ['Objectifs', s.situation.objectives], ['Horizon', s.situation.horizon], ['Contraintes', s.situation.constraints]] as const).map(([k, v]) => (
-              <div key={k} className="border-t border-stone-light/70 py-5">
-                <dt className="text-sm text-stone">{k}</dt>
-                <dd className="mt-1 font-serif text-2xl">{v}</dd>
-              </div>
-            ))}
-          </dl>
-        </div>
-      </section>
-
-      <section className="section bg-ivory-200">
-        <div className="wrap">
-          <h2 className="h-section">Options étudiées</h2>
-          <div className="mt-10 grid gap-px bg-stone-light/50 md:grid-cols-3">
-            {s.options.map((o) => (
-              <article key={o.title} className="bg-ivory-200 p-6 md:px-8">
-                <h3 className="font-serif text-2xl">{o.title}</h3>
-                <p className="mt-3 text-sm leading-relaxed text-charcoal/75">{o.text}</p>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="section">
-        <div className="wrap grid gap-12 lg:grid-cols-2 lg:gap-20">
-          <div>
-            <h2 className="h-section">Décision</h2>
-            <p className="mt-6 leading-relaxed text-charcoal/75">{s.decision}</p>
-          </div>
-          <div>
-            <h2 className="h-section">Acquisition</h2>
-            <dl className="mt-6">
-              {([['Quartier', s.acquisition.area], ['Promoteur', s.acquisition.developer], ['Prix d’achat', s.acquisition.price], ['Structure de paiement', s.acquisition.structure], ['Date d’achat', s.acquisition.date]] as const).map(([k, v]) => (
-                <div key={k} className="flex justify-between gap-6 border-t border-stone-light/70 py-4 text-sm">
-                  <dt className="text-stone">{k}</dt><dd className="text-right">{v}</dd>
-                </div>
-              ))}
-            </dl>
-            {area && <Link href={`/quartiers/${area.slug}`} className="mt-4 inline-block text-sm font-medium text-champagne-dark underline-offset-4 hover:underline">Analyse du quartier {area.name}</Link>}
-          </div>
-        </div>
-      </section>
-
-      <section className="section bg-charcoal text-ivory">
-        <div className="wrap">
-          <h2 className="h-section">Évolution</h2>
-          <p className="mt-4 max-w-xl text-sm text-ivory/60">Uniquement des données historiques vérifiées seront affichées ici.</p>
-          <dl className="mt-10 grid gap-px bg-ivory/15 sm:grid-cols-2 lg:grid-cols-4">
-            {s.evolution.map((e) => (
-              <div key={e.label} className="bg-charcoal p-6">
-                <dt className="text-sm text-ivory/60">{e.label}</dt>
-                <dd className="mt-2 font-serif text-4xl text-champagne-light">{e.value}</dd>
-              </div>
-            ))}
-          </dl>
-        </div>
-      </section>
-
-      <section className="section">
-        <div className="wrap">
-          <h2 className="h-section">Ce que BF Properties a apporté</h2>
-          <ul className="mt-10 grid gap-px bg-stone-light/50 sm:grid-cols-2 lg:grid-cols-4">
-            {s.contribution.map((c) => (
-              <li key={c.title} className="bg-ivory p-6 sm:first:pl-0">
-                <h3 className="font-serif text-2xl">{c.title}</h3>
-                <p className="mt-3 text-sm leading-relaxed text-charcoal/70">{c.text}</p>
-              </li>
-            ))}
-          </ul>
-          {s.quote && (
-            <blockquote className="mt-16 max-w-3xl border-l-2 border-champagne pl-6">
-              <p className="font-serif text-3xl leading-snug">{s.quote.text}</p>
-              <footer className="mt-4 text-sm text-stone">{s.quote.by}</footer>
-            </blockquote>
-          )}
-          <Disclaimer>Les performances passées ne garantissent pas les performances futures. Chaque situation est unique et ne constitue pas une recommandation.</Disclaimer>
-        </div>
-      </section>
-
+      <StoryHero story={s} />
+      {order.map((o, i) => render(o.key, i))}
       <CtaBand id={`story_${s.slug}`} title="Construisons votre propre stratégie." />
     </>
   );
