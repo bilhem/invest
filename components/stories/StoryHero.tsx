@@ -18,6 +18,7 @@ export default function StoryHero({ story }: { story: Story }) {
   const native = img.width && img.height && img.src ? { w: img.width, h: img.height } : null;
   const note = 'note' in img ? img.note : undefined;
   const VEIL = veilStyle(img.veil ?? DEFAULT_VEIL);
+  const flat = img.veil?.flat;
   return (
     <section className="relative flex min-h-[74svh] items-end bg-charcoal text-ivory">
       {native ? (
@@ -27,6 +28,7 @@ export default function StoryHero({ story }: { story: Story }) {
         >
           <BFImage slot={story.img} priority sizes={`(min-width:${native.w}px) ${native.w}px, 100vw`} />
           <div aria-hidden className="hero-veil absolute inset-0" style={VEIL} />
+          {flat ? <div aria-hidden className="absolute inset-0 md:hidden" style={{ backgroundColor: `rgb(27 26 24 / ${flat})` }} /> : null}
           {/* when the section is taller than the photo (phones), the photo dissolves into the section instead of ending on a hard edge */}
           <div aria-hidden className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-charcoal to-transparent" />
         </div>

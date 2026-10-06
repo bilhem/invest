@@ -23,7 +23,11 @@ export type ImageSlot = {
    * Photographic page hero only (`PageHero`): strength (0–1) of the dark veil behind the text. `bottom` darkens the lower band, `left` the left side,
    * `top` the very top (site header). Slots without `veil` keep the historical « strong » overlay of `PageHero`.
    */
-  veil?: { bottom: number; left: number; top: number; /** How far (% of the width, default 72) the left veil reaches before fading out. */ reach?: number };
+  veil?: {
+    bottom: number; left: number; top: number;
+    /** How far (% of the width, default 72) the left veil reaches before fading out. */ reach?: number;
+    /** Investor Stories hero only: extra flat shading (0–1) below 768px, where the text lies over the whole picture (bright facades need it). */ flat?: number;
+  };
 };
 
 /**
@@ -539,17 +543,25 @@ export const IMAGES = {
   'story-1': { alt: 'Dubai Creek Harbour', tone: 'water' },
   'story-2': { alt: 'Quartier résidentiel de Dubai', tone: 'day' },
   'story-3': { alt: 'Skyline de Downtown Dubai', tone: 'dusk' },
-  // Investor Stories (pack PRODUCTION V1, /public/images/investor-stories). Rights declared cleared by the client; files are served untouched (no sharpening, no filter, no enlargement).
-  // They show the PROJECT, never the investor's own unit. A slot without `src` renders the neutral placeholder: Franck (Peninsula Five) and Sonia (Oxford 212) have no native
-  // visual yet (the pack only gives the official source). `veil` = strength of the dark shading behind the text of the case hero (StoryHero), tuned per picture. Never stand in a picture of another project. When the file arrives, drop it as
-  // /images/investor-stories/01-franck-peninsula-five.webp (or 03-sonia-oxford-212.webp) and set `src` + `width` + `height` + `kind: 'render'` + `rights: 'cleared'` + `note: RENDER_NOTE`.
-  'story-franck': { alt: 'Peninsula Five, Business Bay', tone: 'water' },
+  // Investor Stories (pack PRODUCTION V2, /public/images/investor-stories). Rights declared cleared by the client; files are served untouched (no sharpening, no filter, no enlargement).
+  // One picture per case, never shared and never replaced by another project's: 01 Franck = Peninsula Five, 02 Julia & Guillaume = Erin, 03 Sonia = Oxford 212, 04 Nawal = Creek Palace.
+  // They show the PROJECT, never the investor's own unit. `focal` (from 768px) and `focalMobile` are tuned per picture so the building stays identifiable in the hero, the Investor Stories
+  // spreads and the Home cards. `veil` = strength of the dark shading behind the text of the case hero (StoryHero), tuned per picture.
+  'story-franck': {
+    src: '/images/investor-stories/01-franck-peninsula-five.webp', width: 2329, height: 1601, kind: 'render', rights: 'cleared', note: RENDER_NOTE,
+    alt: 'Rendu de la tour Peninsula Five au bord du canal de Business Bay : tour à façade sombre, terrasses avec piscines, promenade le long de l’eau',
+    tone: 'water', focal: '60% 18%', focalMobile: '72% 50%', veil: { bottom: 0.88, left: 0.62, top: 0.3, reach: 78, flat: 0.22 },
+  },
   'story-julia-guillaume': {
     src: '/images/investor-stories/02-julia-guillaume-erin-city-walk.webp', width: 1224, height: 637, kind: 'render', rights: 'cleared', note: RENDER_NOTE,
     alt: 'Rendu de la résidence Erin donnant sur le parc de Central Park at City Walk, à la tombée de la nuit, le Burj Khalifa à l’arrière-plan',
     tone: 'dusk', focal: '58% 50%', focalMobile: '60% 50%', veil: { bottom: 0.76, left: 0.5, top: 0.3, reach: 80 },
   },
-  'story-sonia': { alt: 'Oxford 212, Jumeirah Village Circle', tone: 'day' },
+  'story-sonia': {
+    src: '/images/investor-stories/03-sonia-oxford-212.webp', width: 1856, height: 1044, kind: 'render', rights: 'cleared', note: RENDER_NOTE,
+    alt: 'Rendu de la résidence Oxford 212 à Jumeirah Village Circle : immeuble à façade claire et balcons vitrés, palmiers au premier plan, vu depuis la rue',
+    tone: 'day', focal: '50% 40%', focalMobile: '33% 50%', veil: { bottom: 0.88, left: 0.7, top: 0.3, reach: 84, flat: 0.3 },
+  },
   'story-nawal': {
     src: '/images/investor-stories/04-nawal-creek-palace.webp', width: 1920, height: 1083, kind: 'render', rights: 'cleared', note: RENDER_NOTE,
     alt: 'Rendu de Creek Palace en bord d’eau à Dubai Creek Harbour : tours résidentielles, promenade et bassin turquoise',

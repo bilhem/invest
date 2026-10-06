@@ -97,7 +97,7 @@ export function Stories() {
                 <p className="text-sm text-stone">{s.project} · {s.area}</p>
                 <dl className="mt-5 space-y-2 border-t border-stone-light/60 pt-4 text-sm">
                   {([['Stratégie', s.strategy], [s.home!.label, s.home!.value]] as const).map(([k, v]) => (
-                    <div key={k} className="flex justify-between gap-4"><dt className="text-stone">{k}</dt><dd className="text-right">{v}</dd></div>
+                    <div key={k} className="flex justify-between gap-4"><dt className="text-stone">{k}</dt><dd className={`text-right ${k === 'Stratégie' ? '' : 'whitespace-nowrap'}`}>{v}</dd></div>
                   ))}
                 </dl>
                 <Link href={`/investor-stories/${s.slug}`} className="mt-6 text-sm font-medium text-champagne-dark underline-offset-4 hover:underline">Découvrir le cas<span className="sr-only"> : {s.name}</span></Link>
