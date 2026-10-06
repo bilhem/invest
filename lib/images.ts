@@ -17,6 +17,8 @@ export type ImageSlot = {
   kind?: 'photo' | 'render' | 'plan';
   /** Commercial republication rights. 'unconfirmed' assets must be replaced by licensed originals before production. */
   rights?: 'cleared' | 'unconfirmed';
+  /** Discreet label drawn over the picture's corner when a component asks for it (`BFImage tag`): « Rendu du projet — illustration promoteur ». */
+  note?: string;
 };
 
 /**
@@ -89,6 +91,33 @@ const ISLANDS = '/images/neighborhoods/dubai-islands';
 //   08 is a Palm-wide REFERENCE visual (brochure page), NOT a technical or legal masterplan: it is captioned "plan de référence / vision d’ensemble".
 //   Palm Central appears in the brochure pages (logo, English text): it is only an example of the destination taking shape, never the subject of the page.
 const PALM = '/images/neighborhoods/palm-jebel-ali';
+// The Oasis by Emaar, Nad Al Sheba Gardens, Sobha Hartland II: PRODUCTION V1 packs (extracts of the official Emaar / Meraas / Sobha documents, received 2026-10-06),
+// rights declared cleared. No upscaling, no sharpening, no filter.
+//   Renders carry `note` (« Rendu du projet — illustration promoteur »), shown discreetly on the picture; maps and plans are `plan` (shown whole, never cropped).
+//   The Oasis: 01 aerial and 05 (a Mirage development, used only to illustrate the community) are renders; 02, 03, 04 and 06 are decorative textures (palm shadow, light on water):
+//   their `alt` is empty on purpose, they are never presented as views of the community. 07 = official Emaar location graphic (travel times are the developer's).
+//   Nad Al Sheba Gardens: 01–05 renders, 06 (971 px) is a decorative petal texture: small secondary only. 07 = location page of the Meraas brochure, 08 = community plan
+//   (Phase 10 outlined): labelled « plan de communauté / référence Phase 10 », never a technical masterplan.
+//   Sobha Hartland II: 01–05 are developer renders; 06 is a generic lifestyle PHOTO of the brochure (not the project): small, captioned as an ambiance image. 07 = location graphic.
+const OASIS = '/images/neighborhoods/the-oasis';
+const NADALSHEBA = '/images/neighborhoods/nad-al-sheba-gardens';
+const SOBHA = '/images/neighborhoods/sobha-hartland-ii';
+const RENDER_NOTE = 'Rendu du projet — illustration promoteur';
+const oasisHero: ImageSlot = {
+  src: `${OASIS}/01-the-oasis-hero.webp`, width: 1923, height: 1302, rights: 'cleared', kind: 'render', note: RENDER_NOTE,
+  alt: 'Vue aérienne de The Oasis : un large canal aux eaux turquoise bordé de plages, de palmiers et de villas blanches, au cœur d’une communauté paysagée',
+  tone: 'water', focal: '50% 62%', focalMobile: '42% 62%',
+};
+const nadHero: ImageSlot = {
+  src: `${NADALSHEBA}/01-nad-al-sheba-gardens-hero.webp`, width: 1389, height: 792, rights: 'cleared', kind: 'render', note: RENDER_NOTE,
+  alt: 'Villas et townhouses de Nad Al Sheba Gardens vues en hauteur : rues paysagées, jardins fleuris et chemins piétons',
+  tone: 'day', focal: '50% 55%', focalMobile: '40% 55%',
+};
+const sobhaHero: ImageSlot = {
+  src: `${SOBHA}/01-sobha-hartland-ii-hero.webp`, width: 2242, height: 1545, rights: 'cleared', kind: 'render', note: RENDER_NOTE,
+  alt: 'Rendu aérien de Sobha Hartland II : tours résidentielles et villas autour d’un lagon turquoise, la skyline de Dubai à l’horizon',
+  tone: 'water', focal: '58% 50%', focalMobile: '34% 50%',
+};
 const cityWalkHero: ImageSlot = {
   src: `${CITYWALK}/01-city-walk-hero.webp`, width: 2386, height: 1689, rights: 'cleared',
   alt: 'Résidences de Crestlane à City Walk : jardins paysagers, bassins et allées entre les immeubles',
@@ -354,10 +383,108 @@ export const IMAGES = {
     alt: 'Plan de référence de Palm Jebel Ali : vue aérienne de l’ensemble de la Palm, avec trois repères numérotés (centre communautaire et mosquée, centre sportif et de bien-être, parc), page de la brochure Nakheel',
     kind: 'plan', tone: 'water',
   },
+  // The Oasis by Emaar (PRODUCTION V1).
+  'oasis-hero': oasisHero,
+  'oasis-palm': {
+    src: `${OASIS}/02-the-oasis-community.webp`, width: 1303, height: 1923, rights: 'cleared',
+    alt: '', tone: 'day', focal: '60% 40%',
+  },
+  'oasis-water': {
+    src: `${OASIS}/03-the-oasis-waterfront-lifestyle.webp`, width: 1923, height: 1303, rights: 'cleared',
+    alt: '', tone: 'water', focal: '50% 55%',
+  },
+  'oasis-ripples': {
+    src: `${OASIS}/04-the-oasis-waterways.webp`, width: 1923, height: 1303, rights: 'cleared',
+    alt: '', tone: 'water', focal: '50% 50%',
+  },
+  'oasis-villas': {
+    src: `${OASIS}/05-the-oasis-villas-landscape.webp`, width: 1922, height: 1300, rights: 'cleared', kind: 'render',
+    note: 'Rendu d’un développement de la communauté — illustration promoteur',
+    alt: 'Rendu d’un développement de The Oasis : villa contemporaine au bord d’un bassin et de cascades en gradins, jardin planté d’arbres et de palmiers, famille au premier plan',
+    tone: 'day', focal: '50% 55%',
+  },
+  'oasis-shore': {
+    src: `${OASIS}/06-the-oasis-villa-waterfront.webp`, width: 1923, height: 1303, rights: 'cleared',
+    alt: '', tone: 'water', focal: '72% 50%',
+  },
+  'oasis-location': {
+    src: `${OASIS}/07-the-oasis-location.webp`, width: 5760, height: 3900, rights: 'cleared',
+    alt: 'Carte de localisation officielle Emaar : The Oasis parmi les communautés d’Emaar (Emaar South, Arabian Ranches, Dubai Hills Estate, Dubai Creek Harbour) et les repères de Dubai, avec quatre temps de trajet indiqués par le promoteur',
+    kind: 'plan', tone: 'water',
+  },
+  // Nad Al Sheba Gardens (PRODUCTION V1).
+  'nad-hero': nadHero,
+  'nad-community': {
+    src: `${NADALSHEBA}/02-nad-al-sheba-gardens-community.webp`, width: 2574, height: 1288, rights: 'cleared', kind: 'render', note: RENDER_NOTE,
+    alt: 'Vue aérienne de rues résidentielles de Nad Al Sheba Gardens : villas, jardins, piscines et un espace de jeux couvert en structure légère',
+    tone: 'day', focal: '50% 50%',
+  },
+  'nad-park': {
+    src: `${NADALSHEBA}/03-nad-al-sheba-gardens-park.webp`, width: 2574, height: 1288, rights: 'cleared', kind: 'render', note: RENDER_NOTE,
+    alt: 'Parc de Nad Al Sheba Gardens : chemin pavé, palmiers, massifs de lavande et ombrières colorées sous un ciel dégagé',
+    tone: 'day', focal: '50% 55%',
+  },
+  'nad-family': {
+    src: `${NADALSHEBA}/04-nad-al-sheba-gardens-family.webp`, width: 1591, height: 1149, rights: 'cleared', kind: 'render', note: RENDER_NOTE,
+    alt: 'Vue aérienne d’un espace de loisirs de Nad Al Sheba Gardens : piscines et pavillons légers entourés de jardins et de villas',
+    tone: 'day', focal: '50% 50%',
+  },
+  'nad-pool': {
+    src: `${NADALSHEBA}/05-nad-al-sheba-gardens-pool.webp`, width: 2574, height: 1288, rights: 'cleared', kind: 'render', note: RENDER_NOTE,
+    alt: 'Piscine communautaire de Nad Al Sheba Gardens : transats, parasols et palmiers, villas à l’arrière-plan',
+    tone: 'day', focal: '50% 60%',
+  },
+  'nad-petals': {
+    src: `${NADALSHEBA}/06-nad-al-sheba-gardens-lagoon.webp`, width: 971, height: 967, rights: 'cleared',
+    alt: '', tone: 'day', focal: '50% 50%',
+  },
+  'nad-location': {
+    src: `${NADALSHEBA}/07-nad-al-sheba-gardens-location.webp`, width: 5783, height: 2892, rights: 'cleared',
+    alt: 'Carte de localisation de la brochure Meraas : Nad Al Sheba Gardens près du Meydan Racetrack, de Downtown Dubai et du Burj Khalifa, avec Palm Jumeirah, le Burj Al Arab, Emirates Mall, Dubai Hills Estate Mall et l’aéroport international de Dubai en repères',
+    kind: 'plan', tone: 'day',
+  },
+  'nad-plan': {
+    src: `${NADALSHEBA}/08-nad-al-sheba-gardens-community-plan.webp`, width: 5783, height: 2892, rights: 'cleared',
+    alt: 'Plan de la communauté Nad Al Sheba Gardens (référence Phase 10), page de la brochure Meraas : vue aérienne des rues résidentielles et des espaces verts, avec sept types de repères numérotés (commerces, piscines, école, parcs de quartier, mosquée, parc communautaire, clubhouse) et la Phase 10 entourée',
+    kind: 'plan', tone: 'day',
+  },
+  // Sobha Hartland II (PRODUCTION V1).
+  'sobha-hero': sobhaHero,
+  'sobha-waterfront': {
+    src: `${SOBHA}/02-sobha-hartland-ii-waterfront.webp`, width: 2238, height: 1540, rights: 'cleared', kind: 'render', note: RENDER_NOTE,
+    alt: 'Rendu vu du ciel d’un lagon en anneau entouré de villas et de tours : jardins en terrasses, plans d’eau turquoise et passerelles',
+    tone: 'water', focal: '50% 50%',
+  },
+  'sobha-lagoon-deck': {
+    src: `${SOBHA}/03-sobha-hartland-ii-lagoon-lifestyle.webp`, width: 2243, height: 1149, rights: 'cleared', kind: 'render', note: RENDER_NOTE,
+    alt: 'Rendu d’une piscine en bord de lagon : ponton en bois avec transats et cabanons, végétation tropicale au premier plan',
+    tone: 'water', focal: '55% 50%',
+  },
+  'sobha-lagoon': {
+    src: `${SOBHA}/04-sobha-hartland-ii-lagoon.webp`, width: 2242, height: 1543, rights: 'cleared', kind: 'render', note: RENDER_NOTE,
+    alt: 'Rendu d’un lagon turquoise avec plage de sable et activités nautiques, au pied d’immeubles en terrasses végétalisées et de piscines suspendues',
+    tone: 'water', focal: '60% 50%',
+  },
+  'sobha-skyline': {
+    src: `${SOBHA}/05-sobha-hartland-ii-skyline.webp`, width: 2240, height: 1545, rights: 'cleared', kind: 'render', note: RENDER_NOTE,
+    alt: 'Rendu de Sobha Hartland II vu de haut : lagon central, tours résidentielles à droite et skyline de Dubai à l’horizon',
+    tone: 'water', focal: '58% 52%',
+  },
+  'sobha-ambiance': {
+    src: `${SOBHA}/06-sobha-hartland-ii-lifestyle.webp`, width: 2242, height: 1547, rights: 'cleared', kind: 'photo',
+    note: 'Image d’ambiance du matériel promoteur',
+    alt: 'Image d’ambiance : un couple se tient par la main sur une plage au coucher du soleil',
+    tone: 'day', focal: '72% 40%',
+  },
+  'sobha-location': {
+    src: `${SOBHA}/07-sobha-hartland-ii-location.webp`, width: 3572, height: 2526, rights: 'cleared',
+    alt: 'Carte de localisation du matériel Sobha : Sobha Hartland II entouré de cercles de 1 à 5 km, entre Sobha Hartland, Ras Al Khor, Dubai Design District, Meydan Race Course, Nad Al Sheba, Downtown Dubai et Dubai Creek Harbour, avec une légende de temps de trajet indiqués par le promoteur',
+    kind: 'plan', tone: 'dusk',
+  },
   hero: { alt: 'Skyline de Dubai au crépuscule', tone: 'dusk', focal: '50% 60%' },
   philosophy: { alt: 'Architecture contemporaine à Dubai', tone: 'day', focal: '50% 50%' },
   lab: { alt: 'Interface de modélisation BF Investment Lab', tone: 'dusk' },
-  cta: { alt: 'Dubai Marina de nuit', tone: 'water', focal: '50% 70%' },
+  cta: { alt: 'Dubai en bord de mer, vue de nuit', tone: 'water', focal: '50% 70%' },
   'story-1': { alt: 'Dubai Creek Harbour', tone: 'water' },
   'story-2': { alt: 'Quartier résidentiel de Dubai', tone: 'day' },
   'story-3': { alt: 'Skyline de Downtown Dubai', tone: 'dusk' },
@@ -365,9 +492,11 @@ export const IMAGES = {
   'area-downtown-dubai': downtownHero,
   'area-city-walk': cityWalkHero,
   'area-mina-rashid': minaHero,
-  'area-dubai-marina': { alt: 'Dubai Marina', tone: 'water' },
-  'area-palm-jebel-ali': palmHero,
   'area-dubai-islands': islandsHero,
+  'area-palm-jebel-ali': palmHero,
+  'area-the-oasis': oasisHero,
+  'area-nad-al-sheba-gardens': nadHero,
+  'area-sobha-hartland-ii': sobhaHero,
   'insight-1': { alt: 'Analyse de marché', tone: 'dusk' },
   'insight-2': { alt: 'Guide investisseur', tone: 'day' },
   'insight-3': { alt: 'Analyse de quartier', tone: 'water' },

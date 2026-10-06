@@ -4,7 +4,7 @@ import Reveal from '@/components/Reveal';
 import { getAspect, getImage } from '@/lib/images';
 import MapMarkers from './MapMarkers';
 import SituationDiagram from './SituationDiagram';
-import { Eyebrow, Heading, Prose, Quote, Section, fr, muted, type SectionProps } from './ui';
+import { Body, Eyebrow, Heading, Prose, Quote, Section, fr, muted, type SectionProps } from './ui';
 import type { LocationData } from '@/lib/data/neighborhood-types';
 
 /**
@@ -33,7 +33,7 @@ export default function LocationSection({ s, density, tone, join }: SectionProps
           />
           {hasText && (
             <Reveal className="col-span-12 lg:col-span-5 lg:col-start-8 lg:pt-11">
-              {s.paragraphs && s.paragraphs.length > 0 && <Prose paragraphs={s.paragraphs} dark={dark} />}
+              {s.paragraphs && s.paragraphs.length > 0 && <Body paragraphs={s.paragraphs} inserts={s.inserts} dark={dark} />}
               {s.lines && s.lines.length > 0 && (
                 <ul className={`${s.paragraphs?.length ? 'mt-8' : ''} border-b ${rule}`}>
                   {s.lines.map((l) => (

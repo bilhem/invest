@@ -35,10 +35,11 @@ function Placeholder({ tone, seed }: { tone: keyof typeof TONES; seed: number })
 /** Placeholders show their slot name in development, or when NEXT_PUBLIC_SHOW_IMAGE_SLOTS=1 (e.g. on a preview deploy). Never in production. */
 const SHOW_SLOTS = process.env.NODE_ENV !== 'production' || process.env.NEXT_PUBLIC_SHOW_IMAGE_SLOTS === '1';
 
-type Props = { slot: ImageKey; className?: string; priority?: boolean; sizes?: string; overlay?: 'none' | 'soft' | 'strong' };
+/** `tag`: draws the slot's discreet `note` in the corner (« Rendu du projet — illustration promoteur »). Slots without a note, and callers without `tag`, are unchanged. */
+type Props = { slot: ImageKey; className?: string; priority?: boolean; sizes?: string; overlay?: 'none' | 'soft' | 'strong'; tag?: boolean };
 
 /** Fills its (relative) parent. Swap placeholders via lib/images.ts only. */
-export default function BFImage({ slot, className = '', priority, sizes = '100vw', overlay = 'none' }: Props) {
+export default function BFImage({ slot, className = '', priority, sizes = '100vw', overlay = 'none', tag = false }: Props) {
   const img = getImage(slot);
   const seed = slot.length * 7 + slot.charCodeAt(slot.length - 1);
   const fpMd = img.focal ?? '50% 50%'; // focal point from 768px up
@@ -57,6 +58,11 @@ export default function BFImage({ slot, className = '', priority, sizes = '100vw
             </span>
           )}
         </>
+      )}
+      {tag && 'note' in img && img.note && (
+        <span className="absolute bottom-2 right-2 z-10 max-w-[calc(100%-1rem)] bg-charcoal/55 px-2 py-1 font-sans text-[0.6875rem] leading-tight tracking-wide text-ivory/85 md:bottom-3 md:right-3">
+          {img.note}
+        </span>
       )}
       {overlay !== 'none' && (
         <div className={`absolute inset-0 ${overlay === 'strong'

@@ -124,6 +124,6 @@ export const MINA_RASHID_STORY: NeighborhoodStory = {
     text: 'Nous analysons les projets, les vues, les micro-localisations et les prix d’entrée afin d’identifier les opportunités réellement cohérentes avec votre horizon d’investissement.',
     label: 'Analyser les opportunités',
   },
-  compare: ['dubai-creek-harbour', 'dubai-marina'],
+  compare: ['dubai-creek-harbour', 'dubai-islands'],
   strategies: ['capital-appreciation', 'off-plan'],
 };

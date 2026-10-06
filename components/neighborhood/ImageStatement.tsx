@@ -9,9 +9,11 @@ import type { ImageStatementData, StoryFigure } from '@/lib/data/neighborhood-ty
  *  side    = text 5 / image 7 (landscape) or text 5 / image 6 (portrait); `flip` puts the image on the other side,
  *            `imageCols` (5 | 6 | 7) fits the image width to its resolution (small sources are never enlarged beyond their pixels)
  *  overlay = full-bleed photo, text on columns 1–6 (or the right side with `align: 'right'`) over a gradient
- *  banner  = full-bleed photo band, then title 6 / text 5 on the grid underneath (`textFirst`: the text first, the band closes the chapter)
+ *  banner  = full-bleed photo band, then title 6 / text 5 on the grid underneath (`textFirst`: the text first, the band closes the chapter);
+ *            `contained` frames the band on the wide container (≤ 1400px) instead of running edge to edge
  *  duo     = text 4 / main photo 5 / secondary photo 3: the three columns share the same top and bottom edges
  *  spread  = title across, then text 4 / photo 8 in its true ratio (`flip`: photo first), key idea and closing text under the pair
+ *  stack   = text 5 (sticky title) + two photos stacked on 7 columns, each in its true ratio (`flip`: photos on the left)
  *  atlas   = one very large photo in its true ratio (up to 1400px) with the title laid over its calm part on desktop (above it on phones and tablets),
  *            then text (left) and a ruled list + closing text (right), then the key idea
  * Optional blocks, always in the order of the supplied copy: lead lines, keywords, text, key idea, figures under the photo.
@@ -57,10 +59,10 @@ function Words({ words, dark }: { words: string[]; dark: boolean }) {
 }
 
 /** Discreet figures published by the developer: two columns, a fine rule above, one line of source below. */
-function Figures({ figures, note, dark }: { figures: StoryFigure[]; note?: string; dark: boolean }) {
+function Figures({ figures, note, dark, full = false }: { figures: StoryFigure[]; note?: string; dark: boolean; full?: boolean }) {
   return (
     <div className={`mt-8 border-t pt-6 ${dark ? 'border-ivory/25' : 'border-charcoal/15'}`}>
-      <dl className="grid grid-cols-2 gap-x-6 gap-y-4">
+      <dl className={`grid gap-x-6 gap-y-4 ${full ? 'grid-cols-1' : 'grid-cols-2'}`}>
         {figures.map((f) => (
           <div key={f.label}>
             <dt className={`ed-figure ${dark ? '' : '!text-champagne-dark'}`}>{f.value}</dt>
@@ -81,7 +83,7 @@ export default function ImageStatement({ s, density, tone, join }: SectionProps<
     const right = s.align === 'right';
     return (
       <section className="relative isolate overflow-hidden bg-charcoal text-ivory">
-        <BFImage slot={a.slot} sizes="100vw" />
+        <BFImage slot={a.slot} sizes="100vw" tag />
         <div
           aria-hidden
           className={`absolute inset-0 bg-gradient-to-t from-charcoal/95 via-charcoal/80 to-charcoal/55 ${
@@ -106,15 +108,8 @@ export default function ImageStatement({ s, density, tone, join }: SectionProps<
   }
 
   if (s.variant === 'banner') {
-    const band = (
-      <section className="relative isolate overflow-hidden bg-charcoal">
-        <div className={`relative w-full ${BAND[s.ratio ?? 'cinema']}`}>
-          <BFImage slot={a.slot} sizes="100vw" />
-        </div>
-      </section>
-    );
-    const text = (
-      <Shell id={s.id} tone={tone} density={density} join={s.textFirst ? { prev: join.prev, next: false } : { prev: false, next: join.next }}>
+    const textBlock = (
+      <>
         <div className="ed-grid items-start gap-y-8">
           <Heading eyebrow={s.eyebrow} title={s.title} dark={dark} className="col-span-12 lg:col-span-6" titleClass="max-w-[34rem]" />
           <Reveal className="col-span-12 lg:col-span-5 lg:col-start-8 lg:pt-11">
@@ -131,6 +126,36 @@ export default function ImageStatement({ s, density, tone, join }: SectionProps<
             <Prose paragraphs={s.outro} dark={dark} className="md:pl-8" />
           </Reveal>
         )}
+      </>
+    );
+    if (s.contained) {
+      // one section: the band is framed on the wide container (never wider than its source needs), the text keeps the standard grid
+      const frame = (
+        <div className="ed-wide">
+          <Reveal className="mx-auto max-w-[1400px]">
+            <div className={`relative w-full overflow-hidden bg-charcoal/10 ${BAND[s.ratio ?? 'cinema']}`}>
+              <BFImage slot={a.slot} sizes="(min-width:1456px) 1400px, 100vw" tag />
+            </div>
+          </Reveal>
+        </div>
+      );
+      const text = <div className="ed-wrap">{textBlock}</div>;
+      return (
+        <Section id={s.id} tone={tone} density={density} weight="major" join={join}>
+          {s.textFirst ? <>{text}<div className="mt-12 md:mt-16">{frame}</div></> : <>{frame}<div className="mt-12 md:mt-16">{text}</div></>}
+        </Section>
+      );
+    }
+    const band = (
+      <section className="relative isolate overflow-hidden bg-charcoal">
+        <div className={`relative w-full ${BAND[s.ratio ?? 'cinema']}`}>
+          <BFImage slot={a.slot} sizes="100vw" tag />
+        </div>
+      </section>
+    );
+    const text = (
+      <Shell id={s.id} tone={tone} density={density} join={s.textFirst ? { prev: join.prev, next: false } : { prev: false, next: join.next }}>
+        {textBlock}
       </Shell>
     );
     return s.textFirst ? <>{text}{band}</> : <>{band}{text}</>;
@@ -144,7 +169,7 @@ export default function ImageStatement({ s, density, tone, join }: SectionProps<
         {/* the photo comes first in reading order (right under the title on phones); on desktop `flip` decides which side it takes */}
         <div className="ed-grid mt-12 items-start gap-y-10 md:mt-16">
           <Reveal className={`order-1 col-span-12 lg:col-span-8 ${s.flip ? 'lg:order-1' : 'lg:order-2 lg:col-start-5'}`}>
-            <Photo ratio={ratio}><BFImage slot={a.slot} sizes="(min-width:1360px) 843px, (min-width:1024px) 62vw, 100vw" /></Photo>
+            <Photo ratio={ratio}><BFImage slot={a.slot} sizes="(min-width:1360px) 843px, (min-width:1024px) 62vw, 100vw" tag /></Photo>
           </Reveal>
           <Reveal className={`order-2 col-span-12 lg:col-span-4 ${s.flip ? 'lg:order-2 lg:col-start-9' : 'lg:order-1 lg:col-start-1'}`}>
             <Body paragraphs={s.paragraphs} inserts={s.inserts} dark={dark} />
@@ -181,7 +206,7 @@ export default function ImageStatement({ s, density, tone, join }: SectionProps<
             />
             <Reveal>
               <Photo ratio={ratio} className="shadow-[0_40px_90px_-50px_rgba(27,26,24,0.5)]">
-                <BFImage slot={a.slot} sizes="(min-width:1536px) 1400px, 100vw" />
+                <BFImage slot={a.slot} sizes="(min-width:1536px) 1400px, 100vw" tag />
                 <div aria-hidden className="absolute inset-x-0 top-0 hidden h-[42%] bg-gradient-to-b from-charcoal/55 via-charcoal/20 to-transparent lg:block" />
               </Photo>
             </Reveal>
@@ -206,6 +231,37 @@ export default function ImageStatement({ s, density, tone, join }: SectionProps<
           )}
         </div>
       </Section>
+    );
+  }
+
+  if (s.variant === 'stack') {
+    // text on 5 columns (the title stays in view while the photos scroll) + the photos stacked on 7, each in its true ratio:
+    // the whole composition shares the grid's top and bottom edges. On phones: text first, then the photos one under the other.
+    return (
+      <Shell id={s.id} tone={tone} density={density} weight="major" join={join}>
+        <div className="ed-grid items-start gap-y-10">
+          <div className={`col-span-12 lg:sticky lg:top-28 lg:col-span-5 ${s.flip ? 'lg:order-2 lg:col-start-8' : ''}`}>
+            <Heading eyebrow={s.eyebrow} title={s.title} dark={dark} titleClass="max-w-[34rem]" />
+            <Reveal className="mt-8">
+              <Body paragraphs={s.paragraphs} inserts={s.inserts} dark={dark} />
+            </Reveal>
+            {s.quote && (
+              <Reveal className="mt-10 md:mt-12">
+                <Quote dark={dark} accent className="!text-[1.75rem] md:!text-[2rem]">{s.quote}</Quote>
+              </Reveal>
+            )}
+          </div>
+          <div className={`col-span-12 space-y-5 lg:col-span-7 md:space-y-6 ${s.flip ? 'lg:order-1' : ''}`}>
+            {s.images.map((im) => (
+              <Reveal key={im.slot}>
+                <Photo ratio={getAspect(im.slot, '2 / 1')}>
+                  <BFImage slot={im.slot} sizes="(min-width:1360px) 733px, (min-width:1024px) 58vw, 100vw" tag />
+                </Photo>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </Shell>
     );
   }
 
@@ -243,12 +299,12 @@ export default function ImageStatement({ s, density, tone, join }: SectionProps<
   const textPos = s.flip ? 'lg:order-1' : `lg:order-2 ${TEXT_START[cols]} ${cols === 7 ? 'lg:pl-4' : ''}`;
   return (
     <Shell id={s.id} tone={tone} density={density} join={join}>
-      <div className="ed-grid items-center gap-y-10">
-        <Reveal className={`col-span-12 ${IMG_SPAN[cols]} ${imgPos}`}>
+      <div className={`ed-grid gap-y-10 ${s.sticky ? 'items-start' : 'items-center'}`}>
+        <Reveal className={`col-span-12 ${IMG_SPAN[cols]} ${imgPos} ${s.sticky ? 'lg:sticky lg:top-28' : ''}`}>
           <Photo ratio={getAspect(a.slot, '4 / 5')}>
-            <BFImage slot={a.slot} sizes={IMG_SIZES[cols]} />
+            <BFImage slot={a.slot} sizes={IMG_SIZES[cols]} tag />
           </Photo>
-          {s.figures && s.figures.length > 0 && <Figures figures={s.figures} note={s.figuresNote} dark={dark} />}
+          {s.figures && s.figures.length > 0 && <Figures figures={s.figures} note={s.figuresNote} dark={dark} full={s.figuresFull} />}
         </Reveal>
         <div className={`col-span-12 ${TEXT_SPAN[cols]} ${textPos}`}>
           <Heading eyebrow={s.eyebrow} title={s.title} dark={dark} titleClass="max-w-[34rem]" />
@@ -257,7 +313,7 @@ export default function ImageStatement({ s, density, tone, join }: SectionProps<
             <div className="mt-8 md:mt-10"><Words words={s.words} dark={dark} /></div>
           )}
           <Reveal className="mt-8">
-            <Prose paragraphs={s.paragraphs} dark={dark} />
+            <Body paragraphs={s.paragraphs} inserts={s.inserts} dark={dark} />
           </Reveal>
           {s.quote && (
             <Reveal className="mt-10 md:mt-12">

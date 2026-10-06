@@ -25,9 +25,11 @@ export const AREAS = [
   { slug: 'downtown-dubai', name: 'Downtown Dubai', tag: 'Centre urbain' },
   { slug: 'city-walk', name: 'City Walk', tag: 'Centre · Mer · Lifestyle' },
   { slug: 'mina-rashid', name: 'Mina Rashid', tag: 'Marina · Héritage maritime' },
-  { slug: 'dubai-marina', name: 'Dubai Marina', tag: 'Waterfront' },
-  { slug: 'palm-jebel-ali', name: 'Palm Jebel Ali', tag: 'Projet insulaire' },
   { slug: 'dubai-islands', name: 'Dubai Islands', tag: 'Beachfront' },
+  { slug: 'palm-jebel-ali', name: 'Palm Jebel Ali', tag: 'Projet insulaire' },
+  { slug: 'the-oasis', name: 'The Oasis by Emaar', tag: 'Villas · Waterways' },
+  { slug: 'nad-al-sheba-gardens', name: 'Nad Al Sheba Gardens', tag: 'Villas · Vie familiale' },
+  { slug: 'sobha-hartland-ii', name: 'Sobha Hartland II', tag: 'Waterfront · Lagoons' },
 ] as const;
 export const INSIGHTS = [
   { slug: 'article-1', img: 'insight-1', cat: 'Market', title: '[Titre de l’analyse de marché]', date: '[Date]' },

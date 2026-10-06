@@ -9,7 +9,10 @@ import type { InfraStatus } from './area-types';
  *   Dubai Hills   = breathing room (airy density, centred text, large images)
  *   Downtown      = dense, iconic, metropolitan (dense density, dark chapters, columns)
  * City Walk = geography (dark location chapter, annotated map), Mina Rashid = maritime heritage (airy, small-source photos kept at their true size),
- * Dubai Islands = scale (full-bleed bands, location chain, numbered selection criteria), Palm Jebel Ali = monumental (wide aerials, the whole Palm in its true ratio, very large reference visual and map, a text-only pause, a typographic thesis).
+ * Dubai Islands = scale (full-bleed bands, location chain, numbered selection criteria), Palm Jebel Ali = monumental (wide aerials, the whole Palm in its true ratio, very large reference visual and map, a text-only pause, a typographic thesis),
+ * The Oasis = calm and horizontal (framed wide pictures instead of full-bleed ones, a statement laid over still water, one scale figure published by Emaar, a dark closing thesis),
+ * Nad Al Sheba Gardens = intimate and connected (the map first, text beside a stack of two photos, the community plan very large on a dark chapter, a pool band),
+ * Sobha Hartland II = contemporary and architectural (full-bleed renders, a dark lagoon chapter, a dark location map, a skyline band before the dark thesis).
  * Copy is supplied by BF Properties and must not be rewritten in code.
  */
 export type Tone = 'light' | 'sand' | 'dark';
@@ -28,6 +31,8 @@ export type StoryHero = {
   native?: boolean;
   /** Extra text-side shading for a busy photo (a gradient on the side where the text sits, never a filter on the photo). */
   veil?: boolean;
+  /** `soft` keeps the photo readable (a light gradient at the foot only, with `veil` carrying the text side); default `strong` darkens it from the bottom. */
+  overlay?: 'soft' | 'strong';
 };
 
 type Head = { id?: string; eyebrow?: string; title: string };
@@ -43,6 +48,8 @@ export type EditorialData = Head & {
   statement?: string;
   images?: StoryImage[];
   flip?: boolean;
+  /** Lines slipped into `paragraphs` (see TextInsert): stagger only. */
+  inserts?: TextInsert[];
 };
 
 /**
@@ -59,16 +66,18 @@ export type StoryFigure = { value: string; label: string };
  * Photo-led chapter.
  *  side    = image beside text (true ratio, never cropped); `flip` puts the image on the other side, `imageCols` sets its width on the 12-column grid
  *  overlay = text over a full-bleed image; `align` puts the text on the left (default) or on the right
- *  banner  = full-bleed photo band, then the text on the grid underneath (`textFirst`: the text, then the band; `ratio` sets the band)
+ *  banner  = full-bleed photo band, then the text on the grid underneath (`textFirst`: the text, then the band; `ratio` sets the band);
+ *            `contained`: the band is framed on the wide container (never wider than 1400px) instead of running edge to edge
  *  duo     = two portrait images beside text
  *  spread  = title across, then text on 4 columns + one large photo on 8 (`flip`: photo first), key idea and closing text under the pair
  *  atlas   = one very large photo in its true ratio with the title laid over its calm part (sea) on desktop, then text / list on two columns
+ *  stack   = text on 5 columns (the title stays in view) + two photos stacked on 7, each in its true ratio (`flip`: photos first); the three edges stay aligned
  * Optional text blocks (all rendered in the order of the supplied copy): `lead` (statement-size lines before the text),
  * `words` (a short run of keywords), `paragraphs`, `quote` (key idea), `figures` (+ `figuresNote`, under the photo).
  */
 export type ImageStatementData = Head & {
   type: 'imageStatement';
-  variant: 'side' | 'overlay' | 'duo' | 'banner' | 'spread' | 'atlas';
+  variant: 'side' | 'overlay' | 'duo' | 'banner' | 'spread' | 'atlas' | 'stack';
   tone?: Tone;
   images: StoryImage[];
   paragraphs: string[];
@@ -78,6 +87,10 @@ export type ImageStatementData = Head & {
   textFirst?: boolean;
   /** banner: height of the band on desktop (cinema = 21:9, wide = 16:9). */
   ratio?: 'cinema' | 'wide';
+  /** banner: the band is framed on the wide container (≤ 1400px) instead of running edge to edge. */
+  contained?: boolean;
+  /** side: the photo is top-aligned and stays in view while a longer text scrolls (instead of floating at mid-height of the text). */
+  sticky?: boolean;
   lead?: string[];
   words?: string[];
   quote?: string;
@@ -88,6 +101,25 @@ export type ImageStatementData = Head & {
   align?: 'left' | 'right';
   figures?: StoryFigure[];
   figuresNote?: string;
+  /** One figure on the full width of its column (a long value such as « 100 MILLION SQ FT »); by default the figures share two columns. */
+  figuresFull?: boolean;
+};
+
+/**
+ * A picture on its own, between two chapters (a pause, no text). `width: 'full'` = edge to edge, `'frame'` = framed on the wide container (≤ 1400px, tone around it).
+ * `statement` (optional) is laid over the picture, bottom left, on a shade: the key idea of the chapter just read.
+ */
+export type InterludeData = {
+  type: 'interlude';
+  id?: string;
+  image: ImageKey;
+  width?: 'full' | 'frame';
+  ratio?: 'cinema' | 'wide';
+  tone?: Tone;
+  statement?: string;
+  /** With a statement: `light` (default) = ivory text on a shade; `dark` = charcoal text straight on a pale picture, no shade at all. */
+  ink?: 'light' | 'dark';
+  caption?: string;
 };
 
 /** `title` is optional: a plan that follows its own chapter (City Walk → Crestlane) only carries a label and a caption. */
@@ -150,6 +182,8 @@ export type ThesisData = Head & {
   quote?: string;
   final?: string;
   image?: ImageKey;
+  /** With `image`: the photo is top-aligned and stays in view while the longer text scrolls. */
+  sticky?: boolean;
 };
 
 /**
@@ -192,6 +226,8 @@ export type LocationData = Head & {
   situation?: SituationData;
   /** Text beside the title (columns 8–12). */
   paragraphs?: string[];
+  /** Lines slipped into `paragraphs` (see TextInsert). */
+  inserts?: TextInsert[];
   /** Short reading lines under the text, one per row (the reference points). */
   lines?: string[];
   /** Reference points drawn over the map (City Walk). */
@@ -211,6 +247,7 @@ export type StorySection =
   | EditorialData
   | ImageStatementData
   | MasterplanData
+  | InterludeData
   | FeaturesData
   | ComparisonData
   | CentralityData

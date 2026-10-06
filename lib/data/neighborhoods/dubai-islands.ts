@@ -148,6 +148,6 @@ export const DUBAI_ISLANDS_STORY: NeighborhoodStory = {
     ],
     label: 'Découvrir notre sélection',
   },
-  compare: ['dubai-marina', 'mina-rashid'],
+  compare: ['palm-jebel-ali', 'mina-rashid'],
   strategies: ['off-plan', 'capital-appreciation'],
 };

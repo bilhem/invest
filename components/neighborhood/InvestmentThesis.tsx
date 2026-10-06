@@ -32,7 +32,7 @@ export default function InvestmentThesis({ s, density, tone, join }: SectionProp
               <Body paragraphs={s.paragraphs} inserts={s.inserts} dark={dark} />
             </Reveal>
           </div>
-          <Reveal className="col-span-12 sm:col-span-8 lg:col-span-4 lg:col-start-9">
+          <Reveal className={`col-span-12 sm:col-span-8 lg:col-span-4 lg:col-start-9 ${s.sticky ? 'lg:sticky lg:top-28' : ''}`}>
             <Photo ratio="3 / 4"><BFImage slot={s.image} sizes="(min-width:1360px) 405px, (min-width:1024px) 33vw, 100vw" /></Photo>
           </Reveal>
         </div>

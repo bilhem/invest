@@ -1,6 +1,6 @@
 import BFImage from '@/components/BFImage';
 import Reveal from '@/components/Reveal';
-import { Heading, Photo, Prose, Quote, Section, Shell, fr, muted, type SectionProps } from './ui';
+import { Body, Heading, Photo, Prose, Quote, Section, Shell, fr, muted, type SectionProps } from './ui';
 import type { EditorialData } from '@/lib/data/neighborhood-types';
 
 /** Short closing lines at key-quote size: every line but the last is muted, the last one lands. */
@@ -95,18 +95,18 @@ export default function EditorialSection({ s, density, tone, join }: SectionProp
         <Heading eyebrow={s.eyebrow} title={s.title} dark={dark} titleClass="max-w-[64rem]" />
         <div className="ed-grid mt-12 items-start gap-y-10 md:mt-16">
           <Reveal className="col-span-12 lg:col-span-4">
-            <Prose paragraphs={s.paragraphs} dark={dark} />
+            <Body paragraphs={s.paragraphs} inserts={s.inserts} dark={dark} />
           </Reveal>
           {lead && (
             <Reveal className="col-span-12 lg:col-span-8">
-              <Photo ratio="3 / 2"><BFImage slot={lead.slot} sizes="(min-width:1360px) 843px, (min-width:1024px) 62vw, 100vw" /></Photo>
+              <Photo ratio="3 / 2"><BFImage slot={lead.slot} sizes="(min-width:1360px) 843px, (min-width:1024px) 62vw, 100vw" tag /></Photo>
             </Reveal>
           )}
         </div>
       </Shell>
       {band && (
         <section className="relative isolate overflow-hidden bg-charcoal text-ivory">
-          <BFImage slot={band.slot} sizes="100vw" />
+          <BFImage slot={band.slot} sizes="100vw" tag />
           <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-charcoal/90 via-charcoal/40 to-charcoal/10" />
           <div className="ed-wrap relative flex min-h-[28rem] items-end pb-12 pt-40 md:min-h-[36rem] md:pb-20 lg:min-h-[42rem]">
             {/* the statement starts on column 5, the left edge of the photo above, and sits over the calm part of the image */}
