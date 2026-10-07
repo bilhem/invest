@@ -44,7 +44,9 @@ export default function ArticleSources({ a }: { a: Article }) {
           )}
         </section>
       )}
-      <p className="mt-10 max-w-[40rem] border-l-2 border-champagne pl-4 text-[0.8125rem] leading-relaxed text-charcoal/65">{renderInline(a.disclaimer)}</p>
+      <div className="mt-10 max-w-[40rem] space-y-3 border-l-2 border-champagne pl-4 text-[0.8125rem] leading-relaxed text-charcoal/65">
+        {(Array.isArray(a.disclaimer) ? a.disclaimer : [a.disclaimer]).map((p, i) => <p key={i}>{renderInline(p)}</p>)}
+      </div>
     </>
   );
 }

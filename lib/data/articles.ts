@@ -2,6 +2,7 @@ import type { ImageKey } from '@/lib/images';
 import { INVESTIR_A_DUBAI } from './insights/investir-a-dubai';
 import { OU_INVESTIR_A_DUBAI } from './insights/ou-investir-a-dubai';
 import { QUARTIERS_DEMANDE_LOCATIVE } from './insights/quartiers-les-plus-demandes-location-dubai';
+import { INVESTIR_BUREAUX_DUBAI_2026 } from './insights/investir-bureaux-dubai-2026';
 
 /**
  * BF INSIGHTS — long-form articles.
@@ -36,7 +37,29 @@ export type Block =
    * A ranked list of figures (a top 10): rank, name, where it is, and the figure with its unit. A thin bar scaled on the largest value makes the
    * volumes comparable at a glance (the figures themselves are always written out). Items are shown in the order given.
    */
-  | { type: 'ranking'; items: { name: string; place?: string; value: string; unit?: string }[]; caption?: string }
+  | {
+      type: 'ranking';
+      /** `prefix`: « environ », « Près de »… set small before the value. */
+      items: { name: string; place?: string; prefix?: string; value: string; unit?: string }[];
+      /** Rank numbers 01, 02… in front of the names (default true). Off for a series that is not a ranking (shares, pipelines). */
+      numbered?: boolean;
+      /** The value a full bar stands for (100 for percentages). Default: the largest value of the list. */
+      scale?: number;
+      caption?: string;
+    }
+  /**
+   * A call-to-action panel set inside the text (dark, full column): eyebrow, title, a few paragraphs / lists, then one or two buttons.
+   * `id` is the analytics id (suffixed -primary / -secondary). Both `href` must be routes that exist.
+   */
+  | {
+      type: 'ctaPanel';
+      id: string;
+      eyebrow?: string;
+      title: string;
+      content: ({ type: 'p'; text: string } | { type: 'list'; items: string[] })[];
+      primary: { label: string; href: string };
+      secondary?: { label: string; href: string };
+    }
   /** The recurring question of a section (« La question BF »): a short framed line, set in serif. */
   | { type: 'question'; label: string; text: string }
   /** An index of entries (a reading map): a title (linked when `href` is a route that exists), then labelled lines. */
@@ -97,8 +120,8 @@ export type Article = {
   /** Editorial / methodology note, as supplied: shown after the sources, under `methodologyTitle` when there is one. */
   methodology?: string[];
   methodologyTitle?: string;
-  /** Disclaimer, as supplied (kept visible, discreet). */
-  disclaimer: string;
+  /** Disclaimer, as supplied (kept visible, discreet): one paragraph, or several. */
+  disclaimer: string | string[];
   /** Closing call to action. Defaults to the generic qualification CTA. */
   cta?: { title: string; text?: string; label?: string; href?: string };
   /** Links to routes that exist (never to a page that is not built). Shown in « Pour aller plus loin ». */
@@ -116,8 +139,8 @@ export const categoryLabel = (a: Pick<Article, 'category' | 'alsoIn'>) => [a.cat
 export const INSIGHTS_AUTHOR = 'BF Properties';
 
 /** The published library: final copy only, never placeholder articles. One file per article in ./insights/<slug>.ts. */
-/** Order matters for equal publication dates: the first of the list is shown first (the guide, the district reading, then the rental-demand analysis). */
-export const ARTICLES: Article[] = [INVESTIR_A_DUBAI, OU_INVESTIR_A_DUBAI, QUARTIERS_DEMANDE_LOCATIVE];
+/** Order matters for equal publication dates: the first of the list is shown first (the guide, the district reading, the rental-demand analysis, then the office market). */
+export const ARTICLES: Article[] = [INVESTIR_A_DUBAI, OU_INVESTIR_A_DUBAI, QUARTIERS_DEMANDE_LOCATIVE, INVESTIR_BUREAUX_DUBAI_2026];
 
 /** Plain text of a piece of inline markup: [label](href) → label, **bold** → bold. */
 export const plainText = (text: string) => text.replace(/\[([^\]]+)\]\([^)\s]+\)/g, '$1').replace(/\*\*([^*]+)\*\*/g, '$1');
@@ -133,7 +156,12 @@ export function articleText(a: Pick<Article, 'body'>): string {
       case 'question': parts.push(b.label, b.text); break;
       case 'profiles': b.items.forEach((it) => { parts.push(it.title); it.rows.forEach((r) => parts.push(r.label, r.text)); }); parts.push(b.caption ?? ''); break;
       case 'figures': b.items.forEach((f) => parts.push(f.prefix ?? '', f.value, f.unit ?? '', f.label, f.note ?? '')); parts.push(b.caption ?? ''); break;
-      case 'ranking': b.items.forEach((it) => parts.push(it.name, it.place ?? '', it.value, it.unit ?? '')); parts.push(b.caption ?? ''); break;
+      case 'ranking': b.items.forEach((it) => parts.push(it.name, it.place ?? '', it.prefix ?? '', it.value, it.unit ?? '')); parts.push(b.caption ?? ''); break;
+      case 'ctaPanel':
+        parts.push(b.eyebrow ?? '', b.title);
+        b.content.forEach((c) => (c.type === 'p' ? parts.push(c.text) : parts.push(...c.items)));
+        parts.push(b.primary.label, b.secondary?.label ?? '');
+        break;
       case 'table': parts.push(...b.head, ...b.rows.flat(), b.caption ?? '', b.note ?? ''); break;
       case 'compare': b.columns.forEach((c) => parts.push(c.title, ...c.points)); break;
       case 'method': parts.push(b.title ?? ''); b.steps.forEach((st) => parts.push(st.title, st.text ?? '')); break;

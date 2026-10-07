@@ -1,7 +1,8 @@
 import Link from 'next/link';
 import BFImage from '@/components/BFImage';
 import { nb } from '@/components/neighborhood/ui';
-import type { Block } from '@/lib/data/articles';
+import CtaLink from '@/components/CtaLink';
+import { plainText, type Block } from '@/lib/data/articles';
 import { keepNumbers, renderInline } from './inline';
 
 /**
@@ -36,38 +37,72 @@ function Figures({ b }: { b: Extract<Block, { type: 'figures' }> }) {
   );
 }
 
-/** Digits of a figure as shown (« 27 274 » → 27274), used only to scale the bars. */
-const toNumber = (s: string) => Number(s.replace(/\D/g, '')) || 0;
+/** Numeric value of a figure as shown (« 27 274 » → 27274, « 4,6 » → 4.6), used only to scale the bars. */
+const toNumber = (s: string) => parseFloat(s.replace(/\s/g, '').replace(',', '.')) || 0;
 
 /**
- * A top 10: rank, name, place, and the figure (large) with its unit. A thin bar scaled on the largest value (decorative: the figure is written out)
- * lets the volumes be compared at a glance. Reads as « name — place — figure unit » for assistive technology.
+ * A top 10, a pipeline or a series of shares: name, place, and the figure (large) with its unit. A thin bar scaled on the largest value (or on
+ * `scale`, e.g. 100 for percentages) lets the figures be compared at a glance; it is decorative, the figure is always written out.
+ * Rank numbers only when `numbered` (default). Reads as « name — place — figure unit » for assistive technology.
  */
 function Ranking({ b }: { b: Extract<Block, { type: 'ranking' }> }) {
-  const max = Math.max(...b.items.map((it) => toNumber(it.value)), 1);
+  const numbered = b.numbered !== false;
+  const max = b.scale ?? Math.max(...b.items.map((it) => toNumber(it.value)), 1);
+  const Name = numbered ? 'h3' : 'p';
+  const small = 'font-sans text-[0.6875rem] font-normal tracking-wide text-champagne-dark/90 md:text-[0.8125rem]';
   return (
     <figure className="my-14 md:my-20">
       {b.caption && <figcaption className="mb-5 font-serif text-[1.25rem] leading-snug text-charcoal md:text-[1.5rem]">{renderInline(b.caption)}</figcaption>}
       <ol className="border-t border-charcoal/40">
         {b.items.map((it, i) => (
-          <li key={i} className="grid grid-cols-[2.25rem_1fr_auto] items-baseline gap-x-3 border-b border-charcoal/15 py-5 md:grid-cols-[3.5rem_1fr_auto] md:gap-x-6 md:py-6">
-            <span aria-hidden className="font-serif text-[1.0625rem] tracking-[0.1em] text-champagne-dark md:text-[1.1875rem]">{String(i + 1).padStart(2, '0')}</span>
+          <li key={i} className={`grid items-baseline gap-x-3 border-b border-charcoal/15 py-5 md:gap-x-6 md:py-6 ${numbered ? 'grid-cols-[2.25rem_1fr_auto] md:grid-cols-[3.5rem_1fr_auto]' : 'grid-cols-[1fr_auto]'}`}>
+            {numbered && <span aria-hidden className="font-serif text-[1.0625rem] tracking-[0.1em] text-champagne-dark md:text-[1.1875rem]">{String(i + 1).padStart(2, '0')}</span>}
             <div className="min-w-0">
-              <h3 className="font-serif text-[1.25rem] font-medium leading-snug text-charcoal md:text-[1.5rem]">{nb(it.name)}</h3>
+              <Name className="font-serif text-[1.25rem] font-medium leading-snug text-charcoal md:text-[1.5rem]">{nb(it.name)}</Name>
               {it.place && <p className="mt-1 text-[0.9rem] leading-snug text-charcoal/70"><span className="sr-only"> — </span>{nb(it.place)}</p>}
             </div>
             <p className="text-right font-serif text-[1.5rem] leading-none tracking-tight text-champagne-dark md:text-[2rem]">
               <span className="sr-only"> — </span>
-              <span className="block whitespace-nowrap md:inline">{keepNumbers(it.value)}</span>
-              {it.unit && <>{' '}<span className="mt-1.5 block whitespace-nowrap font-sans text-[0.6875rem] font-normal tracking-wide text-champagne-dark/90 md:ml-1 md:mt-0 md:inline-block md:text-[0.8125rem]">{it.unit}</span></>}
+              <span className="block whitespace-nowrap md:inline">
+                {it.prefix && <><span className={small}>{it.prefix}</span>{' '}</>}
+                {keepNumbers(it.value)}
+              </span>
+              {it.unit && <>{' '}<span className={`mt-1.5 block whitespace-nowrap md:ml-1 md:mt-0 md:inline-block ${small}`}>{it.unit}</span></>}
             </p>
-            <span aria-hidden className="col-span-2 col-start-2 mt-4 block h-px bg-charcoal/10">
-              <span className="block h-[2px] -translate-y-px bg-champagne" style={{ width: `${Math.max(2, (toNumber(it.value) / max) * 100).toFixed(1)}%` }} />
+            <span aria-hidden className={`mt-4 block h-px bg-charcoal/10 ${numbered ? 'col-span-2 col-start-2' : 'col-span-2'}`}>
+              <span className="block h-[2px] -translate-y-px bg-champagne" style={{ width: `${Math.min(100, Math.max(2, (toNumber(it.value) / max) * 100)).toFixed(1)}%` }} />
             </span>
           </li>
         ))}
       </ol>
     </figure>
+  );
+}
+
+/** A call to action set inside the text: dark panel, eyebrow, title, short text / list, then the buttons (tracked like every other CTA). */
+function CtaPanel({ b }: { b: Extract<Block, { type: 'ctaPanel' }> }) {
+  return (
+    <aside aria-label={plainText(b.title)} className="my-20 bg-charcoal px-6 py-12 text-ivory md:my-28 md:px-14 md:py-16">
+      {b.eyebrow && <p className="ed-eyebrow">{nb(b.eyebrow)}</p>}
+      <h2 className="mt-5 max-w-[40rem] text-balance font-serif text-[1.875rem] font-medium leading-[1.12] tracking-tight md:text-[2.75rem]">{nb(b.title)}</h2>
+      <div className="mt-8 max-w-[38rem] space-y-5 text-[1.0625rem] leading-[1.75] text-ivory/80">
+        {b.content.map((c, i) =>
+          c.type === 'p' ? (
+            <p key={i}>{renderInline(c.text)}</p>
+          ) : (
+            <ul key={i} className="space-y-3">
+              {c.items.map((it, ii) => (
+                <li key={ii} className="flex gap-4"><span aria-hidden className="mt-[0.85em] h-px w-4 shrink-0 bg-champagne" /><span>{renderInline(it)}</span></li>
+              ))}
+            </ul>
+          ),
+        )}
+      </div>
+      <div className="mt-10 flex flex-col gap-3 sm:flex-row">
+        <CtaLink href={b.primary.href} id={`${b.id}-primary`} className="btn btn-gold text-center">{b.primary.label}</CtaLink>
+        {b.secondary && <CtaLink href={b.secondary.href} id={`${b.id}-secondary`} className="btn btn-outline-light text-center">{b.secondary.label}</CtaLink>}
+      </div>
+    </aside>
   );
 }
 
@@ -231,7 +266,7 @@ export default function ArticleBody({ blocks }: { blocks: Block[] }) {
           }
           case 'statement':
             return (
-              <p key={i} className="my-14 max-w-[46rem] text-balance border-t border-champagne pt-8 font-serif text-[1.75rem] leading-[1.25] tracking-tight text-charcoal sm:text-[2rem] md:my-20 md:text-[2.5rem]">
+              <p key={i} className="my-14 max-w-[46rem] whitespace-pre-line text-balance border-t border-champagne pt-8 font-serif text-[1.75rem] leading-[1.25] tracking-tight text-charcoal sm:text-[2rem] md:my-20 md:text-[2.5rem]">
                 {renderInline(b.text)}
               </p>
             );
@@ -252,6 +287,8 @@ export default function ArticleBody({ blocks }: { blocks: Block[] }) {
             return <Profiles key={i} b={b} />;
           case 'ranking':
             return <Ranking key={i} b={b} />;
+          case 'ctaPanel':
+            return <CtaPanel key={i} b={b} />;
           case 'table':
             return <DataTable key={i} b={b} />;
           case 'compare':
