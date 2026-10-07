@@ -29,7 +29,7 @@ export const schemas = [
     { name: 'description', type: 'text', description: 'Meta description, Open Graph description and hub excerpt.' }, { name: 'standfirst', type: 'text' },
     { name: 'published', type: 'date' }, { name: 'updated', type: 'date', description: 'Date of the last revision.' },
     { name: 'author', type: 'object', description: 'A real BF author only; otherwise the byline is « BF Properties ».' },
-    { name: 'body', type: 'array', of: [{ type: 'block' }, { type: 'figures' }, { type: 'table' }, { type: 'compare' }, { type: 'method' }, { type: 'analysis' }, { type: 'question' }, { type: 'profiles' }, { type: 'quote' }, { type: 'image' }] },
+    { name: 'body', type: 'array', of: [{ type: 'block' }, { type: 'figures' }, { type: 'table' }, { type: 'compare' }, { type: 'method' }, { type: 'analysis' }, { type: 'question' }, { type: 'profiles' }, { type: 'ranking' }, { type: 'quote' }, { type: 'image' }] },
     { name: 'image', type: 'string', description: 'Cover: an authorised image slot (home teaser, Open Graph, structured data).' },
     { name: 'sources', type: 'array', of: [{ type: 'object' }], description: 'Official sources only: label, url, note.' }, { name: 'methodology', type: 'array', of: [{ type: 'text' }] }, { name: 'methodologyTitle', type: 'string' },
     { name: 'disclaimer', type: 'text' }, { name: 'cta', type: 'object' }, { name: 'links', type: 'array', of: [{ type: 'object' }], description: 'Links to routes that exist only.' },

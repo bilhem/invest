@@ -1,6 +1,7 @@
 import type { ImageKey } from '@/lib/images';
 import { INVESTIR_A_DUBAI } from './insights/investir-a-dubai';
 import { OU_INVESTIR_A_DUBAI } from './insights/ou-investir-a-dubai';
+import { QUARTIERS_DEMANDE_LOCATIVE } from './insights/quartiers-les-plus-demandes-location-dubai';
 
 /**
  * BF INSIGHTS — long-form articles.
@@ -29,8 +30,13 @@ export type Block =
   | { type: 'statement'; text: string }
   /** A quotation (a sentence set in a framed block); attributed when `by` is given. */
   | { type: 'quote'; text: string; by?: string; source?: string }
-  /** Key numbers staged as a row of large figures. Values are shown exactly as supplied (`unit`: set smaller, after the value). */
-  | { type: 'figures'; items: { value: string; unit?: string; label: string; note?: string }[]; caption?: string }
+  /** Key numbers staged as a row of large figures. Values are shown exactly as supplied (`prefix`: « Environ », « Plus de »… set smaller before the value; `unit`: set smaller after it). */
+  | { type: 'figures'; items: { value: string; prefix?: string; unit?: string; label: string; note?: string }[]; caption?: string }
+  /**
+   * A ranked list of figures (a top 10): rank, name, where it is, and the figure with its unit. A thin bar scaled on the largest value makes the
+   * volumes comparable at a glance (the figures themselves are always written out). Items are shown in the order given.
+   */
+  | { type: 'ranking'; items: { name: string; place?: string; value: string; unit?: string }[]; caption?: string }
   /** The recurring question of a section (« La question BF »): a short framed line, set in serif. */
   | { type: 'question'; label: string; text: string }
   /** An index of entries (a reading map): a title (linked when `href` is a route that exists), then labelled lines. */
@@ -110,8 +116,8 @@ export const categoryLabel = (a: Pick<Article, 'category' | 'alsoIn'>) => [a.cat
 export const INSIGHTS_AUTHOR = 'BF Properties';
 
 /** The published library: final copy only, never placeholder articles. One file per article in ./insights/<slug>.ts. */
-/** Order matters for equal publication dates: the first of the list is shown first (the guide, then the district reading). */
-export const ARTICLES: Article[] = [INVESTIR_A_DUBAI, OU_INVESTIR_A_DUBAI];
+/** Order matters for equal publication dates: the first of the list is shown first (the guide, the district reading, then the rental-demand analysis). */
+export const ARTICLES: Article[] = [INVESTIR_A_DUBAI, OU_INVESTIR_A_DUBAI, QUARTIERS_DEMANDE_LOCATIVE];
 
 /** Plain text of a piece of inline markup: [label](href) → label, **bold** → bold. */
 export const plainText = (text: string) => text.replace(/\[([^\]]+)\]\([^)\s]+\)/g, '$1').replace(/\*\*([^*]+)\*\*/g, '$1');
@@ -126,7 +132,8 @@ export function articleText(a: Pick<Article, 'body'>): string {
       case 'quote': parts.push(b.text, b.by ?? ''); break;
       case 'question': parts.push(b.label, b.text); break;
       case 'profiles': b.items.forEach((it) => { parts.push(it.title); it.rows.forEach((r) => parts.push(r.label, r.text)); }); parts.push(b.caption ?? ''); break;
-      case 'figures': b.items.forEach((f) => parts.push(f.value, f.unit ?? '', f.label, f.note ?? '')); parts.push(b.caption ?? ''); break;
+      case 'figures': b.items.forEach((f) => parts.push(f.prefix ?? '', f.value, f.unit ?? '', f.label, f.note ?? '')); parts.push(b.caption ?? ''); break;
+      case 'ranking': b.items.forEach((it) => parts.push(it.name, it.place ?? '', it.value, it.unit ?? '')); parts.push(b.caption ?? ''); break;
       case 'table': parts.push(...b.head, ...b.rows.flat(), b.caption ?? '', b.note ?? ''); break;
       case 'compare': b.columns.forEach((c) => parts.push(c.title, ...c.points)); break;
       case 'method': parts.push(b.title ?? ''); b.steps.forEach((st) => parts.push(st.title, st.text ?? '')); break;

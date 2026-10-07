@@ -79,7 +79,7 @@ export default function InsightsExplorer({ articles, categories, categoryLinks =
           </Link>
 
           {rest.length > 0 && (
-            <ul className="mt-14 grid gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
+            <ul className={`mt-14 grid gap-x-8 gap-y-12 sm:grid-cols-2 ${rest.length >= 3 ? 'lg:grid-cols-3' : ''}`}>
               {rest.map((a) => (
                 <li key={a.slug}>
                   <Link href={`/insights/${a.slug}`} className="group flex h-full flex-col border-t border-charcoal/25 pt-5">

@@ -24,6 +24,7 @@ function Figures({ b }: { b: Extract<Block, { type: 'figures' }> }) {
           <div key={i} className={`flex flex-col ${oneRow ? 'sm:border-l sm:border-charcoal/15 sm:pl-8 sm:first:border-l-0 sm:first:pl-0' : ''}`}>
             <dt className="order-2 mt-3 text-sm leading-snug text-charcoal/70">{renderInline(f.label)}</dt>
             <dd className="order-1 block text-balance font-serif text-[2.25rem] leading-[1.05] tracking-tight text-champagne-dark md:text-[2.75rem]">
+              {f.prefix && <><span className="inline-block whitespace-nowrap font-sans text-[0.8125rem] font-normal tracking-wide text-champagne-dark/90 md:text-[0.9375rem]">{f.prefix}</span>{' '}</>}
               {keepNumbers(f.value)}{f.unit && <>{' '}<span className="inline-block whitespace-nowrap font-sans text-[0.8125rem] font-normal tracking-wide text-champagne-dark/90 md:text-[0.9375rem]">{f.unit}</span></>}
             </dd>
             {f.note && <dd className="order-3 mt-1.5 text-xs leading-snug text-stone">{renderInline(f.note)}</dd>}
@@ -31,6 +32,41 @@ function Figures({ b }: { b: Extract<Block, { type: 'figures' }> }) {
         ))}
       </dl>
       {b.caption && <figcaption className="mt-4 text-xs leading-relaxed text-stone">{renderInline(b.caption)}</figcaption>}
+    </figure>
+  );
+}
+
+/** Digits of a figure as shown (« 27 274 » → 27274), used only to scale the bars. */
+const toNumber = (s: string) => Number(s.replace(/\D/g, '')) || 0;
+
+/**
+ * A top 10: rank, name, place, and the figure (large) with its unit. A thin bar scaled on the largest value (decorative: the figure is written out)
+ * lets the volumes be compared at a glance. Reads as « name — place — figure unit » for assistive technology.
+ */
+function Ranking({ b }: { b: Extract<Block, { type: 'ranking' }> }) {
+  const max = Math.max(...b.items.map((it) => toNumber(it.value)), 1);
+  return (
+    <figure className="my-14 md:my-20">
+      {b.caption && <figcaption className="mb-5 font-serif text-[1.25rem] leading-snug text-charcoal md:text-[1.5rem]">{renderInline(b.caption)}</figcaption>}
+      <ol className="border-t border-charcoal/40">
+        {b.items.map((it, i) => (
+          <li key={i} className="grid grid-cols-[2.25rem_1fr_auto] items-baseline gap-x-3 border-b border-charcoal/15 py-5 md:grid-cols-[3.5rem_1fr_auto] md:gap-x-6 md:py-6">
+            <span aria-hidden className="font-serif text-[1.0625rem] tracking-[0.1em] text-champagne-dark md:text-[1.1875rem]">{String(i + 1).padStart(2, '0')}</span>
+            <div className="min-w-0">
+              <h3 className="font-serif text-[1.25rem] font-medium leading-snug text-charcoal md:text-[1.5rem]">{nb(it.name)}</h3>
+              {it.place && <p className="mt-1 text-[0.9rem] leading-snug text-charcoal/70"><span className="sr-only"> — </span>{nb(it.place)}</p>}
+            </div>
+            <p className="text-right font-serif text-[1.5rem] leading-none tracking-tight text-champagne-dark md:text-[2rem]">
+              <span className="sr-only"> — </span>
+              <span className="block whitespace-nowrap md:inline">{keepNumbers(it.value)}</span>
+              {it.unit && <>{' '}<span className="mt-1.5 block whitespace-nowrap font-sans text-[0.6875rem] font-normal tracking-wide text-champagne-dark/90 md:ml-1 md:mt-0 md:inline-block md:text-[0.8125rem]">{it.unit}</span></>}
+            </p>
+            <span aria-hidden className="col-span-2 col-start-2 mt-4 block h-px bg-charcoal/10">
+              <span className="block h-[2px] -translate-y-px bg-champagne" style={{ width: `${Math.max(2, (toNumber(it.value) / max) * 100).toFixed(1)}%` }} />
+            </span>
+          </li>
+        ))}
+      </ol>
     </figure>
   );
 }
@@ -214,6 +250,8 @@ export default function ArticleBody({ blocks }: { blocks: Block[] }) {
             return <Question key={i} b={b} />;
           case 'profiles':
             return <Profiles key={i} b={b} />;
+          case 'ranking':
+            return <Ranking key={i} b={b} />;
           case 'table':
             return <DataTable key={i} b={b} />;
           case 'compare':
