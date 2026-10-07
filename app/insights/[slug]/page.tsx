@@ -12,7 +12,7 @@ import { tocFrom, withHeadingIds } from '@/components/insights/inline';
 import { buildMetadata, abs } from '@/lib/seo';
 import { SITE } from '@/lib/site';
 import { getArticle, getArticles, getRelatedArticles } from '@/lib/cms';
-import { INSIGHTS_AUTHOR, articleWords } from '@/lib/data/articles';
+import { INSIGHTS_AUTHOR, articleWords, plainText } from '@/lib/data/articles';
 import { getImage } from '@/lib/images';
 
 type Params = { slug: string };
@@ -65,11 +65,23 @@ export default async function Page({ params }: { params: Promise<Params> }) {
     ...(a.sources.length ? { citation: a.sources.map((s) => ({ '@type': 'CreativeWork', name: s.label, url: s.url })) } : {}),
   };
 
+  // FAQPage structured data when the article has a FAQ block: the questions and answers of the page, as written.
+  const faq = a.body.flatMap((b) => (b.type === 'faq' ? b.items : []));
+  const faqLd = faq.length
+    ? {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        inLanguage: 'fr',
+        mainEntity: faq.map((f) => ({ '@type': 'Question', name: plainText(f.q), acceptedAnswer: { '@type': 'Answer', text: plainText(f.a.join(' ')) } })),
+      }
+    : null;
+
   const cta = a.cta === false ? null : a.cta ?? { title: 'Cette analyse soulève une question pour votre projet ?' };
 
   return (
     <>
       <JsonLd data={ld} />
+      {faqLd && <JsonLd data={faqLd} />}
       <ArticleHero a={a} />
 
       <div className="py-14 md:py-20 lg:py-28">

@@ -17,7 +17,7 @@ function Figures({ b }: { b: Extract<Block, { type: 'figures' }> }) {
   const n = b.items.length;
   // Up to three figures sit on one row (thin vertical rules between them); four or more form a grid without inner rules.
   const oneRow = n <= 3;
-  const cols = n === 1 ? '' : n === 2 ? 'sm:grid-cols-2' : n === 3 ? 'sm:grid-cols-3' : 'sm:grid-cols-2 lg:grid-cols-4';
+  const cols = n === 1 ? '' : n === 2 || b.columns === 2 ? 'sm:grid-cols-2' : n === 3 ? 'sm:grid-cols-3' : 'sm:grid-cols-2 lg:grid-cols-4';
   // Figures that carry no label (a series of amounts, e.g. the four capital levels) form a plain list instead of a description list.
   const labelled = b.items.some((f) => f.label);
   const Wrap = labelled ? 'dl' : 'ul';
@@ -176,21 +176,56 @@ function Compare({ b }: { b: Extract<Block, { type: 'compare' }> }) {
 }
 
 function Method({ b }: { b: Extract<Block, { type: 'method' }> }) {
+  const dark = Boolean(b.dark);
   return (
-    <section className="my-14 md:my-20">
-      {b.title && <h3 className="mb-6 font-serif text-[1.5rem] leading-snug text-charcoal md:text-[1.75rem]">{nb(b.title)}</h3>}
-      <ol className="border-t border-charcoal/15">
+    <section className={dark ? 'my-16 bg-charcoal px-6 py-10 text-ivory md:my-24 md:px-14 md:py-14' : 'my-14 md:my-20'}>
+      {b.title && <h3 className={`mb-6 font-serif text-[1.5rem] leading-snug md:text-[1.75rem] ${dark ? 'text-ivory' : 'text-charcoal'}`}>{nb(b.title)}</h3>}
+      <ol className={dark ? 'border-t border-ivory/20 md:grid md:grid-cols-2 md:gap-x-14' : 'border-t border-charcoal/15'}>
         {b.steps.map((s, i) => (
-          <li key={i} className="grid grid-cols-[2.75rem_1fr] gap-x-3 border-b border-charcoal/15 py-5 md:grid-cols-[4rem_1fr] md:py-6">
-            <span aria-hidden className="font-serif text-[1.125rem] text-champagne-dark">{String(i + 1).padStart(2, '0')}</span>
+          <li key={i} className={`grid grid-cols-[2.75rem_1fr] gap-x-3 border-b py-5 md:py-6 ${dark ? 'border-ivory/15' : 'border-charcoal/15 md:grid-cols-[4rem_1fr]'}`}>
+            <span aria-hidden className={`font-serif text-[1.125rem] ${dark ? 'text-champagne' : 'text-champagne-dark'}`}>{String(i + 1).padStart(2, '0')}</span>
             <div>
-              <p className="font-serif text-[1.25rem] leading-snug text-charcoal">{renderInline(s.title)}</p>
-              {s.text && <p className={`mt-2 text-[0.98rem] leading-[1.7] text-charcoal/75 ${MEASURE}`}>{renderInline(s.text)}</p>}
+              <p className={`font-serif text-[1.25rem] leading-snug ${dark ? 'text-ivory' : 'text-charcoal'}`}>{renderInline(s.title)}</p>
+              {s.text && <p className={`mt-2 text-[0.98rem] leading-[1.7] ${dark ? 'text-ivory/70' : `text-charcoal/75 ${MEASURE}`}`}>{renderInline(s.text)}</p>}
             </div>
           </li>
         ))}
       </ol>
     </section>
+  );
+}
+
+/** Links to other pages of the site, set apart in the text: the real title of each page, an arrow, nothing else. */
+function ReadMore({ b }: { b: Extract<Block, { type: 'readMore' }> }) {
+  return (
+    <aside aria-label={b.label ?? 'À lire aussi'} className="my-12 max-w-[42rem] border-y border-charcoal/15 py-5 md:my-16">
+      <p className="ed-eyebrow !text-champagne-dark">{b.label ?? 'À lire aussi'}</p>
+      <ul className="mt-2 divide-y divide-charcoal/10">
+        {b.items.map((it) => (
+          <li key={it.href}>
+            <Link href={it.href} className="group flex items-baseline justify-between gap-6 py-3 font-serif text-[1.1875rem] leading-snug text-charcoal transition-colors hover:text-champagne-dark md:text-[1.3125rem]">
+              <span>{nb(it.title)}</span><span aria-hidden className="text-champagne-dark transition-transform duration-300 group-hover:translate-x-1">→</span>
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </aside>
+  );
+}
+
+/** FAQ: every question stays visible (headings in the page, also published as FAQPage structured data by the article page). */
+function Faq({ b }: { b: Extract<Block, { type: 'faq' }> }) {
+  return (
+    <ul className="mt-10 border-t border-charcoal/40">
+      {b.items.map((it, i) => (
+        <li key={i} className="border-b border-charcoal/15 py-7 md:py-9">
+          <h3 className="max-w-[40rem] text-balance font-serif text-[1.3125rem] font-medium leading-[1.3] text-charcoal md:text-[1.5rem]">{nb(keepNumbers(it.q))}</h3>
+          <div className={`mt-3 space-y-3 text-[1rem] leading-[1.75] text-charcoal/80 ${MEASURE}`}>
+            {it.a.map((p, pi) => <p key={pi}>{renderInline(p)}</p>)}
+          </div>
+        </li>
+      ))}
+    </ul>
   );
 }
 
@@ -290,7 +325,7 @@ export default function ArticleBody({ blocks }: { blocks: Block[] }) {
             return (
               <figure key={i} className="my-14 max-w-[44rem] md:my-20">
                 <blockquote className="border-l-2 border-champagne pl-6 md:pl-8">
-                  <p className="text-balance font-serif text-[1.5rem] leading-[1.35] text-charcoal md:text-[1.875rem]">{renderInline(b.text)}</p>
+                  <p className="whitespace-pre-line text-balance font-serif text-[1.5rem] leading-[1.35] text-charcoal md:text-[1.875rem]">{renderInline(b.text)}</p>
                 </blockquote>
                 {b.by && <figcaption className="mt-4 pl-6 text-sm text-stone md:pl-8">{b.by}{b.source ? `, ${b.source}` : ''}</figcaption>}
               </figure>
@@ -311,6 +346,10 @@ export default function ArticleBody({ blocks }: { blocks: Block[] }) {
             return <Compare key={i} b={b} />;
           case 'method':
             return <Method key={i} b={b} />;
+          case 'readMore':
+            return <ReadMore key={i} b={b} />;
+          case 'faq':
+            return <Faq key={i} b={b} />;
           case 'analysis':
             return <Analysis key={i} b={b} />;
           case 'note':

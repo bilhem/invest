@@ -5,6 +5,7 @@ import { QUARTIERS_DEMANDE_LOCATIVE } from './insights/quartiers-les-plus-demand
 import { INVESTIR_BUREAUX_DUBAI_2026 } from './insights/investir-bureaux-dubai-2026';
 import { COMBIEN_FAUT_IL_INVESTIR_DUBAI } from './insights/combien-faut-il-investir-dubai';
 import { RENDEMENT_LOCATIF_DUBAI_2026 } from './insights/rendement-locatif-dubai-2026';
+import { ACHETER_BIEN_IMMOBILIER_DUBAI_2026 } from './insights/acheter-bien-immobilier-dubai-2026';
 
 /**
  * BF INSIGHTS — long-form articles.
@@ -35,9 +36,10 @@ export type Block =
   | { type: 'quote'; text: string; by?: string; source?: string }
   /**
    * Key numbers staged as a row of large figures. Values are shown exactly as supplied (`prefix`: « Environ », « Plus de »… set smaller before the value;
-   * `unit`: set smaller after it). `label` may be left out when the figures stand alone (a series of amounts).
+   * `unit`: set smaller after it). `label` may be left out when the figures stand alone (a series of amounts). `columns: 2`: two per row from tablets up
+   * (four wide amounts such as « 2 000 000 AED » do not fit side by side).
    */
-  | { type: 'figures'; items: { value: string; prefix?: string; unit?: string; label?: string; note?: string }[]; caption?: string }
+  | { type: 'figures'; items: { value: string; prefix?: string; unit?: string; label?: string; note?: string }[]; caption?: string; columns?: 2 }
   /**
    * A ranked list of figures (a top 10): rank, name, where it is, and the figure with its unit. A thin bar scaled on the largest value makes the
    * volumes comparable at a glance (the figures themselves are always written out). Items are shown in the order given.
@@ -73,8 +75,15 @@ export type Block =
   | { type: 'table'; head: string[]; rows: string[][]; caption?: string; note?: string; first?: 'label' }
   /** Options side by side (stacked on phones). */
   | { type: 'compare'; columns: { title: string; points: string[] }[]; caption?: string }
-  /** A methodology / process: numbered steps. */
-  | { type: 'method'; title?: string; steps: { title: string; text?: string }[] }
+  /** A methodology / process: numbered steps. `dark`: set on a charcoal panel, two columns from tablets up (a long method, e.g. ten steps). */
+  | { type: 'method'; title?: string; steps: { title: string; text?: string }[]; dark?: boolean }
+  /**
+   * Links to other pages of the site, set apart in the text (« À lire aussi » unless `label` is given). Each `title` is the real title of the page it
+   * leads to and each `href` a route that exists.
+   */
+  | { type: 'readMore'; label?: string; items: { title: string; href: string }[] }
+  /** Frequently asked questions: the question (a heading) and its answer paragraphs. Also published as FAQPage structured data. */
+  | { type: 'faq'; items: { q: string; a: string[] }[] }
   /** « BF Analysis »: a call-out that stands apart from the running text. */
   | { type: 'analysis'; title?: string; paragraphs: string[] }
   /** A small caveat set apart from the text. */
@@ -145,7 +154,7 @@ export const INSIGHTS_AUTHOR = 'BF Properties';
 
 /** The published library: final copy only, never placeholder articles. One file per article in ./insights/<slug>.ts. */
 /** Order matters for equal publication dates: the first of the list is shown first (the guide, the district reading, the rental-demand analysis, the office market, the budgets, then the rental yield). */
-export const ARTICLES: Article[] = [INVESTIR_A_DUBAI, OU_INVESTIR_A_DUBAI, QUARTIERS_DEMANDE_LOCATIVE, INVESTIR_BUREAUX_DUBAI_2026, COMBIEN_FAUT_IL_INVESTIR_DUBAI, RENDEMENT_LOCATIF_DUBAI_2026];
+export const ARTICLES: Article[] = [INVESTIR_A_DUBAI, OU_INVESTIR_A_DUBAI, QUARTIERS_DEMANDE_LOCATIVE, INVESTIR_BUREAUX_DUBAI_2026, COMBIEN_FAUT_IL_INVESTIR_DUBAI, RENDEMENT_LOCATIF_DUBAI_2026, ACHETER_BIEN_IMMOBILIER_DUBAI_2026];
 
 /** Plain text of a piece of inline markup: [label](href) → label, **bold** → bold. */
 export const plainText = (text: string) => text.replace(/\[([^\]]+)\]\([^)\s]+\)/g, '$1').replace(/\*\*([^*]+)\*\*/g, '$1');
@@ -170,6 +179,8 @@ export function articleText(a: Pick<Article, 'body'>): string {
       case 'table': parts.push(...b.head, ...b.rows.flat(), b.caption ?? '', b.note ?? ''); break;
       case 'compare': b.columns.forEach((c) => parts.push(c.title, ...c.points)); break;
       case 'method': parts.push(b.title ?? ''); b.steps.forEach((st) => parts.push(st.title, st.text ?? '')); break;
+      case 'faq': b.items.forEach((it) => parts.push(it.q, ...it.a)); break;
+      case 'readMore': break;
       case 'analysis': parts.push(b.title ?? '', ...b.paragraphs); break;
       case 'image': parts.push(b.caption ?? ''); break;
       case 'divider': break;
