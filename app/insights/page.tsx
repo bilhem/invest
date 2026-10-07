@@ -3,6 +3,7 @@ import CtaBand from '@/components/ui/CtaBand';
 import InsightsExplorer from '@/components/InsightsExplorer';
 import { buildMetadata } from '@/lib/seo';
 import { getArticles, getDevelopersPage } from '@/lib/cms';
+import { readingMinutes } from '@/lib/data/articles';
 import { ARTICLE_CATEGORIES, CATEGORY_PAGES } from '@/lib/data/articles';
 import { DEVELOPERS_PATH } from '@/lib/data/developers';
 
@@ -13,7 +14,8 @@ export const metadata = buildMetadata({
 });
 
 export default function Page() {
-  const articles = getArticles().map(({ slug, category, title, standfirst, readingMinutes }) => ({ slug, category, title, standfirst, readingMinutes }));
+  // Published articles only (final copy); nothing is added to fill the page.
+  const articles = getArticles().map((a) => ({ slug: a.slug, category: a.category, alsoIn: a.alsoIn, title: a.title, description: a.description, published: a.published, readingMinutes: readingMinutes(a) }));
   const dev = getDevelopersPage();
   // Editorial verticals with a page of their own, built from that page's own supplied copy.
   const featured = [{ eyebrow: dev.hero.eyebrow, title: dev.hero.title, text: dev.hero.intro[0], href: DEVELOPERS_PATH, cta: 'Lire l’analyse' }];

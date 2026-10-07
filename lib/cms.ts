@@ -8,7 +8,7 @@
 import { AREAS, getAreaBySlug, type Area } from './data/areas';
 import { STRATEGIES, type Strategy } from './data/strategies';
 import { STORIES, type Story } from './data/stories';
-import { ARTICLES, isIndexable, type Article } from './data/articles';
+import { ARTICLES, type Article } from './data/articles';
 import { INVEST_FAQ, type Faq } from './data/faq';
 import { DEVELOPERS, DEVELOPERS_PAGE, type Developer } from './data/developers';
 
@@ -22,12 +22,11 @@ export const getStrategies = (): Strategy[] => STRATEGIES;
 export const getStories = (): Story[] => STORIES;
 export const getStory = (slug: string): Story | undefined => STORIES.find((s) => s.slug === slug);
 
-export const getArticles = (): Article[] => ARTICLES;
+/** Published articles, newest first. */
+export const getArticles = (): Article[] => [...ARTICLES].sort((a, b) => b.published.localeCompare(a.published));
 export const getArticle = (slug: string): Article | undefined => ARTICLES.find((a) => a.slug === slug);
 export const getRelatedArticles = (a: Article): Article[] =>
-  a.related.map((slug) => ARTICLES.find((x) => x.slug === slug)).filter((x): x is Article => Boolean(x));
-/** Only articles whose figures and sources have been reviewed are indexed and listed in the sitemap (see INSIGHTS_PUBLICATION). */
-export { isIndexable };
+  (a.related ?? []).map((slug) => ARTICLES.find((x) => x.slug === slug)).filter((x): x is Article => Boolean(x));
 
 export const getInvestFaq = (): Faq[] => INVEST_FAQ;
 

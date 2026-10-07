@@ -3,15 +3,17 @@ import type { Metadata } from 'next';
 import CtaBand from '@/components/ui/CtaBand';
 import JsonLd from '@/components/ui/JsonLd';
 import TrackEvent from '@/components/TrackEvent';
-import ArticleBody from '@/components/ArticleBody';
 import ArticleHero from '@/components/insights/ArticleHero';
-import ArticleAside from '@/components/insights/ArticleAside';
-import { Disclaimer } from '@/components/ui/Bits';
+import ArticleToc from '@/components/insights/ArticleToc';
+import ArticleBody from '@/components/insights/ArticleBody';
+import ArticleMore from '@/components/insights/ArticleMore';
+import ArticleSources from '@/components/insights/ArticleSources';
+import { tocFrom, withHeadingIds } from '@/components/insights/inline';
 import { buildMetadata, abs } from '@/lib/seo';
 import { SITE } from '@/lib/site';
-import { getArticle, getArticles, getRelatedArticles, getStory, isIndexable, isPublishable } from '@/lib/cms';
-import { INSIGHTS_AUTHOR, INSIGHTS_PUBLICATION } from '@/lib/data/articles';
-import { INSIGHT_CTA, INSIGHT_METHOD, INSIGHT_PAST_PERFORMANCE, INSIGHT_SOURCES } from '@/lib/data/insights';
+import { getArticle, getArticles, getRelatedArticles } from '@/lib/cms';
+import { INSIGHTS_AUTHOR, articleWords } from '@/lib/data/articles';
+import { getImage } from '@/lib/images';
 
 type Params = { slug: string };
 
@@ -24,76 +26,67 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   const { slug } = await params;
   const a = getArticle(slug);
   if (!a) return {};
-  const { publishedOn, reviewedOn } = INSIGHTS_PUBLICATION;
+  const cover = a.image ? getImage(a.image) : undefined;
   return buildMetadata({
-    title: a.title,
-    description: a.standfirst,
+    title: a.seoTitle ?? a.title,
+    description: a.description,
     path: `/insights/${a.slug}`,
-    noindex: !isIndexable(a),
-    article: { section: a.category, ...(publishedOn ? { publishedTime: publishedOn } : {}), ...(reviewedOn ? { modifiedTime: reviewedOn } : {}) },
+    noindex: a.noindex,
+    image: cover && 'src' in cover && cover.src ? { src: cover.src, width: cover.width, height: cover.height, alt: cover.alt } : undefined,
+    article: { section: a.category, publishedTime: a.published, modifiedTime: a.updated ?? a.published },
   });
 }
-
-/** The supplied call to action reads « Définir mon projet / faire analyser une opportunité » → the existing qualification CTA (/consultation). */
-const CTA_LABEL = INSIGHT_CTA.split(' / ')[0] ?? 'Définir mon projet';
 
 export default async function Page({ params }: { params: Promise<Params> }) {
   const { slug } = await params;
   const a = getArticle(slug);
   if (!a) notFound();
 
+  const body = withHeadingIds(a.body);
+  const toc = [...tocFrom(body), ...(a.sources.length || a.methodology?.length ? [{ id: 'sources', label: 'Sources & méthodologie' }] : [])];
   const related = getRelatedArticles(a);
-  const franck = a.story ? getStory('franck-peninsula-five') : undefined;
-  const story = franck && isPublishable(franck) ? franck : undefined;
-  const { publishedOn, reviewedOn } = INSIGHTS_PUBLICATION;
+  const cover = a.image ? getImage(a.image) : undefined;
 
-  // Article + (in the hero) BreadcrumbList. No image, author or date is invented: the dates appear once they are set in INSIGHTS_PUBLICATION.
+  // Article (the BreadcrumbList is emitted by the hero). Author: the organisation, unless a real BF author is set on the article.
   const ld = {
     '@context': 'https://schema.org',
     '@type': 'Article',
     headline: a.title,
-    description: a.standfirst,
+    description: a.description,
     inLanguage: 'fr',
-    articleSection: a.category,
-    author: { '@type': 'Organization', name: INSIGHTS_AUTHOR, url: SITE.url },
+    articleSection: [a.category, ...(a.alsoIn ?? [])],
+    datePublished: a.published,
+    dateModified: a.updated ?? a.published,
+    wordCount: articleWords(a),
+    ...(cover && 'src' in cover && cover.src ? { image: abs(cover.src) } : {}),
+    author: a.author ? { '@type': 'Person', name: a.author.name } : { '@type': 'Organization', name: INSIGHTS_AUTHOR, url: SITE.url },
     publisher: { '@type': 'Organization', name: SITE.name, url: SITE.url },
     mainEntityOfPage: { '@type': 'WebPage', '@id': abs(`/insights/${a.slug}`) },
-    ...(publishedOn ? { datePublished: publishedOn } : {}),
-    ...(reviewedOn ? { dateModified: reviewedOn } : {}),
+    ...(a.sources.length ? { citation: a.sources.map((s) => ({ '@type': 'CreativeWork', name: s.label, url: s.url })) } : {}),
   };
+
+  const cta = a.cta ?? { title: 'Cette analyse soulève une question pour votre projet ?' };
 
   return (
     <>
       <JsonLd data={ld} />
       <ArticleHero a={a} />
 
-      <div className="py-14 md:py-20 lg:py-24">
+      <div className="py-14 md:py-20 lg:py-28">
         <div className="wrap">
-          <div className="ed-grid gap-y-14">
-            <article className="col-span-12 lg:col-span-7">
-              <ArticleBody blocks={a.body} />
+          <div className="ed-grid gap-y-10">
+            <div className="col-span-12 lg:col-span-3"><ArticleToc items={toc} /></div>
+            <article className="col-span-12 lg:col-span-9">
+              <ArticleBody blocks={body} />
+              <ArticleMore a={a} related={related} />
+              <ArticleSources a={a} />
               <TrackEvent event="article_read" params={{ article: a.slug }} when="visible" />
-
-              <section aria-label="Sources et méthodologie" className="mt-14 max-w-[40rem] border-t border-charcoal/10 pt-5 text-xs leading-relaxed text-stone">
-                <h2 className="text-[0.7rem] font-medium uppercase tracking-[0.18em]">Sources &amp; méthodologie</h2>
-                <p className="mt-2">Sources : {a.sources ?? INSIGHT_SOURCES}</p>
-                <p className="mt-1">{INSIGHT_METHOD}</p>
-              </section>
-              <div className="max-w-[40rem]">
-                <Disclaimer>
-                  Contenu à visée informative. Il ne constitue pas un conseil juridique, fiscal ou financier. {INSIGHT_PAST_PERFORMANCE}
-                </Disclaimer>
-              </div>
             </article>
-
-            <div className="col-span-12 lg:col-span-4 lg:col-start-9">
-              <ArticleAside a={a} related={related} story={story} />
-            </div>
           </div>
         </div>
       </div>
 
-      <CtaBand id={`article_${a.slug}`} title="Cette analyse soulève une question pour votre projet ?" label={CTA_LABEL} />
+      <CtaBand id={`article_${a.slug}`} title={cta.title} text={cta.text} label={cta.label} href={cta.href} />
     </>
   );
 }

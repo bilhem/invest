@@ -1,7 +1,6 @@
 import type { MetadataRoute } from 'next';
 import { SITE } from '@/lib/site';
-import { getAreas, getStories, getArticles, getReadyDevelopers, isIndexable, isPublishable } from '@/lib/cms';
-import { INSIGHTS_PUBLICATION } from '@/lib/data/articles';
+import { getAreas, getStories, getArticles, getReadyDevelopers, isPublishable } from '@/lib/cms';
 import { developerHref } from '@/lib/data/developers';
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -16,7 +15,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   getStories().filter(isPublishable).forEach((s) => entries.push({ url: `${SITE.url}/investor-stories/${s.slug}`, changeFrequency: 'yearly', priority: 0.6 }));
   // Individual developer pages (/insights/developers/<slug>) are listed only once they have final content.
   getReadyDevelopers().forEach((d) => entries.push({ url: `${SITE.url}${developerHref(d)}`, changeFrequency: 'monthly', priority: 0.6 }));
-  // BF Insights articles are listed once their figures and sources have been reviewed (INSIGHTS_PUBLICATION.reviewedOn).
-  getArticles().filter(isIndexable).forEach((a) => entries.push({ url: `${SITE.url}/insights/${a.slug}`, lastModified: INSIGHTS_PUBLICATION.reviewedOn ?? undefined, changeFrequency: 'monthly', priority: 0.6 }));
+  // BF Insights articles (final copy only; there is no demonstration content).
+  getArticles().filter((a) => !a.noindex).forEach((a) => entries.push({ url: `${SITE.url}/insights/${a.slug}`, lastModified: a.updated ?? a.published, changeFrequency: 'monthly', priority: 0.7 }));
   return entries;
 }

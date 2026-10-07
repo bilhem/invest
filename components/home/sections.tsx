@@ -215,6 +215,7 @@ export function LabTeaser() {
 }
 
 export function Insights() {
+  if (INSIGHTS.length === 0) return null;
   return (
     <section className="section">
       <div className="wrap">
@@ -225,6 +226,18 @@ export function Insights() {
           </Reveal>
           <CtaLink href="/insights" id="insights" className="btn btn-outline-dark self-start">Toutes les analyses</CtaLink>
         </div>
+        {INSIGHTS.length === 1 ? (
+          /* A single article: it is shown large rather than alone in a column of three. */
+          <Link href={`/insights/${INSIGHTS[0].slug}`} className="group mt-14 grid gap-8 md:grid-cols-[1.3fr_1fr] md:items-center md:gap-14">
+            <div className="relative aspect-[3/2] overflow-hidden"><BFImage slot={INSIGHTS[0].img as ImageKey} sizes="(min-width:768px) 60vw, 100vw" className="transition-transform duration-[1200ms] group-hover:scale-[1.03]" /></div>
+            <div>
+              <p className="text-xs text-champagne-dark">{INSIGHTS[0].cat} · {INSIGHTS[0].meta}</p>
+              <h3 className="mt-3 text-balance font-serif text-[1.75rem] leading-[1.15] transition-colors group-hover:text-champagne-dark md:text-[2.25rem]">{INSIGHTS[0].title}</h3>
+              <p className="mt-5 leading-relaxed text-charcoal/70">{INSIGHTS[0].desc}</p>
+              <span className="mt-6 inline-block text-sm font-medium text-champagne-dark">Lire l’analyse<span aria-hidden className="ml-1.5 inline-block transition-transform duration-300 group-hover:translate-x-1">→</span></span>
+            </div>
+          </Link>
+        ) : (
         <div className="mt-14 grid gap-8 md:grid-cols-3">
           {INSIGHTS.map((a) => (
             <Link key={a.slug} href={`/insights/${a.slug}`} className="group block">
@@ -234,6 +247,7 @@ export function Insights() {
             </Link>
           ))}
         </div>
+        )}
       </div>
     </section>
   );

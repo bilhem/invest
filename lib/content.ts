@@ -1,5 +1,5 @@
 // Home content. Everything not yet verified is a structured placeholder: [X].
-import { ARTICLES } from './data/articles';
+import { ARTICLES, categoryLabel, readingMinutes } from './data/articles';
 
 export const METHOD = [
   { n: '01', t: 'Comprendre', d: 'Situation financière, objectifs, horizon et attentes.' },
@@ -28,13 +28,9 @@ export const AREAS = [
   { slug: 'nad-al-sheba-gardens', name: 'Nad Al Sheba Gardens', tag: 'Villas · Vie familiale' },
   { slug: 'sobha-hartland-ii', name: 'Sobha Hartland II', tag: 'Waterfront · Lagoons' },
 ] as const;
-// Three of the BF Insights articles (lib/data/insights.ts), one per category. The visual is the existing tone placeholder: no picture was supplied.
-const HOME_INSIGHTS = [
-  'investir-a-dubai-en-2026-le-guide-de-l-investisseur',
-  'dubai-construit-il-trop-comprendre-le-risque-de-sur-offre',
-  'al-jaddaf-pourquoi-cette-localisation-merite-une-deuxieme-lecture',
-] as const;
-export const INSIGHTS = HOME_INSIGHTS.flatMap((slug, i) => {
-  const a = ARTICLES.find((x) => x.slug === slug);
-  return a ? [{ slug, img: `insight-${i + 1}`, cat: a.category, title: a.title, meta: `Lecture : ${a.readingMinutes} min` }] : [];
-});
+// The latest published BF Insights articles (up to three), one teaser each. The visual is the article's cover (an authorised image) or, without one, the existing tone placeholder.
+// Empty while no article is published: the home then simply omits the block (see Insights() in components/home/sections.tsx).
+export const INSIGHTS = [...ARTICLES]
+  .sort((a, b) => b.published.localeCompare(a.published))
+  .slice(0, 3)
+  .map((a, i) => ({ slug: a.slug, img: a.image ?? `insight-${i + 1}`, cat: categoryLabel(a), title: a.title, desc: a.description, meta: `Lecture : ${readingMinutes(a)} min` }));
