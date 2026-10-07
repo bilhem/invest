@@ -1,4 +1,5 @@
 import type { ImageKey } from '@/lib/images';
+import { INVESTIR_A_DUBAI } from './insights/investir-a-dubai';
 import { OU_INVESTIR_A_DUBAI } from './insights/ou-investir-a-dubai';
 
 /**
@@ -109,7 +110,8 @@ export const categoryLabel = (a: Pick<Article, 'category' | 'alsoIn'>) => [a.cat
 export const INSIGHTS_AUTHOR = 'BF Properties';
 
 /** The published library: final copy only, never placeholder articles. One file per article in ./insights/<slug>.ts. */
-export const ARTICLES: Article[] = [OU_INVESTIR_A_DUBAI];
+/** Order matters for equal publication dates: the first of the list is shown first (the guide, then the district reading). */
+export const ARTICLES: Article[] = [INVESTIR_A_DUBAI, OU_INVESTIR_A_DUBAI];
 
 /** Plain text of a piece of inline markup: [label](href) → label, **bold** → bold. */
 export const plainText = (text: string) => text.replace(/\[([^\]]+)\]\([^)\s]+\)/g, '$1').replace(/\*\*([^*]+)\*\*/g, '$1');

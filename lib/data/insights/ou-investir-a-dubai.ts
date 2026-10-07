@@ -621,6 +621,7 @@ export const OU_INVESTIR_A_DUBAI: Article = {
   disclaimer:
     'Les performances passées ne préjugent pas des performances futures. Les valeurs, rendements, exemples et analyses présentés sont fournis à titre informatif. Ils ne constituent ni une garantie de rendement, ni une projection de performance, ni un conseil fiscal ou juridique personnalisé.',
 
+  related: ['investir-a-dubai'],
   // « Pour aller plus loin »: the ten destinations are already linked from the reading map above.
   links: [
     { label: 'Stratégies d’investissement', href: '/strategies' },

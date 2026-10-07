@@ -24,7 +24,7 @@ function Figures({ b }: { b: Extract<Block, { type: 'figures' }> }) {
           <div key={i} className={`flex flex-col ${oneRow ? 'sm:border-l sm:border-charcoal/15 sm:pl-8 sm:first:border-l-0 sm:first:pl-0' : ''}`}>
             <dt className="order-2 mt-3 text-sm leading-snug text-charcoal/70">{renderInline(f.label)}</dt>
             <dd className="order-1 block text-balance font-serif text-[2.25rem] leading-[1.05] tracking-tight text-champagne-dark md:text-[2.75rem]">
-              {keepNumbers(f.value)}{f.unit && <span className="ml-2 font-sans text-[0.8125rem] font-normal tracking-wide text-champagne-dark/90 md:text-[0.9375rem]">{f.unit}</span>}
+              {keepNumbers(f.value)}{f.unit && <>{' '}<span className="inline-block whitespace-nowrap font-sans text-[0.8125rem] font-normal tracking-wide text-champagne-dark/90 md:text-[0.9375rem]">{f.unit}</span></>}
             </dd>
             {f.note && <dd className="order-3 mt-1.5 text-xs leading-snug text-stone">{renderInline(f.note)}</dd>}
           </div>

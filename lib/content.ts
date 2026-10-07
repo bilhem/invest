@@ -31,6 +31,6 @@ export const AREAS = [
 // The latest published BF Insights articles (up to three), one teaser each. The visual is the article's cover (an authorised image) or, without one, the existing tone placeholder.
 // Empty while no article is published: the home then simply omits the block (see Insights() in components/home/sections.tsx).
 export const INSIGHTS = [...ARTICLES]
-  .sort((a, b) => b.published.localeCompare(a.published))
+  .sort((a, b) => b.published.localeCompare(a.published) || ARTICLES.indexOf(a) - ARTICLES.indexOf(b))
   .slice(0, 3)
   .map((a, i) => ({ slug: a.slug, img: a.image ?? `insight-${i + 1}`, cat: categoryLabel(a), title: a.title, desc: a.description, meta: `Lecture : ${readingMinutes(a)} min` }));

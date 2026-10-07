@@ -22,8 +22,8 @@ export const getStrategies = (): Strategy[] => STRATEGIES;
 export const getStories = (): Story[] => STORIES;
 export const getStory = (slug: string): Story | undefined => STORIES.find((s) => s.slug === slug);
 
-/** Published articles, newest first. */
-export const getArticles = (): Article[] => [...ARTICLES].sort((a, b) => b.published.localeCompare(a.published));
+/** Published articles, newest first (equal dates keep the order of ARTICLES). */
+export const getArticles = (): Article[] => [...ARTICLES].sort((a, b) => b.published.localeCompare(a.published) || ARTICLES.indexOf(a) - ARTICLES.indexOf(b));
 export const getArticle = (slug: string): Article | undefined => ARTICLES.find((a) => a.slug === slug);
 export const getRelatedArticles = (a: Article): Article[] =>
   (a.related ?? []).map((slug) => ARTICLES.find((x) => x.slug === slug)).filter((x): x is Article => Boolean(x));

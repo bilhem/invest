@@ -238,7 +238,7 @@ export function Insights() {
             </div>
           </Link>
         ) : (
-        <div className="mt-14 grid gap-8 md:grid-cols-3">
+        <div className={`mt-14 grid gap-8 ${INSIGHTS.length === 2 ? 'md:grid-cols-2' : 'md:grid-cols-3'}`}>
           {INSIGHTS.map((a) => (
             <Link key={a.slug} href={`/insights/${a.slug}`} className="group block">
               <div className="relative aspect-[3/2]"><BFImage slot={a.img as ImageKey} sizes="(min-width:768px) 33vw, 100vw" className="transition-transform duration-[1200ms] group-hover:scale-[1.03]" /></div>
