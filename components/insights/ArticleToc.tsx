@@ -1,5 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
+import { nb } from '@/components/neighborhood/ui';
+import { keepNumbers } from './inline';
 
 export type TocItem = { id: string; label: string };
 
@@ -39,7 +41,7 @@ export default function ArticleToc({ items }: { items: TocItem[] }) {
                 aria-current={active === i.id ? 'location' : undefined}
                 className={`-ml-px block border-l py-1 pl-4 pr-2 text-[0.8125rem] leading-snug transition-colors ${active === i.id ? 'border-champagne text-charcoal' : 'border-transparent text-charcoal/60 hover:text-charcoal'}`}
               >
-                {i.label}
+                {nb(keepNumbers(i.label))}
               </a>
             </li>
           ))}
@@ -60,7 +62,7 @@ export default function ArticleToc({ items }: { items: TocItem[] }) {
                   onClick={(e) => e.currentTarget.closest('details')?.removeAttribute('open')}
                   className="block py-2 text-[0.9375rem] leading-snug text-charcoal/75"
                 >
-                  {i.label}
+                  {nb(keepNumbers(i.label))}
                 </a>
               </li>
             ))}

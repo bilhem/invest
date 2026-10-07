@@ -31,7 +31,7 @@ function Figures({ b }: { b: Extract<Block, { type: 'figures' }> }) {
           const value = (
             <>
               {f.prefix && <><span className={small}>{f.prefix}</span>{' '}</>}
-              {keepNumbers(f.value)}{f.unit && <>{' '}<span className={small}>{f.unit}</span></>}
+              {nb(keepNumbers(f.value))}{f.unit && <>{' '}<span className={small}>{f.unit}</span></>}
             </>
           );
           return labelled ? (

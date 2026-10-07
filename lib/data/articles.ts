@@ -4,6 +4,7 @@ import { OU_INVESTIR_A_DUBAI } from './insights/ou-investir-a-dubai';
 import { QUARTIERS_DEMANDE_LOCATIVE } from './insights/quartiers-les-plus-demandes-location-dubai';
 import { INVESTIR_BUREAUX_DUBAI_2026 } from './insights/investir-bureaux-dubai-2026';
 import { COMBIEN_FAUT_IL_INVESTIR_DUBAI } from './insights/combien-faut-il-investir-dubai';
+import { RENDEMENT_LOCATIF_DUBAI_2026 } from './insights/rendement-locatif-dubai-2026';
 
 /**
  * BF INSIGHTS — long-form articles.
@@ -143,8 +144,8 @@ export const categoryLabel = (a: Pick<Article, 'category' | 'alsoIn'>) => [a.cat
 export const INSIGHTS_AUTHOR = 'BF Properties';
 
 /** The published library: final copy only, never placeholder articles. One file per article in ./insights/<slug>.ts. */
-/** Order matters for equal publication dates: the first of the list is shown first (the guide, the district reading, the rental-demand analysis, the office market, then the budgets). */
-export const ARTICLES: Article[] = [INVESTIR_A_DUBAI, OU_INVESTIR_A_DUBAI, QUARTIERS_DEMANDE_LOCATIVE, INVESTIR_BUREAUX_DUBAI_2026, COMBIEN_FAUT_IL_INVESTIR_DUBAI];
+/** Order matters for equal publication dates: the first of the list is shown first (the guide, the district reading, the rental-demand analysis, the office market, the budgets, then the rental yield). */
+export const ARTICLES: Article[] = [INVESTIR_A_DUBAI, OU_INVESTIR_A_DUBAI, QUARTIERS_DEMANDE_LOCATIVE, INVESTIR_BUREAUX_DUBAI_2026, COMBIEN_FAUT_IL_INVESTIR_DUBAI, RENDEMENT_LOCATIF_DUBAI_2026];
 
 /** Plain text of a piece of inline markup: [label](href) → label, **bold** → bold. */
 export const plainText = (text: string) => text.replace(/\[([^\]]+)\]\([^)\s]+\)/g, '$1').replace(/\*\*([^*]+)\*\*/g, '$1');
