@@ -65,7 +65,7 @@ export default async function Page({ params }: { params: Promise<Params> }) {
     ...(a.sources.length ? { citation: a.sources.map((s) => ({ '@type': 'CreativeWork', name: s.label, url: s.url })) } : {}),
   };
 
-  const cta = a.cta ?? { title: 'Cette analyse soulève une question pour votre projet ?' };
+  const cta = a.cta === false ? null : a.cta ?? { title: 'Cette analyse soulève une question pour votre projet ?' };
 
   return (
     <>
@@ -86,7 +86,7 @@ export default async function Page({ params }: { params: Promise<Params> }) {
         </div>
       </div>
 
-      <CtaBand id={`article_${a.slug}`} title={cta.title} text={cta.text} label={cta.label} href={cta.href} />
+      {cta && <CtaBand id={`article_${a.slug}`} title={cta.title} text={cta.text} label={cta.label} href={cta.href} />}
     </>
   );
 }

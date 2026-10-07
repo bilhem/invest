@@ -3,6 +3,7 @@ import { INVESTIR_A_DUBAI } from './insights/investir-a-dubai';
 import { OU_INVESTIR_A_DUBAI } from './insights/ou-investir-a-dubai';
 import { QUARTIERS_DEMANDE_LOCATIVE } from './insights/quartiers-les-plus-demandes-location-dubai';
 import { INVESTIR_BUREAUX_DUBAI_2026 } from './insights/investir-bureaux-dubai-2026';
+import { COMBIEN_FAUT_IL_INVESTIR_DUBAI } from './insights/combien-faut-il-investir-dubai';
 
 /**
  * BF INSIGHTS — long-form articles.
@@ -31,8 +32,11 @@ export type Block =
   | { type: 'statement'; text: string }
   /** A quotation (a sentence set in a framed block); attributed when `by` is given. */
   | { type: 'quote'; text: string; by?: string; source?: string }
-  /** Key numbers staged as a row of large figures. Values are shown exactly as supplied (`prefix`: « Environ », « Plus de »… set smaller before the value; `unit`: set smaller after it). */
-  | { type: 'figures'; items: { value: string; prefix?: string; unit?: string; label: string; note?: string }[]; caption?: string }
+  /**
+   * Key numbers staged as a row of large figures. Values are shown exactly as supplied (`prefix`: « Environ », « Plus de »… set smaller before the value;
+   * `unit`: set smaller after it). `label` may be left out when the figures stand alone (a series of amounts).
+   */
+  | { type: 'figures'; items: { value: string; prefix?: string; unit?: string; label?: string; note?: string }[]; caption?: string }
   /**
    * A ranked list of figures (a top 10): rank, name, where it is, and the figure with its unit. A thin bar scaled on the largest value makes the
    * volumes comparable at a glance (the figures themselves are always written out). Items are shown in the order given.
@@ -122,8 +126,8 @@ export type Article = {
   methodologyTitle?: string;
   /** Disclaimer, as supplied (kept visible, discreet): one paragraph, or several. */
   disclaimer: string | string[];
-  /** Closing call to action. Defaults to the generic qualification CTA. */
-  cta?: { title: string; text?: string; label?: string; href?: string };
+  /** Closing call to action band. Defaults to the generic qualification CTA; `false` when the article carries its own call to action (a `ctaPanel` block), so the page is not closed twice. */
+  cta?: { title: string; text?: string; label?: string; href?: string } | false;
   /** Links to routes that exist (never to a page that is not built). Shown in « Pour aller plus loin ». */
   links?: { label: string; href: string }[];
   /** Slugs of other articles. */
@@ -139,8 +143,8 @@ export const categoryLabel = (a: Pick<Article, 'category' | 'alsoIn'>) => [a.cat
 export const INSIGHTS_AUTHOR = 'BF Properties';
 
 /** The published library: final copy only, never placeholder articles. One file per article in ./insights/<slug>.ts. */
-/** Order matters for equal publication dates: the first of the list is shown first (the guide, the district reading, the rental-demand analysis, then the office market). */
-export const ARTICLES: Article[] = [INVESTIR_A_DUBAI, OU_INVESTIR_A_DUBAI, QUARTIERS_DEMANDE_LOCATIVE, INVESTIR_BUREAUX_DUBAI_2026];
+/** Order matters for equal publication dates: the first of the list is shown first (the guide, the district reading, the rental-demand analysis, the office market, then the budgets). */
+export const ARTICLES: Article[] = [INVESTIR_A_DUBAI, OU_INVESTIR_A_DUBAI, QUARTIERS_DEMANDE_LOCATIVE, INVESTIR_BUREAUX_DUBAI_2026, COMBIEN_FAUT_IL_INVESTIR_DUBAI];
 
 /** Plain text of a piece of inline markup: [label](href) → label, **bold** → bold. */
 export const plainText = (text: string) => text.replace(/\[([^\]]+)\]\([^)\s]+\)/g, '$1').replace(/\*\*([^*]+)\*\*/g, '$1');
@@ -155,7 +159,7 @@ export function articleText(a: Pick<Article, 'body'>): string {
       case 'quote': parts.push(b.text, b.by ?? ''); break;
       case 'question': parts.push(b.label, b.text); break;
       case 'profiles': b.items.forEach((it) => { parts.push(it.title); it.rows.forEach((r) => parts.push(r.label, r.text)); }); parts.push(b.caption ?? ''); break;
-      case 'figures': b.items.forEach((f) => parts.push(f.prefix ?? '', f.value, f.unit ?? '', f.label, f.note ?? '')); parts.push(b.caption ?? ''); break;
+      case 'figures': b.items.forEach((f) => parts.push(f.prefix ?? '', f.value, f.unit ?? '', f.label ?? '', f.note ?? '')); parts.push(b.caption ?? ''); break;
       case 'ranking': b.items.forEach((it) => parts.push(it.name, it.place ?? '', it.prefix ?? '', it.value, it.unit ?? '')); parts.push(b.caption ?? ''); break;
       case 'ctaPanel':
         parts.push(b.eyebrow ?? '', b.title);

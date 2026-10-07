@@ -18,20 +18,36 @@ function Figures({ b }: { b: Extract<Block, { type: 'figures' }> }) {
   // Up to three figures sit on one row (thin vertical rules between them); four or more form a grid without inner rules.
   const oneRow = n <= 3;
   const cols = n === 1 ? '' : n === 2 ? 'sm:grid-cols-2' : n === 3 ? 'sm:grid-cols-3' : 'sm:grid-cols-2 lg:grid-cols-4';
+  // Figures that carry no label (a series of amounts, e.g. the four capital levels) form a plain list instead of a description list.
+  const labelled = b.items.some((f) => f.label);
+  const Wrap = labelled ? 'dl' : 'ul';
+  const small = 'inline-block whitespace-nowrap font-sans text-[0.8125rem] font-normal tracking-wide text-champagne-dark/90 md:text-[0.9375rem]';
+  const valueCls = 'order-1 block text-balance font-serif text-[2.25rem] leading-[1.05] tracking-tight text-champagne-dark md:text-[2.75rem]';
+  const itemCls = `flex flex-col ${oneRow ? 'sm:border-l sm:border-charcoal/15 sm:pl-8 sm:first:border-l-0 sm:first:pl-0' : ''}`;
   return (
     <figure className="my-16 md:my-24">
-      <dl className={`grid gap-y-10 border-y border-charcoal/15 py-10 md:py-14 ${cols} ${oneRow ? '' : 'gap-x-8'}`}>
-        {b.items.map((f, i) => (
-          <div key={i} className={`flex flex-col ${oneRow ? 'sm:border-l sm:border-charcoal/15 sm:pl-8 sm:first:border-l-0 sm:first:pl-0' : ''}`}>
-            <dt className="order-2 mt-3 text-sm leading-snug text-charcoal/70">{renderInline(f.label)}</dt>
-            <dd className="order-1 block text-balance font-serif text-[2.25rem] leading-[1.05] tracking-tight text-champagne-dark md:text-[2.75rem]">
-              {f.prefix && <><span className="inline-block whitespace-nowrap font-sans text-[0.8125rem] font-normal tracking-wide text-champagne-dark/90 md:text-[0.9375rem]">{f.prefix}</span>{' '}</>}
-              {keepNumbers(f.value)}{f.unit && <>{' '}<span className="inline-block whitespace-nowrap font-sans text-[0.8125rem] font-normal tracking-wide text-champagne-dark/90 md:text-[0.9375rem]">{f.unit}</span></>}
-            </dd>
-            {f.note && <dd className="order-3 mt-1.5 text-xs leading-snug text-stone">{renderInline(f.note)}</dd>}
-          </div>
-        ))}
-      </dl>
+      <Wrap className={`grid gap-y-10 border-y border-charcoal/15 py-10 md:py-14 ${cols} ${oneRow ? '' : 'gap-x-8'}`}>
+        {b.items.map((f, i) => {
+          const value = (
+            <>
+              {f.prefix && <><span className={small}>{f.prefix}</span>{' '}</>}
+              {keepNumbers(f.value)}{f.unit && <>{' '}<span className={small}>{f.unit}</span></>}
+            </>
+          );
+          return labelled ? (
+            <div key={i} className={itemCls}>
+              {f.label && <dt className="order-2 mt-3 text-sm leading-snug text-charcoal/70">{renderInline(f.label)}</dt>}
+              <dd className={valueCls}>{value}</dd>
+              {f.note && <dd className="order-3 mt-1.5 text-xs leading-snug text-stone">{renderInline(f.note)}</dd>}
+            </div>
+          ) : (
+            <li key={i} className={itemCls}>
+              <p className={valueCls}>{value}</p>
+              {f.note && <p className="order-3 mt-1.5 text-xs leading-snug text-stone">{renderInline(f.note)}</p>}
+            </li>
+          );
+        })}
+      </Wrap>
       {b.caption && <figcaption className="mt-4 text-xs leading-relaxed text-stone">{renderInline(b.caption)}</figcaption>}
     </figure>
   );
@@ -239,12 +255,12 @@ export default function ArticleBody({ blocks }: { blocks: Block[] }) {
             return (
               <div key={i} id={b.id} className="h2w mt-20 scroll-mt-28 border-t border-charcoal/15 pt-8 md:mt-28 md:pt-10">
                 {label && <p aria-hidden className="mb-4 font-serif text-[1.0625rem] tracking-[0.14em] text-champagne-dark md:mb-5 md:text-[1.1875rem]">{label}</p>}
-                <h2 className="max-w-[42rem] text-balance font-serif text-[1.875rem] font-medium leading-[1.15] tracking-tight text-charcoal md:text-[2.5rem]">{nb(b.text)}</h2>
+                <h2 className="max-w-[42rem] text-balance font-serif text-[1.875rem] font-medium leading-[1.15] tracking-tight text-charcoal md:text-[2.5rem]">{nb(keepNumbers(b.text))}</h2>
               </div>
             );
           }
           case 'h3':
-            return <h3 key={i} className="mt-12 max-w-[40rem] text-balance font-serif text-[1.375rem] font-medium leading-[1.25] text-charcoal md:mt-14 md:text-[1.625rem]">{nb(b.text)}</h3>;
+            return <h3 key={i} className="mt-12 max-w-[40rem] text-balance font-serif text-[1.375rem] font-medium leading-[1.25] text-charcoal md:mt-14 md:text-[1.625rem]">{nb(keepNumbers(b.text))}</h3>;
           case 'p':
             return b.lead
               ? <p key={i} className={`mt-6 font-serif text-[1.375rem] leading-[1.55] text-charcoal md:text-[1.5rem] ${MEASURE} md:max-w-[42rem]`}>{renderInline(b.text)}</p>

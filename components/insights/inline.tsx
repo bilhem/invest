@@ -6,12 +6,12 @@ import { plainText, type Block } from '@/lib/data/articles';
 const TOKEN = /(\[[^\]]+\]\([^)\s]+\)|\*\*[^*]+\*\*)/g;
 export const LINK_CLASS = 'underline decoration-champagne/70 decoration-1 underline-offset-[5px] transition-colors hover:text-champagne-dark';
 
-/** Display only: keeps a figure with its unit on one line (« 60 303 », « 6 % », « 252 milliards AED »); only the kind of space changes, never a word. */
+/** Display only: keeps a figure with its unit on one line (« 60 303 », « 6 % », « 100 000 € », « 252 milliards AED »); only the kind of space changes, never a word. */
 export const keepNumbers = (text: string) =>
   text
     .replace(/(\d) (?=\d{3}(?!\d))/g, '$1\u00a0')
-    .replace(/(\d) (?=(?:%|AED\b|sqft\b|milliards?\b|millions?\b))/g, '$1\u00a0')
-    .replace(/(milliards?|millions?) (?=AED\b)/g, '$1\u00a0');
+    .replace(/(\d) (?=(?:%|€|M€|AED\b|sqft\b|milliards?\b|millions?\b))/g, '$1\u00a0')
+    .replace(/(milliards?|millions?) (?=AED\b|d’euros)/g, '$1\u00a0');
 
 /**
  * Inline markup of the article texts, display only: [label](/route) internal link, [label](https://…) external link, **bold**.
