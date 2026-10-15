@@ -170,6 +170,28 @@ const editorialInsights: ImageSlot = {
   alt: '', tone: 'dusk', focal: '50% 50%', focalMobile: '48% 50%', veil: { bottom: 0.74, left: 0.55, top: 0.3 },
 };
 
+// BROCHURE VISUALS: pack « BF-Brochure-Visuals-5-Selected-V1 » (received 2026-10-15, /public/images/editorial). Extracts of developer brochures, native resolution, no filter, no sharpening.
+// They are marketing RENDERS (CGI), never photographs of completed buildings: every slot is `render` and carries a `note` that names the project (drawn on the picture where the
+// component asks for `tag`). Commercial republication rights are NOT confirmed yet (rights flag « unconfirmed »): to be confirmed with the client before production.
+//   01 hero of /quartiers: The Pinnacle at Sobha Central brochure (PDF p. 7).
+//   02 consultation band of the home page (FinalCta): Nad Al Sheba Gardens Phase 10 brochure (PDF p. 20); decorative (alt ''), the note names the project.
+//   03 villas and pool: Nad Al Sheba Gardens Phase 10 brochure (PDF p. 11). It is the SAME render as `nad-pool` (the pool band of the Nad Al Sheba Gardens page, 2574 px, already placed):
+//      registered, not placed a second time (the site has no other villa section that would not borrow another project's picture).
+//   04 DAMAC Islands brochure (PDF p. 16): a DAMAC Islands render, NEVER Dubai Islands. No page of the site is about DAMAC Islands (the developers page is not a project catalogue):
+//      registered, not placed.
+//   05 Nad Al Sheba Gardens Phase 10 brochure (PDF p. 13): third picture of the « Family living » chapter of the Nad Al Sheba Gardens page.
+const heroAreas: ImageSlot = {
+  src: `${EDITORIAL}/01-hero-quartiers-sobha-central.webp`, width: 2382, height: 1153, kind: 'render', rights: 'unconfirmed',
+  note: 'Rendu du projet The Pinnacle at Sobha Central — illustration promoteur',
+  alt: 'Rendu du projet The Pinnacle at Sobha Central le long de Sheikh Zayed Road : tours résidentielles, autoroute, front de mer et skyline vus du ciel',
+  tone: 'water', focal: '50% 45%', focalMobile: '47% 50%', veil: { bottom: 0.82, left: 0.7, top: 0.4 },
+};
+const homeConsultation: ImageSlot = {
+  src: `${EDITORIAL}/02-consultation-nad-al-sheba-villas.webp`, width: 2400, height: 1202, kind: 'render', rights: 'unconfirmed',
+  note: 'Rendu du projet Nad Al Sheba Gardens — illustration promoteur',
+  alt: '', tone: 'dusk', focal: '50% 55%', focalMobile: '62% 55%',
+};
+
 export const IMAGES = {
   'creek-hero': creekHero,
   'area-dubai-creek-harbour': creekHero,
@@ -465,6 +487,21 @@ export const IMAGES = {
     alt: 'Piscine communautaire de Nad Al Sheba Gardens : transats, parasols et palmiers, villas à l’arrière-plan',
     tone: 'day', focal: '50% 60%',
   },
+  'nad-residential': {
+    src: `${EDITORIAL}/05-quartiers-residentiels-nad-al-sheba.webp`, width: 1495, height: 1153, kind: 'render', rights: 'unconfirmed', note: RENDER_NOTE,
+    alt: 'Chemin de promenade et massifs de lavande le long des villas de Nad Al Sheba Gardens, sous un ciel dégagé',
+    tone: 'day', focal: '50% 55%',
+  },
+  // Not placed (see the BROCHURE VISUALS note above): the same render as `nad-pool`, and a DAMAC Islands render (never Dubai Islands).
+  'brochure-nad-villas-pool': {
+    src: `${EDITORIAL}/03-strategie-villas-nad-al-sheba.webp`, width: 2400, height: 1201, kind: 'render', rights: 'unconfirmed', note: RENDER_NOTE,
+    alt: 'Piscine communautaire entourée de villas et de palmiers, rendu de Nad Al Sheba Gardens', tone: 'day', focal: '50% 60%',
+  },
+  'brochure-damac-islands': {
+    src: `${EDITORIAL}/04-lifestyle-damac-islands.webp`, width: 1303, height: 1500, kind: 'render', rights: 'unconfirmed',
+    note: 'Rendu du projet DAMAC Islands — illustration promoteur',
+    alt: 'Rendu du projet DAMAC Islands : canal bordé de villas au crépuscule, kayaks lumineux et gondole', tone: 'water', focal: '50% 55%',
+  },
   'nad-petals': {
     src: `${NADALSHEBA}/06-nad-al-sheba-gardens-lagoon.webp`, width: 971, height: 967, rights: 'cleared',
     alt: '', tone: 'day', focal: '50% 50%',
@@ -539,7 +576,7 @@ export const IMAGES = {
   'strategy-entrepreneurs-companies': { src: '/images/home/strategy-entrepreneurs-companies.webp', width: 283, height: 279, kind: 'render', rights: 'cleared', alt: 'Mallette devant la skyline de nuit', tone: 'dusk' },
   philosophy: { alt: 'Architecture contemporaine à Dubai', tone: 'day', focal: '50% 50%' },
   lab: { alt: 'Interface de modélisation BF Investment Lab', tone: 'dusk' },
-  cta: { alt: 'Dubai en bord de mer, vue de nuit', tone: 'water', focal: '50% 70%' },
+  cta: homeConsultation,
   'story-1': { alt: 'Dubai Creek Harbour', tone: 'water' },
   'story-2': { alt: 'Quartier résidentiel de Dubai', tone: 'day' },
   'story-3': { alt: 'Skyline de Downtown Dubai', tone: 'dusk' },
@@ -583,7 +620,7 @@ export const IMAGES = {
   'hero-invest': editorialInvest,
   'hero-strategies': editorialStrategies,
   'hero-entrepreneurs': { alt: 'Quartier d’affaires de Dubai', tone: 'dusk' },
-  'hero-areas': { alt: 'Dubai, vue d’ensemble des quartiers', tone: 'water' },
+  'hero-areas': heroAreas,
   'hero-stories': editorialStories,
   'hero-insights': editorialInsights,
   'hero-about': { alt: 'Skyline de Dubai', tone: 'dusk' },

@@ -3,11 +3,12 @@ import type { NeighborhoodStory } from '../neighborhood-types';
 /**
  * NAD AL SHEBA GARDENS (Meraas) — a villa and townhouse community near the heart of Dubai. Not a Phase 10 page: Phase 10 only serves as visual material
  * (the community plan is captioned « plan de communauté / référence Phase 10 », never a technical masterplan).
- * Rhythm: intimate and connected to the city. The location map comes first (position is the rarity), then text beside a stack of two photos, the community plan
+ * Rhythm: intimate and connected to the city. The location map comes first (position is the rarity), then text beside a stack of three photos, the community plan
  * shown very large on a dark chapter, a pool band, a light typographic thesis.
  * Copy supplied by BF Properties: do not rewrite. No figure, price, yield, date or travel time is added; the developer's travel times that appear INSIDE the brochure map are captioned as such.
  * Visuals (see lib/images.ts): the hero is only 1 389 px wide: it stops at its native size (`native`), never stretched on large screens. 06 of the pack (971 px, a petal
  * texture, not a lagoon) is registered (`nad-petals`) but not placed: the brief allows it only as a small secondary picture and the page has no place for a decorative one.
+ * The « Family living » stack carries a third render (`nad-residential`, brochure visual 05, promoter render, rights to confirm).
  */
 export const NAD_AL_SHEBA_GARDENS_STORY: NeighborhoodStory = {
   density: 'standard',
@@ -69,7 +70,7 @@ export const NAD_AL_SHEBA_GARDENS_STORY: NeighborhoodStory = {
           items: ['Parcs.', 'Chemins.', 'Piscines.', 'École.', 'Espaces communautaires.', 'Sport.', 'Mosquée.', 'Retail.'],
         },
       ],
-      images: [{ slot: 'nad-community' }, { slot: 'nad-park' }],
+      images: [{ slot: 'nad-community' }, { slot: 'nad-park' }, { slot: 'nad-residential' }],
     },
     // 4 — Communauté: the community plan very large, whole, on a dark chapter (the plan page is cream: it stands out like a document).
     {

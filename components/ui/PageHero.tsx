@@ -20,7 +20,7 @@ export default function PageHero({ image, title, subtitle, eyebrow, crumbs, chil
   const veil = getImage(image).veil;
   return (
     <section className="relative flex min-h-[58svh] items-end bg-charcoal text-ivory lg:min-h-[66svh]">
-      <BFImage slot={image} priority overlay={veil ? 'none' : 'strong'} />
+      <BFImage slot={image} priority overlay={veil ? 'none' : 'strong'} tag />
       {veil && (
         <div aria-hidden className="hero-veil absolute inset-0"
           style={{ '--v-b': veil.bottom, '--v-l': veil.left, '--v-t': veil.top, ...(veil.reach ? { '--v-r': `${veil.reach}%` } : {}) } as React.CSSProperties} />

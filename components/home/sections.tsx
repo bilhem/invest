@@ -256,7 +256,9 @@ export function Insights() {
 export function FinalCta() {
   return (
     <section className="relative flex min-h-[70svh] items-center bg-charcoal text-ivory">
-      <BFImage slot="cta" overlay="strong" />
+      <BFImage slot="cta" overlay="strong" tag />
+      {/* extra scrim behind the title only: the render stays visible at the edges, the white title keeps a strong contrast on the lighter facades */}
+      <div aria-hidden className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(27,26,24,0.5),rgba(27,26,24,0)_72%)]" />
       <div className="wrap relative py-24 text-center">
         <h2 className="h-section mx-auto max-w-2xl">Votre projet commence par une conversation.</h2>
         <CtaLink href="/consultation" id="final" className="btn btn-gold mt-10">Prendre rendez-vous</CtaLink>
