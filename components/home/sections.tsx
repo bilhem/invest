@@ -195,10 +195,19 @@ export function Areas() {
   );
 }
 
+/** Edge fade of the Lab picture: top edge on phones and tablets (the picture sits under the text), left edge + soft top/bottom from 1024 px. */
+const LAB_MASK =
+  '[-webkit-mask-image:linear-gradient(to_bottom,transparent_0%,#000_24%)] [mask-image:linear-gradient(to_bottom,transparent_0%,#000_24%)] ' +
+  'lg:[-webkit-mask-image:linear-gradient(to_right,transparent_0%,#000_28%),linear-gradient(to_bottom,transparent_0%,#000_12%,#000_88%,transparent_100%)] ' +
+  'lg:[mask-image:linear-gradient(to_right,transparent_0%,#000_28%),linear-gradient(to_bottom,transparent_0%,#000_12%,#000_88%,transparent_100%)] ' +
+  'lg:[-webkit-mask-composite:source-in] lg:[mask-composite:intersect]';
+
 export function LabTeaser() {
+  const lab = getImage('lab');
+  const labNote = 'note' in lab ? lab.note : undefined;
   return (
     <section className="relative overflow-hidden bg-charcoal section text-ivory">
-      <div className="wrap grid items-center gap-12 lg:grid-cols-2">
+      <div className="wrap grid items-center gap-12 lg:grid-cols-2 xl:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
         <Reveal>
           <p className="eyebrow">Coming soon</p>
           <h2 className="h-section mt-4">BF Investment Lab</h2>
@@ -208,7 +217,16 @@ export function LabTeaser() {
           </p>
           <CtaLink href="/lab" id="lab_teaser" className="btn btn-gold mt-9">Découvrir le Lab</CtaLink>
         </Reveal>
-        <div className="relative aspect-[4/3] border border-ivory/10"><BFImage slot="lab" overlay="strong" sizes="(min-width:1024px) 50vw, 100vw" /></div>
+        {/* The picture has no frame and no card: it bleeds to the screen's right edge from 1024 px (full width below) and melts into the anthracite through its mask. `justify-self-stretch`: a grid item with an aspect ratio would otherwise shrink to max-h × ratio on wide screens instead of reaching the edge. */}
+        <div className="relative -mx-6 aspect-[16/10] md:-mx-10 md:aspect-[2/1] lg:mx-0 lg:-mr-[max(2.5rem,calc((100vw_-_1240px)/2_+_2.5rem))] lg:aspect-[16/10] lg:max-h-[34rem] lg:justify-self-stretch">
+          <div className={`absolute inset-0 ${LAB_MASK}`}><BFImage slot="lab" sizes="(min-width:1024px) 56vw, 100vw" /></div>
+          {/* The interface and its figures are a fictional mockup: the mention sits outside the faded zone so it stays legible, aligned on the page grid. */}
+          {labNote && (
+            <span className="absolute bottom-3 right-6 z-10 bg-charcoal/65 px-2 py-1 font-sans text-[0.6875rem] leading-tight tracking-wide text-ivory/90 md:right-10 lg:bottom-5 lg:right-[max(2.5rem,calc((100vw_-_1240px)/2_+_2.5rem))]">
+              {labNote}
+            </span>
+          )}
+        </div>
       </div>
     </section>
   );
@@ -241,7 +259,7 @@ export function Insights() {
         <div className={`mt-14 grid gap-8 ${INSIGHTS.length === 2 ? 'md:grid-cols-2' : 'md:grid-cols-3'}`}>
           {INSIGHTS.map((a) => (
             <Link key={a.slug} href={`/insights/${a.slug}`} className="group block">
-              <div className="relative aspect-[3/2]"><BFImage slot={a.img as ImageKey} sizes="(min-width:768px) 33vw, 100vw" className="transition-transform duration-[1200ms] group-hover:scale-[1.03]" /></div>
+              <div className="relative aspect-video"><BFImage slot={a.img as ImageKey} sizes="(min-width:768px) 33vw, 100vw" className="transition-transform duration-[1200ms] group-hover:scale-[1.03]" /></div>
               <p className="mt-5 text-xs text-champagne-dark">{a.cat} · {a.meta}</p>
               <h3 className="mt-2 font-serif text-2xl leading-snug group-hover:text-champagne-dark">{a.title}</h3>
             </Link>

@@ -1,5 +1,6 @@
 // Home content. Everything not yet verified is a structured placeholder: [X].
 import { ARTICLES, categoryLabel, readingMinutes } from './data/articles';
+import type { ImageKey } from './images';
 
 export const METHOD = [
   { n: '01', t: 'Comprendre', d: 'Situation financière, objectifs, horizon et attentes.' },
@@ -28,9 +29,16 @@ export const AREAS = [
   { slug: 'nad-al-sheba-gardens', name: 'Nad Al Sheba Gardens', tag: 'Villas · Vie familiale' },
   { slug: 'sobha-hartland-ii', name: 'Sobha Hartland II', tag: 'Waterfront · Lagoons' },
 ] as const;
-// The latest published BF Insights articles (up to three), one teaser each. The visual is the article's cover (an authorised image) or, without one, the existing tone placeholder.
+// Home-page teaser visuals (« Lab & Insights » pack: AI illustrations, lib/images.ts), picked by article slug. They only replace the picture of the three home cards:
+// the article's own cover `image` (insights hub, Open Graph, JSON-LD) is left untouched.
+const HOME_TEASER_IMAGES: Record<string, ImageKey> = {
+  'investir-a-dubai': 'home-insight-guide',
+  'ou-investir-a-dubai': 'home-insight-where',
+  'quartiers-les-plus-demandes-location-dubai': 'home-insight-demand',
+};
+// The latest published BF Insights articles (up to three), one teaser each. The visual is the home teaser visual above, else the article's cover (an authorised image) or, without one, the existing tone placeholder.
 // Empty while no article is published: the home then simply omits the block (see Insights() in components/home/sections.tsx).
 export const INSIGHTS = [...ARTICLES]
   .sort((a, b) => b.published.localeCompare(a.published) || ARTICLES.indexOf(a) - ARTICLES.indexOf(b))
   .slice(0, 3)
-  .map((a, i) => ({ slug: a.slug, img: a.image ?? `insight-${i + 1}`, cat: categoryLabel(a), title: a.title, desc: a.description, meta: `Lecture : ${readingMinutes(a)} min` }));
+  .map((a, i) => ({ slug: a.slug, img: HOME_TEASER_IMAGES[a.slug] ?? a.image ?? `insight-${i + 1}`, cat: categoryLabel(a), title: a.title, desc: a.description, meta: `Lecture : ${readingMinutes(a)} min` }));

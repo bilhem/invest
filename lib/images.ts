@@ -192,6 +192,35 @@ const homeConsultation: ImageSlot = {
   alt: '', tone: 'dusk', focal: '50% 55%', focalMobile: '62% 55%',
 };
 
+// LAB & INSIGHTS VISUALS: pack « BF-Lab-Insights-Visual-Pack-V1 » (received 2026-10-16, /public/images/editorial). Four AI-generated ILLUSTRATIONS approved by the client:
+// not documentary photographs, no real property and no exact neighbourhood is depicted. Used on the home page only (BF Investment Lab teaser, BF Insights teasers).
+//   01 Lab: laptop with a dashboard in front of the Dubai skyline (1672 × 612, native file). The interface and its figures (ROI, rental income, appreciation) are a fictional visual
+//      mockup, not data and not a working product: the `note` says so on the picture (`BFImage tag`) and the page never presents them as performance.
+//   02-04 Insights teasers (home cards, 16:9, object-fit cover). The three pack files carried a white extraction margin (7–15 px at the top and left, an artefact of the composite they were
+//      cut from): trimmed (crop only, no resampling) so no white edge shows. Native sizes after trimming: 558 × 308, 502 × 308, 564 × 308: they are never enlarged by the code.
+// The articles' own cover `image` (insights hub, Open Graph, JSON-LD) is NOT changed: the home teasers pick these slots through HOME_TEASER_IMAGES in lib/content.ts.
+const homeLab: ImageSlot = {
+  src: `${EDITORIAL}/01-bf-investment-lab-hero.webp`, width: 1672, height: 612, kind: 'render', rights: 'cleared',
+  note: 'Illustration conceptuelle — chiffres fictifs, non réels',
+  alt: 'Illustration conceptuelle : ordinateur portable affichant le tableau de bord du BF Investment Lab, devant une baie vitrée sur la skyline de Dubai au coucher du soleil',
+  tone: 'dusk', focal: '26% 50%', focalMobile: '24% 50%',
+};
+const homeInsightGuide: ImageSlot = {
+  src: `${EDITORIAL}/02-insight-guide-investisseur.webp`, width: 558, height: 308, kind: 'render', rights: 'cleared',
+  alt: 'Illustration : piscine à débordement et transats face à la skyline de Dubai au coucher du soleil',
+  tone: 'dusk', focal: '50% 50%',
+};
+const homeInsightWhere: ImageSlot = {
+  src: `${EDITORIAL}/03-insight-ou-investir.webp`, width: 502, height: 308, kind: 'render', rights: 'cleared',
+  alt: 'Illustration : bureau de direction aux grandes baies vitrées, avec les tours de Dubai au coucher du soleil',
+  tone: 'dusk', focal: '50% 15%',
+};
+const homeInsightDemand: ImageSlot = {
+  src: `${EDITORIAL}/04-insight-demande-locative.webp`, width: 564, height: 308, kind: 'render', rights: 'cleared',
+  alt: 'Illustration : résidences en bord de plage, palmiers et eau turquoise, skyline de Dubai en arrière-plan',
+  tone: 'water', focal: '50% 50%',
+};
+
 export const IMAGES = {
   'creek-hero': creekHero,
   'area-dubai-creek-harbour': creekHero,
@@ -575,7 +604,10 @@ export const IMAGES = {
   'strategy-portfolio-diversification': { src: '/images/home/strategy-portfolio-diversification.webp', width: 279, height: 279, kind: 'render', rights: 'cleared', alt: 'Globe terrestre et lignes de connexion', tone: 'dusk' },
   'strategy-entrepreneurs-companies': { src: '/images/home/strategy-entrepreneurs-companies.webp', width: 283, height: 279, kind: 'render', rights: 'cleared', alt: 'Mallette devant la skyline de nuit', tone: 'dusk' },
   philosophy: { alt: 'Architecture contemporaine à Dubai', tone: 'day', focal: '50% 50%' },
-  lab: { alt: 'Interface de modélisation BF Investment Lab', tone: 'dusk' },
+  lab: homeLab,
+  'home-insight-guide': homeInsightGuide,
+  'home-insight-where': homeInsightWhere,
+  'home-insight-demand': homeInsightDemand,
   cta: homeConsultation,
   'story-1': { alt: 'Dubai Creek Harbour', tone: 'water' },
   'story-2': { alt: 'Quartier résidentiel de Dubai', tone: 'day' },
