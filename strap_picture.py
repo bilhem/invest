@@ -64,9 +64,10 @@ class Reglages:
     grain: float = 1.0
     echantillon_mm: float = 20.0 # largeur réelle couverte par la photo d'échantillon
     couleur: str = ""            # forcer une teinte (#rrggbb)
-    matiere: str = "auto"        # "auto" (devine d'après la photo), "lisse" ou "ecailles" (alligator, croco)
+    matiere: str = "auto"        # "auto", "lisse", "grandes_ecailles" (alligator classique) ou "ecailles" (toutes écailles carrées)
     ecaille_mm: float = 7.0      # longueur des grandes écailles du centre
     ecaille_relief: float = 1.0  # intensité du bombé des écailles et des sillons
+    ecaille_grande: float = 0.85 # grandes écailles : hauteur d'une écaille en part de la largeur du brin
     # couture
     couture: bool = True
     fil: str = ""                # couleur du fil (#rrggbb) ; vide = ton sur ton, plus foncé que le cuir
@@ -507,7 +508,7 @@ def detecter_matiere(path: str) -> str:
     th = cv2.morphologyEx(g, cv2.MORPH_TOPHAT, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (25, 25)))
     bords = (th > 10).astype(np.uint8) * 255
     lignes = cv2.HoughLinesP(bords, 1, np.pi / 180, 50, minLineLength=int(0.3 * min(g.shape)), maxLineGap=15)
-    return "ecailles" if lignes is not None and len(lignes) >= 3 else "lisse"
+    return "grandes_ecailles" if lignes is not None and len(lignes) >= 3 else "lisse"
 
 
 def couleur_sillon(path: str, base: np.ndarray) -> np.ndarray:
@@ -591,6 +592,80 @@ def ecailles(inside: np.ndarray, px_mm: float, r: Reglages, graine: int = 11):
     return relief.astype(np.float32), teinte.astype(np.float32), sillon.astype(np.float32)
 
 
+def grandes_ecailles(inside: np.ndarray, px_mm: float, r: Reglages, graine: int = 5):
+    """Alligator « grandes écailles » : en haut et au milieu, de grandes écailles qui prennent
+    toute la largeur (sillons transversaux) ; vers la pointe, des écailles de plus en plus petites
+    et irrégulières (partie queue de la peau). Pavage de Voronoï, reproductible.
+    Renvoie (relief en mm, variation de teinte, intensité des sillons)."""
+    rng = np.random.default_rng(graine)
+    hm, wm = inside.shape
+    rows = np.nonzero(inside.any(1))[0]
+    a = np.full(hm, wm / 2.0, np.float32)
+    w = np.ones(hm, np.float32)
+    for y in rows:
+        xs = np.nonzero(inside[y])[0]
+        a[y], w[y] = (xs[0] + xs[-1]) / 2, max((xs[-1] - xs[0]) / 2, 1)
+    a = cv2.GaussianBlur(a[:, None], (0, 0), px_mm * 2)[:, 0]
+    w = np.maximum(cv2.GaussianBlur(w[:, None], (0, 0), px_mm * 2)[:, 0], 1)
+    y0, y1 = rows[0], rows[-1]
+    L = (y1 - y0) / px_mm
+
+    # --- graines : une par grande écaille, puis plusieurs par rangée en approchant la pointe
+    graines = []
+    v, k = -2.0, 0
+    debut_queue = 0.45           # part de la longueur où les écailles commencent à rapetisser
+    while v < L + 4:
+        f = np.clip(v / L, 0, 1)
+        yc = int(np.clip(y0 + v * px_mm, y0, y1))
+        W = 2 * w[yc] / px_mm
+        s = 1.0 if f < debut_queue else 1 - 0.84 * ((f - debut_queue) / (1 - debut_queue)) ** 0.6
+        h = max(2.2, r.ecaille_grande * W * s * rng.uniform(0.85, 1.15))
+        n = 1 if s > 0.85 else max(2, int(round(W / h * 1.15)))
+        for i in range(n):
+            if n == 1:
+                u = rng.uniform(-0.06, 0.06)
+                dv = 0.0
+            else:
+                u = -1 + (2 * i + 1 + (0.5 if k % 2 else 0)) / n + rng.uniform(-0.22, 0.22) / n
+                u = float(np.clip(u, -1.1, 1.1))
+                dv = rng.uniform(-0.18, 0.18) * h
+            yy = y0 + (v + h / 2 + dv) * px_mm
+            yi = int(np.clip(yy, y0, y1))
+            graines.append((a[yi] + u * w[yi], yy))
+        v += h
+        k += 1
+    G = np.array(graines, np.float32)
+
+    # --- Voronoï : distance au sillon = distance au bissecteur des 2 graines les plus proches
+    d_edge = np.full((hm, wm), 99.0, np.float32)
+    cell = np.zeros((hm, wm), np.int32)
+    X = np.arange(wm, dtype=np.float32)[None, :, None]
+    for ya in range(0, hm, 128):
+        yb = min(hm, ya + 128)
+        Y = np.arange(ya, yb, dtype=np.float32)[:, None, None]
+        d2 = (X - G[None, None, :, 0]) ** 2 + (Y - G[None, None, :, 1]) ** 2
+        idx = np.argpartition(d2, 1, axis=2)[..., :2]
+        da = np.take_along_axis(d2, idx, 2)
+        o = np.argsort(da, axis=2)
+        idx = np.take_along_axis(idx, o, 2)
+        da = np.take_along_axis(da, o, 2)
+        s1, s2 = G[idx[..., 0]], G[idx[..., 1]]
+        sep = np.maximum(np.linalg.norm(s1 - s2, axis=-1), 1e-3)
+        d_edge[ya:yb] = (da[..., 1] - da[..., 0]) / (2 * sep) / px_mm
+        cell[ya:yb] = idx[..., 0]
+
+    # les sillons s'estompent le long du bord (zone de couture, comme sur un vrai bracelet)
+    bord = cv2.distanceTransform(inside, cv2.DIST_L2, 5) / px_mm
+    fondu = np.clip((bord - 0.9) / 1.4, 0, 1)
+    rel = r.ecaille_relief
+    t = np.clip(d_edge / 0.9, 0, 1)
+    relief = 0.2 * rel * t * t * (3 - 2 * t) * fondu + 0.2 * rel * (1 - fondu)
+    sillon = np.exp(-(d_edge / 0.17) ** 2) * fondu
+    teintes = rng.normal(0, 0.05, len(G)).astype(np.float32)
+    teinte = 1 + teintes[cell] + 0.05 * (1 - np.exp(-d_edge / 2.5))
+    return relief.astype(np.float32), teinte.astype(np.float32), sillon.astype(np.float32)
+
+
 def rendre(masque: np.ndarray, trous, r: Reglages, echantillon: str, px_mm: float) -> Image.Image:
     S = r.taille * 2                      # sur-échantillonnage x2
     pad = int(3 * px_mm)
@@ -607,8 +682,9 @@ def rendre(masque: np.ndarray, trous, r: Reglages, echantillon: str, px_mm: floa
 
     tex = texture(echantillon, r, px_mm, (hm, wm))
     matiere = r.matiere if r.matiere != "auto" else detecter_matiere(echantillon)
-    if matiere == "ecailles":
-        relief, teinte, sillon = ecailles(inside, px_mm, r)
+    if matiere in ("ecailles", "grandes_ecailles"):
+        motif = ecailles if matiere == "ecailles" else grandes_ecailles
+        relief, teinte, sillon = motif(inside, px_mm, r)
         h = h + relief * (inside > 0)
         base = np.median(tex[inside > 0], 0)
         gcol = couleur_sillon(echantillon, base)
@@ -711,8 +787,11 @@ def traiter(plan: Path, r: Reglages, echantillon: str, sortie: Path) -> dict:
     doute = bool(ech_txt and ech_pas and abs(ech_txt / ech_pas - 1) > 0.2)
 
     # matière : la fiche produit fait foi (« Alligator », « Toutes écailles carrées », « croco »…)
-    if r.matiere == "auto" and re.search(r"alligator|crocodile|croco\b|[ée]cailles?|caiman|ca[iï]man", texte, re.I):
-        r.matiere = "ecailles"
+    if r.matiere == "auto":
+        if re.search(r"[ée]cailles?\s+carr[ée]es", texte, re.I):
+            r.matiere = "ecailles"                      # « Toutes Écailles Carrées »
+        elif re.search(r"alligator|crocodile|croco\b|[ée]cailles?|ca[iï]man", texte, re.I):
+            r.matiere = "grandes_ecailles"
 
     long_mm, larg_mm = max(rw, rh) / meilleure.px_mm, larg_px / meilleure.px_mm
     cible = r.remplissage * r.taille * 2 / long_mm
