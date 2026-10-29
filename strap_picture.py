@@ -64,6 +64,9 @@ class Reglages:
     grain: float = 1.0
     echantillon_mm: float = 20.0 # largeur réelle couverte par la photo d'échantillon
     couleur: str = ""            # forcer une teinte (#rrggbb)
+    matiere: str = "auto"        # "auto" (devine d'après la photo), "lisse" ou "ecailles" (alligator, croco)
+    ecaille_mm: float = 7.0      # longueur des grandes écailles du centre
+    ecaille_relief: float = 1.0  # intensité du bombé des écailles et des sillons
     # couture
     couture: bool = True
     fil: str = ""                # couleur du fil (#rrggbb) ; vide = ton sur ton, plus foncé que le cuir
@@ -411,7 +414,11 @@ def texture(path: str, r: Reglages, px_mm: float, shape) -> np.ndarray:
     if path:
         img = np.asarray(Image.open(path).convert("RGB"), dtype=np.float32) / 255
         patch = zone_propre(img)
-        base = np.median(patch.reshape(-1, 3), 0)
+        # teinte = médiane de toute la photo, sans les sillons/reflets ni les ombres
+        px = img.reshape(-1, 3)
+        lum_all = px.mean(1)
+        lo, hi = np.percentile(lum_all, [15, 85])
+        base = np.median(px[(lum_all >= lo) & (lum_all <= hi)], 0)
         lum = patch.mean(-1)
         detail = (lum - cv2.GaussianBlur(lum, (0, 0), max(1.0, patch.shape[0] / 8))) / max(lum.mean(), 1e-3)
     else:
@@ -489,6 +496,101 @@ def dessiner_couture(col: np.ndarray, masque: np.ndarray, r: Reglages, px_mm: fl
     return np.clip(col, 0, 1)
 
 
+def detecter_matiere(path: str) -> str:
+    """'ecailles' si la photo montre de longs sillons droits (alligator, croco), sinon 'lisse'."""
+    if not path:
+        return "lisse"
+    g = np.asarray(Image.open(path).convert("L"))
+    f = 400 / max(g.shape)
+    g = cv2.resize(g, None, fx=f, fy=f, interpolation=cv2.INTER_CUBIC)
+    # sillons = fines lignes claires : filtre « top-hat » puis recherche de segments droits
+    th = cv2.morphologyEx(g, cv2.MORPH_TOPHAT, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (25, 25)))
+    bords = (th > 10).astype(np.uint8) * 255
+    lignes = cv2.HoughLinesP(bords, 1, np.pi / 180, 50, minLineLength=int(0.3 * min(g.shape)), maxLineGap=15)
+    return "ecailles" if lignes is not None and len(lignes) >= 3 else "lisse"
+
+
+def couleur_sillon(path: str, base: np.ndarray) -> np.ndarray:
+    """Teinte des sillons entre écailles, prise sur les pixels les plus clairs de la photo."""
+    if not path:
+        return np.clip(base * 1.5, 0, 1)
+    img = np.asarray(Image.open(path).convert("RGB"), dtype=np.float32) / 255
+    lum = img.mean(-1)
+    clairs = img[lum >= np.percentile(lum, 96)]
+    c = np.median(clairs, 0)
+    ratio = min(c.mean() / max(base.mean(), 1e-3), 1.9)
+    return np.clip(base * ratio, 0, 1)
+
+
+def ecailles(inside: np.ndarray, px_mm: float, r: Reglages, graine: int = 11):
+    """Écailles d'alligator « carrées » qui suivent la forme du brin :
+    une rangée centrale de grandes écailles, des plus petites vers les bords.
+    Renvoie (relief en mm, variation de teinte, intensité des sillons)."""
+    rng = np.random.default_rng(graine)
+    hm, wm = inside.shape
+    rows = np.nonzero(inside.any(1))[0]
+    a = np.full(hm, wm / 2.0, np.float32)
+    w = np.ones(hm, np.float32)
+    for y in rows:
+        xs = np.nonzero(inside[y])[0]
+        a[y], w[y] = (xs[0] + xs[-1]) / 2, max((xs[-1] - xs[0]) / 2, 1)
+    # largeur lissée (la pointe affine les écailles progressivement)
+    a = cv2.GaussianBlur(a[:, None], (0, 0), px_mm * 2)[:, 0]
+    w = np.maximum(cv2.GaussianBlur(w[:, None], (0, 0), px_mm * 2)[:, 0], 1)
+    X = np.arange(wm, dtype=np.float32)[None, :]
+    u = (X - a[:, None]) / w[:, None]                       # -1..1 à travers le brin
+    v = np.arange(hm, dtype=np.float32)[:, None] / px_mm    # mm le long du brin
+    largeur_max = w[rows].max() * 2 / px_mm
+
+    # colonnes : centre large, flancs, et petits bords si le brin est assez large
+    j = cv2.GaussianBlur(rng.normal(0, 1, (hm, 1)).astype(np.float32), (0, 0), px_mm * 3)[:, 0]
+    j = j / max(j.std(), 1e-6)
+    b1 = 0.46 + 0.03 * j[:, None]          # écaille centrale ≈ moitié de la largeur
+    bornes = [b1]
+    if largeur_max >= 24:
+        bornes.append(0.8 + 0.03 * j[::-1, None])
+    au = np.abs(u)
+    colonne = np.zeros(u.shape, np.int32)
+    for k, b in enumerate(bornes, 1):
+        colonne[au >= b] = k
+    # distance horizontale (mm) au sillon de colonne le plus proche
+    d_h = np.full(u.shape, 99.0, np.float32)
+    for b in bornes:
+        d_h = np.minimum(d_h, np.abs(au - b) * w[:, None] / px_mm)
+
+    # rangées : chaque colonne a sa propre suite de longueurs (décalées entre colonnes)
+    longueur = hm / px_mm + 10
+    facteurs = [1.0, 0.7, 0.5]
+    d_v = np.full(u.shape, 99.0, np.float32)
+    cellule = np.zeros(u.shape, np.int64)
+    for k in range(len(bornes) + 1):
+        L0 = r.ecaille_mm * facteurs[k]
+        bords, y0 = [-rng.uniform(0, L0)], 0
+        while bords[-1] < longueur:
+            bords.append(bords[-1] + L0 * rng.uniform(0.8, 1.2))
+        bords = np.array(bords, np.float32)
+        sel = colonne == k
+        idx = np.clip(np.searchsorted(bords, v, side="right") - 1, 0, len(bords) - 2)
+        idx = np.broadcast_to(idx, u.shape)
+        haut, bas = bords[idx], bords[idx + 1]
+        dv = np.minimum(v - haut, bas - v)
+        d_v[sel] = dv[sel]
+        cote = 1 if k == 0 else (np.sign(u[sel]).astype(np.int64) + 2)  # l'écaille centrale n'a pas de côté
+        cellule[sel] = (idx[sel] * 7 + k) * 3 + cote
+
+    d = np.minimum(d_h, d_v)
+    # bombé de chaque écaille + sillon étroit entre elles
+    rel = r.ecaille_relief
+    # écailles plates à bords arrondis (pas de pyramide) et sillon fin
+    t = np.clip(d / 0.55, 0, 1)
+    relief = 0.14 * rel * t * t * (3 - 2 * t)
+    sillon = np.exp(-(d / 0.14) ** 2)
+    # teinte propre à chaque écaille (aléatoire mais reproductible)
+    teintes = rng.normal(0, 0.06, cellule.max() + 1).astype(np.float32)
+    teinte = 1 + teintes[cellule] + 0.05 * (1 - np.exp(-d / 2.0))
+    return relief.astype(np.float32), teinte.astype(np.float32), sillon.astype(np.float32)
+
+
 def rendre(masque: np.ndarray, trous, r: Reglages, echantillon: str, px_mm: float) -> Image.Image:
     S = r.taille * 2                      # sur-échantillonnage x2
     pad = int(3 * px_mm)
@@ -504,6 +606,18 @@ def rendre(masque: np.ndarray, trous, r: Reglages, echantillon: str, px_mm: floa
     h = np.where((yy < er) & (inside > 0), np.maximum(h, er * 0.85), h)
 
     tex = texture(echantillon, r, px_mm, (hm, wm))
+    matiere = r.matiere if r.matiere != "auto" else detecter_matiere(echantillon)
+    if matiere == "ecailles":
+        relief, teinte, sillon = ecailles(inside, px_mm, r)
+        h = h + relief * (inside > 0)
+        base = np.median(tex[inside > 0], 0)
+        gcol = couleur_sillon(echantillon, base)
+        tex = tex * teinte[..., None]
+        tex = tex + (gcol[None, None, :] - tex) * (0.8 * sillon)[..., None]
+        h = h - 0.05 * r.ecaille_relief * sillon
+        brillance = max(r.brillance, 0.3)       # alligator : finition brillante
+    else:
+        brillance = r.brillance
     lum = tex.mean(-1)
     grain = lum - cv2.GaussianBlur(lum, (0, 0), 6)
     hp = cv2.GaussianBlur((h * px_mm + r.grain * grain * 4).astype(np.float32), (0, 0), 1.5)
@@ -515,7 +629,7 @@ def rendre(masque: np.ndarray, trous, r: Reglages, echantillon: str, px_mm: floa
     diff = np.clip(n @ L, 0, 1)
     spec = np.clip(n @ Hh, 0, 1) ** 60
     grad = 1.06 - 0.12 * np.clip(yy / max(1, masque.shape[0] / px_mm), 0, 1)
-    col = tex * ((0.42 + 0.68 * diff) * grad)[..., None] + r.brillance * spec[..., None]
+    col = tex * ((0.42 + 0.68 * diff) * grad)[..., None] + brillance * spec[..., None]
     col *= (0.82 + 0.18 * np.clip(dist / (er * 1.2), 0, 1))[..., None]
     col = np.clip(col, 0, 1).astype(np.float32)
     if r.couture:
@@ -579,7 +693,7 @@ def traiter(plan: Path, r: Reglages, echantillon: str, sortie: Path) -> dict:
         if det and (meilleure is None or det.score > meilleure.score):
             meilleure, gris = det, g
     if meilleure is None:
-        return {"fichier": plan.name, "statut": "ÉCHEC : aucun brin trouvé", "page": "", "echelle": "",
+        return {"fichier": plan.name, "statut": "ÉCHEC : aucun brin trouvé", "page": "", "echelle": "", "matiere": "",
                 "longueur_mm": "", "largeur_mm": "", "trous": "", "score": ""}
 
     # --- échelle réelle du dessin (les plans sont souvent imprimés réduits ou agrandis)
@@ -596,6 +710,10 @@ def traiter(plan: Path, r: Reglages, echantillon: str, sortie: Path) -> dict:
         source = "échelle du PDF"
     doute = bool(ech_txt and ech_pas and abs(ech_txt / ech_pas - 1) > 0.2)
 
+    # matière : la fiche produit fait foi (« Alligator », « Toutes écailles carrées », « croco »…)
+    if r.matiere == "auto" and re.search(r"alligator|crocodile|croco\b|[ée]cailles?|caiman|ca[iï]man", texte, re.I):
+        r.matiere = "ecailles"
+
     long_mm, larg_mm = max(rw, rh) / meilleure.px_mm, larg_px / meilleure.px_mm
     cible = r.remplissage * r.taille * 2 / long_mm
     masque, trous = redresser(meilleure, cible, r.lissage_mm, r.symetrie)
@@ -609,6 +727,7 @@ def traiter(plan: Path, r: Reglages, echantillon: str, sortie: Path) -> dict:
     plausible = 50 <= long_mm <= 260 and 6 <= larg_mm <= 32
     statut = "OK" if meilleure.score >= 14 and plausible and not doute else "À VÉRIFIER"
     return {"fichier": plan.name, "statut": statut, "page": meilleure.page, "echelle": source,
+            "matiere": r.matiere if r.matiere != "auto" else detecter_matiere(echantillon),
             "longueur_mm": round(long_mm, 1), "largeur_mm": round(larg_mm, 1),
             "trous": len(meilleure.trous), "score": round(meilleure.score, 1)}
 
@@ -618,7 +737,7 @@ def _traiter_sur(t):
     try:
         return traiter(plan, r, ech, sortie)
     except Exception as e:  # un plan qui plante ne bloque pas les autres
-        return {"fichier": plan.name, "statut": f"ERREUR : {e}", "page": "", "echelle": "",
+        return {"fichier": plan.name, "statut": f"ERREUR : {e}", "page": "", "echelle": "", "matiere": "",
                 "longueur_mm": "", "largeur_mm": "", "trous": "", "score": ""}
 
 
