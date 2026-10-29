@@ -69,7 +69,7 @@ class Reglages:
     ecaille_mm: float = 7.0      # longueur des grandes écailles du centre
     ecaille_relief: float = 1.0  # intensité du bombé des écailles et des sillons
     ecaille_grande: float = 0.85 # grandes écailles : hauteur d'une écaille en part de la largeur du brin
-    queue: str = "auto"          # pointe des grandes écailles : "irreguliere", "carree" ou "auto" (varie selon la référence)
+    queue: str = "auto"          # disposition alligator : "deux_colonnes", "carree", "irreguliere" ou "auto" (varie selon la référence)
     graine: int = -1             # disposition des écailles ; -1 = tirée de la référence (chaque brin est unique)
     # couture
     couture: bool = True
@@ -492,7 +492,8 @@ def dessiner_couture(col: np.ndarray, masque: np.ndarray, r: Reglages, px_mm: fl
     if r.fil:
         tc = hex_rgb(r.fil)
     else:  # ton sur ton : teinte du cuir, assombrie
-        tc = np.median(col[mb > 0], 0) * 0.55
+        cuir = np.median(col[mb > 0], 0)
+        tc = cuir * 0.55 if cuir.mean() > 0.18 else np.clip(cuir * 1.6 + 0.07, 0, 1)
     col = col * (1 - 0.5 * ombre[..., None])
     col = col * (1 - 0.65 * cv2.GaussianBlur(piq, (0, 0), 0.6)[..., None])
     col = col * (1 - fil[..., None]) + tc * fil[..., None] * (0.85 + 0.15 * 1)
@@ -583,6 +584,7 @@ def ecailles(inside: np.ndarray, px_mm: float, r: Reglages, graine: int = 11):
         cellule[sel] = (idx[sel] * 7 + k) * 3 + cote
 
     d = np.minimum(d_h, d_v)
+    d = np.maximum(d + 0.18 * bruit_lisse(u.shape, 1.6 * px_mm, rng), 0)   # tracé organique
     # bombé de chaque écaille + sillon étroit entre elles
     rel = r.ecaille_relief
     # écailles plates à bords arrondis (pas de pyramide) et sillon fin
@@ -593,6 +595,14 @@ def ecailles(inside: np.ndarray, px_mm: float, r: Reglages, graine: int = 11):
     teintes = rng.normal(0, 0.06, cellule.max() + 1).astype(np.float32)
     teinte = 1 + teintes[cellule] + 0.05 * (1 - np.exp(-d / 2.0))
     return relief.astype(np.float32), teinte.astype(np.float32), sillon.astype(np.float32)
+
+
+def bruit_lisse(shape, taille_px: float, rng) -> np.ndarray:
+    """Bruit doux, moyenne 0, écart-type 1, de « grain » taille_px (pour des contours organiques)."""
+    H, W = shape
+    gh, gw = max(2, int(H / max(taille_px, 1)) + 2), max(2, int(W / max(taille_px, 1)) + 2)
+    n = cv2.resize(rng.normal(0, 1, (gh, gw)).astype(np.float32), (W, H), interpolation=cv2.INTER_CUBIC)
+    return n / max(float(n.std()), 1e-6)
 
 
 def grandes_ecailles(inside: np.ndarray, px_mm: float, r: Reglages, graine: int = 5):
@@ -616,10 +626,33 @@ def grandes_ecailles(inside: np.ndarray, px_mm: float, r: Reglages, graine: int 
     # --- graines : une par grande écaille, puis plusieurs par rangée en approchant la pointe
     # queue « irreguliere » : écailles de plus en plus petites et désordonnées
     # queue « carree »      : grille d'écailles carrées bien rangées (2 ou 3 colonnes)
-    queue = r.queue if r.queue in ("irreguliere", "carree") else ("carree" if rng.random() < 0.5 else "irreguliere")
+    # « deux_colonnes »    : deux colonnes de grandes écailles allongées, sillons décalés (alligator classique)
+    if r.queue in ("irreguliere", "carree", "deux_colonnes"):
+        queue = r.queue
+    else:  # auto : varie d'une référence à l'autre
+        queue = rng.choice(["deux_colonnes", "deux_colonnes", "carree", "irreguliere"])
     graines, grandes = [], []
     v, k = -2.0, 0
     debut_queue = 0.45           # part de la longueur où les écailles commencent à rapetisser
+    if queue == "deux_colonnes":
+        ub = rng.uniform(-0.25, 0.15)                      # frontière entre colonnes, pas au centre
+        for (ua, ue) in ((-1.0, ub), (ub, 1.0)):
+            uc, frac = (ua + ue) / 2, (ue - ua) / 2
+            vv = -rng.uniform(0, 8)
+            while vv < L + 4:
+                f = np.clip(vv / L, 0, 1)
+                yc = int(np.clip(y0 + vv * px_mm, y0, y1))
+                Wc = 2 * w[yc] / px_mm * frac
+                h = Wc * rng.uniform(1.0, 1.6) * r.ecaille_grande / 0.85
+                if f > 0.72:                                   # vers la pointe : plus courtes
+                    h *= 1 - 0.55 * (f - 0.72) / 0.28
+                h = max(2.2, h)
+                yy = y0 + (vv + h / 2) * px_mm
+                yi = int(np.clip(yy, y0, y1))
+                graines.append((a[yi] + (uc + rng.uniform(-0.04, 0.04) * frac) * w[yi], yy))
+                grandes.append(9.0)
+                vv += h
+        v = L + 99                                         # saute la boucle générale
     while v < L + 4:
         f = np.clip(v / L, 0, 1)
         yc = int(np.clip(y0 + v * px_mm, y0, y1))
@@ -650,6 +683,9 @@ def grandes_ecailles(inside: np.ndarray, px_mm: float, r: Reglages, graine: int 
         v += h
         k += 1
     G = np.array(graines, np.float32)
+    # écailles allongées dans le sens du brin : on calcule le pavage dans un repère comprimé en y
+    ky = 0.6 if queue == "deux_colonnes" else 1.0
+    G = G * np.array([1.0, ky], np.float32)
 
     # --- Voronoï : distance au sillon = distance au bissecteur des 2 graines les plus proches
     d_edge = np.full((hm, wm), 99.0, np.float32)
@@ -657,7 +693,7 @@ def grandes_ecailles(inside: np.ndarray, px_mm: float, r: Reglages, graine: int 
     X = np.arange(wm, dtype=np.float32)[None, :, None]
     for ya in range(0, hm, 128):
         yb = min(hm, ya + 128)
-        Y = np.arange(ya, yb, dtype=np.float32)[:, None, None]
+        Y = np.arange(ya, yb, dtype=np.float32)[:, None, None] * ky
         d2 = (X - G[None, None, :, 0]) ** 2 + (Y - G[None, None, :, 1]) ** 2
         idx = np.argpartition(d2, 1, axis=2)[..., :2]
         da = np.take_along_axis(d2, idx, 2)
@@ -671,17 +707,22 @@ def grandes_ecailles(inside: np.ndarray, px_mm: float, r: Reglages, graine: int 
 
     # les sillons s'estompent le long du bord (zone de couture, comme sur un vrai bracelet)
     bord = cv2.distanceTransform(inside, cv2.DIST_L2, 5) / px_mm
-    fondu = np.clip((bord - 0.9) / 1.4, 0, 1)
+    fondu = np.clip((bord - 0.5) / 0.8, 0, 1)
     rel = r.ecaille_relief
-    t = np.clip(d_edge / 0.9, 0, 1)
-    relief = 0.2 * rel * t * t * (3 - 2 * t) * fondu + 0.2 * rel * (1 - fondu)
-    sillon = np.exp(-(d_edge / 0.17) ** 2) * fondu
+    # sillons organiques : tracé légèrement ondulé, épaisseur et profondeur irrégulières
+    bombe = 0.08 * rel * (1 - np.exp(-d_edge / 2.0))               # léger bombé lisse de chaque écaille
+    d_edge = np.maximum(d_edge + 0.12 * bruit_lisse((hm, wm), 2.5 * px_mm, rng), 0)   # tracé ondulé
+    casse = np.clip(0.85 + 0.15 * bruit_lisse((hm, wm), 1.5 * px_mm, rng), 0.5, 1)   # léger relief irrégulier
+    t = np.clip(d_edge / 0.5, 0, 1)
+    creux = (1 - t * t * (3 - 2 * t)) * casse                        # 1 au fond du sillon, 0 sur l'écaille
+    relief = (0.16 * rel * (1 - creux) + bombe) * fondu + (0.16 + 0.08) * rel * (1 - fondu)
+    sillon = np.exp(-(d_edge / 0.12) ** 2) * fondu * casse
     # sur les grandes écailles, le sillon s'arrête avant les bords (trait partiel, comme sur la peau)
     U = np.abs((np.arange(wm, dtype=np.float32)[None, :] - a[:, None]) / w[:, None])
     lim = np.array(grandes, np.float32)[cell]
     partiel = np.clip((lim - U) / 0.12, 0, 1)
     sillon = sillon * partiel
-    relief = relief + (0.2 * rel - relief) * (1 - partiel)   # pas de creux là où le sillon est masqué
+    relief = relief + ((0.16 + 0.08) * rel - relief) * (1 - partiel)   # pas de creux là où le sillon est masqué
     teintes = rng.normal(0, 0.05, len(G)).astype(np.float32)
     teinte = 1 + teintes[cell] + 0.05 * (1 - np.exp(-d_edge / 2.5))
     return relief.astype(np.float32), teinte.astype(np.float32), sillon.astype(np.float32)
