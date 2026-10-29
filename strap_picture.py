@@ -33,6 +33,7 @@ import argparse
 import csv
 import math
 import os
+import re
 import sys
 from concurrent.futures import ProcessPoolExecutor
 from dataclasses import dataclass
@@ -65,7 +66,7 @@ class Reglages:
     couleur: str = ""            # forcer une teinte (#rrggbb)
     # couture
     couture: bool = True
-    fil: str = "#2c2838"
+    fil: str = ""                # couleur du fil (#rrggbb) ; vide = ton sur ton, plus foncé que le cuir
     couture_retrait_mm: float = 1.3
     couture_pas_mm: float = 1.25
     couture_point_mm: float = 0.85
@@ -73,6 +74,7 @@ class Reglages:
     couture_angle: float = 18.0
     # détection
     lissage_mm: float = 0.35     # lissage du contour (retouche)
+    symetrie: bool = True        # retouche par symétrie gauche/droite (désactiver pour un brin asymétrique)
     vue_forcee: str = ""         # "x0,y0,x1,y1" en fraction de page pour forcer la zone (ex: 0,0.4,0.55,0.8)
 
 
@@ -85,22 +87,44 @@ def hex_rgb(h: str) -> np.ndarray:
 # 1. Lecture des pages
 # --------------------------------------------------------------------------- #
 def pages_en_images(chemin: Path, dpi: int):
-    """Renvoie une liste d'images en niveaux de gris (np.uint8), une par page."""
+    """Renvoie (images en niveaux de gris, une par page ; est_pdf ; texte de chaque page)."""
     ext = chemin.suffix.lower()
     if ext in (".png", ".jpg", ".jpeg", ".tif", ".tiff", ".bmp"):
-        return [np.asarray(Image.open(chemin).convert("L"))], False
+        return [np.asarray(Image.open(chemin).convert("L"))], False, [""]
     try:
         import fitz  # PyMuPDF
         doc = fitz.open(chemin)
-        out = []
+        out, texte = [], []
         for p in doc:
             pix = p.get_pixmap(dpi=dpi, colorspace=fitz.csGRAY, alpha=False)
             out.append(np.frombuffer(pix.samples, np.uint8).reshape(pix.height, pix.width).copy())
-        return out, True
+            texte.append(p.get_text("text"))
+        return out, True, texte
     except ImportError:
         import pypdfium2 as pdfium  # solution de secours
         doc = pdfium.PdfDocument(str(chemin))
-        return [np.asarray(doc[i].render(scale=dpi / 72).to_pil().convert("L")) for i in range(len(doc))], True
+        imgs = [np.asarray(doc[i].render(scale=dpi / 72).to_pil().convert("L")) for i in range(len(doc))]
+        texte = [doc[i].get_textpage().get_text_range() for i in range(len(doc))]
+        return imgs, True, texte
+
+
+# Pages à ignorer : normes Richemont génériques (marquage, barrettes, vis…) et fiches produit.
+PAGES_IGNOREES = re.compile(r"BCA_P000|\bBA[CD]_P|\bVIF_P|\bGOD_P|\bREC_P|FICHE PRODUIT|Largeur bracelet de", re.I)
+
+
+def largeur_attache_texte(texte: str) -> float:
+    """Largeur à l'attache (mm) lue dans la fiche produit ou le cartouche, 0 si introuvable.
+    Formats vus : '21x19 – 115/75', '21-18 rembordé', 'Largeur entre-cornes : 20'."""
+    t = texte.replace(",", ".")
+    for motif in (r"(\d{1,2}(?:\.\d)?)\s*[xX×/]\s*(\d{1,2}(?:\.\d)?)\s*[–—-]\s*\d{2,3}\s*/\s*\d{2,3}",
+                  r"\b(\d{2}(?:\.\d)?)\s*-\s*(\d{2}(?:\.\d)?)\s*(?:remb|coup|tranch|rb[ée]|rd[ée])",
+                  r"[Ll]argeur\s+entre[- ]cornes\s*:?\s*(\d{1,2}(?:\.\d)?)"):
+        m = re.search(motif, t, flags=re.I)
+        if m:
+            v = max(float(g) for g in m.groups() if g)
+            if 6 <= v <= 40:
+                return v
+    return 0.0
 
 
 # --------------------------------------------------------------------------- #
@@ -114,6 +138,7 @@ class Detection:
     page: int
     px_mm: float
     rect: tuple               # minAreaRect
+    pas_trous_px: float = 0.0 # entraxe moyen des trous alignés (pour l'échelle)
 
 
 def traits(gray: np.ndarray, px_mm: float) -> np.ndarray:
@@ -137,6 +162,69 @@ def chercher_trous(lines: np.ndarray, px_mm: float):
             if a / (math.pi * (max(w, h) / 2) ** 2) > 0.6:
                 petits.append((cent[i][0], cent[i][1], max(w, h) / 2))
     return petits
+
+
+def evaluer(c: np.ndarray, petits, px_mm: float):
+    """Note une forme candidate. Un brin = allongé, pas un rectangle parfait,
+    une pointe à un bout et/ou une rangée de trous alignés à pas régulier.
+    Renvoie (score, trous_alignés, pas_px) ou None."""
+    (cx, cy), (rw, rh), ang = cv2.minAreaRect(c)
+    L, l = max(rw, rh), min(rw, rh)
+    if l < 3 * px_mm or l > 60 * px_mm or L < 25 * px_mm or L > 330 * px_mm:
+        return None
+    allong = L / l
+    if allong < 3:
+        return None
+    rempli = cv2.contourArea(c) / max(rw * rh, 1)
+    if rempli < 0.6:
+        return None
+    # repère du rectangle : u = axe long, v = axe court
+    t = math.radians(ang if rw >= rh else ang + 90)
+    u, v = np.array([math.cos(t), math.sin(t)]), np.array([-math.sin(t), math.cos(t)])
+    p = c[:, 0, :].astype(np.float64) - [cx, cy]
+    pu, pv = p @ u, p @ v
+    # profil de largeur le long du brin -> pointe ?
+    bins = np.linspace(-L / 2, L / 2, 41)
+    larg = np.zeros(40)
+    for k in range(40):
+        sel = (pu >= bins[k]) & (pu < bins[k + 1])
+        if sel.any():
+            larg[k] = pv[sel].max() - pv[sel].min()
+    bouts = min(larg[:2].mean(), larg[-2:].mean()) / max(larg.max(), 1)
+    pointe = bouts < 0.6
+
+    # trous alignés sur l'axe, rayon homogène, pas régulier
+    cand = []
+    for tx, ty, tr in petits:
+        q = np.array([tx - cx, ty - cy])
+        a_u, a_v = q @ u, q @ v
+        if abs(a_u) < L / 2 * 0.95 and abs(a_v) < 0.2 * l and 0.015 < tr / l < 0.13:
+            if cv2.pointPolygonTest(c, (float(tx), float(ty)), False) > 0:
+                cand.append((a_u, tx, ty, tr))
+    alignes, pas = [], 0.0
+    if len(cand) >= 3:
+        rmed = np.median([q[3] for q in cand])
+        cand = sorted([q for q in cand if 0.6 * rmed < q[3] < 1.6 * rmed])
+        if len(cand) >= 3:
+            gaps = np.diff([q[0] for q in cand])
+            g = np.median(gaps)
+            if g > 2 * rmed:
+                ok = set()
+                for k, gg in enumerate(gaps):
+                    if 0.75 * g < gg < 1.25 * g:
+                        ok.update((k, k + 1))
+                if len(ok) >= 3:
+                    alignes = [(cand[k][1], cand[k][2], cand[k][3]) for k in sorted(ok)]
+                    pas = float(g)
+    if not pointe and not alignes:
+        return None
+    if not pointe and allong > 10:       # bande très fine sans pointe = ligne de tableau
+        return None
+    if rempli > 0.975:   # rectangle parfait = case de texte, ligne de tableau, cadre…
+        return None
+    score = (6 if pointe else 0) + min(len(alignes), 12) * 2 + min(allong, 7) * 0.5 \
+        + (2 if 0.75 < rempli < 0.975 else 0)
+    return score, alignes, pas
 
 
 def detecter_brin(gray: np.ndarray, px_mm: float, page: int, zone=None) -> Detection | None:
@@ -178,35 +266,20 @@ def _detecter(lines: np.ndarray, petits, px_mm: float, page: int) -> Detection |
     meilleur = None
     for i in range(1, n):
         x, y, w, h, a = stats[i]
-        if a < (8 * px_mm) * (30 * px_mm) * 0.3:      # trop petit pour un brin
+        if a < (3 * px_mm) * (25 * px_mm) * 0.5:      # trop petit pour un brin
             continue
         if x == 0 or y == 0 or x + w >= W or y + h >= H:  # touche le bord : c'est le fond
             continue
         comp = (lab[y:y + h, x:x + w] == i).astype(np.uint8)
         cnts, _ = cv2.findContours(comp, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
-        c = max(cnts, key=cv2.contourArea)
-        (cx, cy), (rw, rh), ang = cv2.minAreaRect(c + np.array([x, y]))
-        L, l = max(rw, rh), min(rw, rh)
-        if l < 6 * px_mm or l > 40 * px_mm or L < 40 * px_mm or L > 260 * px_mm:
-            continue
-        allong = L / l
-        if allong < 2.5:
-            continue
-        rempli = cv2.contourArea(c) / (rw * rh)     # un brin remplit bien son rectangle
-        if rempli < 0.6:
-            continue
-        # trous à l'intérieur ?
-        plein = np.zeros((h, w), np.uint8)
-        cv2.drawContours(plein, [c], -1, 1, -1)
-        nb_trous = sum(1 for (tx, ty, tr) in petits
-                       if x <= tx < x + w and y <= ty < y + h and plein[int(ty - y), int(tx - x)])
-        score = min(allong, 8) + rempli * 3 + min(nb_trous, 10) * 2.5
-        if meilleur is None or score > meilleur[0]:
-            meilleur = (score, i, (x, y, w, h), c, (cx, cy, rw, rh, ang), nb_trous)
+        c = max(cnts, key=cv2.contourArea) + np.array([x, y])
+        ev = evaluer(c, petits, px_mm)
+        if ev and (meilleur is None or ev[0] > meilleur[0]):
+            meilleur = (ev[0], i, (x, y, w, h), c - np.array([x, y]), ev[1], ev[2])
 
     if meilleur is None:
         return None
-    score, idx, (x, y, w, h), c, rect, nb_trous = meilleur
+    score, idx, (x, y, w, h), c, trous_alignes, pas = meilleur
 
     # --- silhouette exacte : on part de l'intérieur trouvé et on s'étend jusqu'au contour extérieur
     # on travaille dans une fenêtre autour du brin (rapide)
@@ -236,15 +309,15 @@ def _detecter(lines: np.ndarray, petits, px_mm: float, page: int) -> Detection |
     full = np.zeros((H, W), np.uint8)
     cv2.drawContours(full, [c], -1, 1, -1)
 
-    trous = [(tx, ty, tr) for (tx, ty, tr) in petits if full[int(ty), int(tx)]]
+    trous = [(tx, ty, tr) for (tx, ty, tr) in trous_alignes if full[int(ty), int(tx)]]
     rect = cv2.minAreaRect(c)
-    return Detection(full.astype(bool), trous, score, page, px_mm, rect)
+    return Detection(full.astype(bool), trous, score, page, px_mm, rect, pas)
 
 
 # --------------------------------------------------------------------------- #
 # 3. Redressement et retouche de la silhouette
 # --------------------------------------------------------------------------- #
-def redresser(det: Detection, cible_px_mm: float, lissage_mm: float):
+def redresser(det: Detection, cible_px_mm: float, lissage_mm: float, symetrie: bool = True):
     """Renvoie (masque_redressé float 0..1, trous redressés) au pas cible_px_mm,
     attache en haut, pointe en bas, axe vertical."""
     (cx, cy), (rw, rh), ang = det.rect
@@ -280,6 +353,24 @@ def redresser(det: Detection, cible_px_mm: float, lissage_mm: float):
     mf = cv2.GaussianBlur(mf, (0, 0), s)
     mf = np.clip((mf - 0.5) * 3 + 0.5, 0, 1)  # bord net mais lisse
     trous = [(tx * f, ty * f, tr * f) for tx, ty, tr in trous]
+    if symetrie:
+        # un brin est symétrique : ce qui ne dépasse que d'un côté (cote, cercle de détail,
+        # flèche) est un reste du dessin -> on garde l'intersection avec le miroir
+        on = mf > 0.5
+        rows = np.nonzero(on.any(1))[0]
+        centres = [(np.argmax(on[y]) + len(on[y]) - 1 - np.argmax(on[y][::-1])) / 2 for y in rows]
+        axe = float(np.median(centres))
+        pad = int(abs(mf.shape[1] / 2 - axe)) + 4
+        mf = np.pad(mf, ((0, 0), (pad, pad)))
+        dx = (mf.shape[1] - 1) / 2 - (axe + pad)
+        M = np.float32([[1, 0, dx], [0, 1, 0]])
+        mf = cv2.warpAffine(mf, M, (mf.shape[1], mf.shape[0]), flags=cv2.INTER_LINEAR)
+        mf = np.minimum(mf, mf[:, ::-1])
+        trous = [(tx + pad + dx, ty, tr) for tx, ty, tr in trous]
+        cols = np.nonzero((mf > 0.02).any(0))[0]
+        c0, c1 = max(0, cols[0] - 2), cols[-1] + 3
+        mf = mf[:, c0:c1]
+        trous = [(tx - c0, ty, tr) for tx, ty, tr in trous]
     # perçage des trous (cercles propres, anticrénelés)
     if trous:
         sub = 4
@@ -293,29 +384,58 @@ def redresser(det: Detection, cible_px_mm: float, lissage_mm: float):
 # --------------------------------------------------------------------------- #
 # 4. Rendu
 # --------------------------------------------------------------------------- #
+def zone_propre(img: np.ndarray, frac: float = 0.45) -> np.ndarray:
+    """Plus grande zone carrée de l'échantillon sans couture, bord ni reflet :
+    la fenêtre où le relief (gradient) est le plus faible."""
+    g = cv2.GaussianBlur(img.mean(-1), (0, 0), 1.0)
+    gx, gy = cv2.Sobel(g, cv2.CV_32F, 1, 0), cv2.Sobel(g, cv2.CV_32F, 0, 1)
+    e = np.hypot(gx, gy)
+    e = e + 0.5 * np.abs(g - np.median(g))      # évite aussi les zones trop claires/sombres
+    s = max(8, int(min(img.shape[:2]) * frac))
+    ii = cv2.integral(e.astype(np.float64))
+    best, pos = None, (0, 0)
+    for y in range(0, img.shape[0] - s + 1, 2):
+        for x in range(0, img.shape[1] - s + 1, 2):
+            v = ii[y + s, x + s] - ii[y, x + s] - ii[y + s, x] + ii[y, x]
+            if best is None or v < best:
+                best, pos = v, (y, x)
+    y, x = pos
+    return img[y:y + s, x:x + s]
+
+
 def texture(path: str, r: Reglages, px_mm: float, shape) -> np.ndarray:
+    """Matière = teinte de l'échantillon + son grain fin (zone propre, répétée en miroir)
+    + légères marbrures et pores procéduraux pour éviter tout motif répété."""
     H, W = shape
+    rng = np.random.default_rng(7)
     if path:
         img = np.asarray(Image.open(path).convert("RGB"), dtype=np.float32) / 255
-        sigma = max(img.shape[:2]) / 6
-        low = cv2.GaussianBlur(img, (0, 0), sigma)
-        mean = img.reshape(-1, 3).mean(0)
-        flat = np.clip(img / np.maximum(low, 1e-3) * mean, 0, 1)
+        patch = zone_propre(img)
+        base = np.median(patch.reshape(-1, 3), 0)
+        lum = patch.mean(-1)
+        detail = (lum - cv2.GaussianBlur(lum, (0, 0), max(1.0, patch.shape[0] / 8))) / max(lum.mean(), 1e-3)
     else:
-        rng = np.random.default_rng(1)
-        flat = np.clip(0.5 + cv2.GaussianBlur(rng.normal(0, 0.06, (400, 400)).astype(np.float32), (0, 0), 1.2), 0, 1)
-        flat = np.repeat(flat[..., None], 3, 2)
-        mean = flat.reshape(-1, 3).mean(0)
+        base = np.array([0.35, 0.2, 0.15], np.float32)
+        detail = np.zeros((64, 64), np.float32)
     if r.couleur:
-        flat = np.clip(flat / np.maximum(mean, 1e-3) * hex_rgb(r.couleur), 0, 1)
-    tw = max(8, int(r.echantillon_mm * px_mm))
-    th = max(8, int(tw * flat.shape[0] / flat.shape[1]))
-    t = cv2.resize(flat, (tw, th), interpolation=cv2.INTER_AREA)
-    t = np.concatenate([t, t[:, ::-1]], 1)
-    t = np.concatenate([t, t[::-1]], 0)
-    big = np.tile(t, (H // t.shape[0] + 2, W // t.shape[1] + 2, 1))
-    oy, ox = t.shape[0] // 3, t.shape[1] // 5
-    return big[oy:oy + H, ox:ox + W]
+        base = hex_rgb(r.couleur)
+    # grain fin de l'échantillon, à l'échelle réelle, tuilé en miroir
+    taille_patch_mm = r.echantillon_mm * 0.45
+    tw = max(8, int(taille_patch_mm * px_mm))
+    d = cv2.resize(detail.astype(np.float32), (tw, tw), interpolation=cv2.INTER_CUBIC)
+    d = np.concatenate([d, d[:, ::-1]], 1)
+    d = np.concatenate([d, d[::-1]], 0)
+    d = np.tile(d, (H // d.shape[0] + 2, W // d.shape[1] + 2))[:H, :W]
+    # marbrures douces (variation de teinte du cuir) + pores fins
+    def bruit(echelle_mm, amp):
+        n = rng.normal(0, 1, (max(2, int(H / (echelle_mm * px_mm))) + 2, max(2, int(W / (echelle_mm * px_mm))) + 2))
+        n = cv2.resize(n.astype(np.float32), (W, H), interpolation=cv2.INTER_CUBIC)
+        return n / max(n.std(), 1e-6) * amp
+    marbre = bruit(6.0, 0.035)
+    pores = cv2.GaussianBlur(rng.normal(0, 1, (H, W)).astype(np.float32), (0, 0), max(0.6, 0.06 * px_mm))
+    pores = pores / max(pores.std(), 1e-6) * 0.025 * r.grain
+    var = 1 + np.clip(d, -0.25, 0.25) * 0.8 + marbre + pores
+    return np.clip(base[None, None, :] * var[..., None], 0, 1).astype(np.float32)
 
 
 def dessiner_couture(col: np.ndarray, masque: np.ndarray, r: Reglages, px_mm: float):
@@ -358,7 +478,10 @@ def dessiner_couture(col: np.ndarray, masque: np.ndarray, r: Reglages, px_mm: fl
             hx, hy = x + s * lw * math.cos(ra), y + s * lw * math.sin(ra)
             cv2.circle(piq, (int(hx * sub), int(hy * sub)), max(1, int(ww * .55 * sub)), 1.0, -1, cv2.LINE_AA, 2)
     ombre = cv2.GaussianBlur(ombre, (0, 0), max(0.5, ww * .8))
-    tc = hex_rgb(r.fil)
+    if r.fil:
+        tc = hex_rgb(r.fil)
+    else:  # ton sur ton : teinte du cuir, assombrie
+        tc = np.median(col[mb > 0], 0) * 0.55
     col = col * (1 - 0.5 * ombre[..., None])
     col = col * (1 - 0.65 * cv2.GaussianBlur(piq, (0, 0), 0.6)[..., None])
     col = col * (1 - fil[..., None]) + tc * fil[..., None] * (0.85 + 0.15 * 1)
@@ -443,30 +566,39 @@ def image_controle(gray: np.ndarray, det: Detection, chemin: Path):
 # 5. Traitement d'un plan / d'un dossier
 # --------------------------------------------------------------------------- #
 def traiter(plan: Path, r: Reglages, echantillon: str, sortie: Path) -> dict:
-    pages, est_pdf = pages_en_images(plan, r.dpi)
+    pages, est_pdf, textes = pages_en_images(plan, r.dpi)
+    texte = "\n".join(textes)
     zone = tuple(float(v) for v in r.vue_forcee.split(",")) if r.vue_forcee else None
     meilleure, gris = None, None
     for i, g in enumerate(pages, 1):
-        if est_pdf:
-            px_mm = r.dpi / MM_PER_INCH / r.echelle_plan
-        else:
-            px_mm = g.shape[1] / 280  # estimation provisoire pour une photo, corrigée plus bas
+        if PAGES_IGNOREES.search(textes[i - 1]):
+            continue
+        # échelle provisoire (la vraie est calée plus bas) : 1:1 pour un PDF, ~A4 pour une photo
+        px_mm = r.dpi / MM_PER_INCH / r.echelle_plan if est_pdf else g.shape[1] / 280
         det = detecter_brin(g, px_mm, i, zone)
         if det and (meilleure is None or det.score > meilleure.score):
             meilleure, gris = det, g
     if meilleure is None:
-        return {"fichier": plan.name, "statut": "ÉCHEC : aucun brin trouvé", "page": "", "longueur_mm": "",
-                "largeur_mm": "", "trous": "", "score": ""}
+        return {"fichier": plan.name, "statut": "ÉCHEC : aucun brin trouvé", "page": "", "echelle": "",
+                "longueur_mm": "", "largeur_mm": "", "trous": "", "score": ""}
 
-    if not est_pdf:  # photo / scan : on calibre avec la largeur réelle si fournie
-        (_, _), (rw, rh), _ = meilleure.rect
-        largeur_px = min(rw, rh)
-        meilleure.px_mm = largeur_px / (r.largeur_mm or 21.0)
-
+    # --- échelle réelle du dessin (les plans sont souvent imprimés réduits ou agrandis)
     (_, _), (rw, rh), _ = meilleure.rect
-    long_mm, larg_mm = max(rw, rh) / meilleure.px_mm, min(rw, rh) / meilleure.px_mm
+    larg_px = min(rw, rh)
+    l_txt = r.largeur_mm or largeur_attache_texte(texte)
+    ech_txt = larg_px / l_txt if l_txt else 0
+    ech_pas = meilleure.pas_trous_px / 6.0 if meilleure.pas_trous_px else 0  # entraxe standard 6 mm
+    if ech_txt:
+        meilleure.px_mm, source = ech_txt, f"cote texte {l_txt:g} mm"
+    elif ech_pas:
+        meilleure.px_mm, source = ech_pas, "pas des trous 6 mm"
+    else:
+        source = "échelle du PDF"
+    doute = bool(ech_txt and ech_pas and abs(ech_txt / ech_pas - 1) > 0.2)
+
+    long_mm, larg_mm = max(rw, rh) / meilleure.px_mm, larg_px / meilleure.px_mm
     cible = r.remplissage * r.taille * 2 / long_mm
-    masque, trous = redresser(meilleure, cible, r.lissage_mm)
+    masque, trous = redresser(meilleure, cible, r.lissage_mm, r.symetrie)
     img = rendre(masque, trous, r, echantillon, cible)
 
     nom = plan.stem
@@ -474,9 +606,11 @@ def traiter(plan: Path, r: Reglages, echantillon: str, sortie: Path) -> dict:
     (sortie / "controle").mkdir(exist_ok=True)
     img.save(sortie / f"{nom}.png")
     image_controle(gris, meilleure, sortie / "controle" / f"{nom}_controle.jpg")
-    statut = "OK" if meilleure.score > 12 else "À VÉRIFIER"
-    return {"fichier": plan.name, "statut": statut, "page": meilleure.page, "longueur_mm": round(long_mm, 1),
-            "largeur_mm": round(larg_mm, 1), "trous": len(meilleure.trous), "score": round(meilleure.score, 1)}
+    plausible = 50 <= long_mm <= 260 and 6 <= larg_mm <= 32
+    statut = "OK" if meilleure.score >= 14 and plausible and not doute else "À VÉRIFIER"
+    return {"fichier": plan.name, "statut": statut, "page": meilleure.page, "echelle": source,
+            "longueur_mm": round(long_mm, 1), "largeur_mm": round(larg_mm, 1),
+            "trous": len(meilleure.trous), "score": round(meilleure.score, 1)}
 
 
 def _traiter_sur(t):
@@ -484,8 +618,8 @@ def _traiter_sur(t):
     try:
         return traiter(plan, r, ech, sortie)
     except Exception as e:  # un plan qui plante ne bloque pas les autres
-        return {"fichier": plan.name, "statut": f"ERREUR : {e}", "page": "", "longueur_mm": "",
-                "largeur_mm": "", "trous": "", "score": ""}
+        return {"fichier": plan.name, "statut": f"ERREUR : {e}", "page": "", "echelle": "",
+                "longueur_mm": "", "largeur_mm": "", "trous": "", "score": ""}
 
 
 def main():
