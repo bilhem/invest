@@ -34,6 +34,7 @@ import csv
 import math
 import os
 import re
+import zlib
 import sys
 from concurrent.futures import ProcessPoolExecutor
 from dataclasses import dataclass
@@ -68,6 +69,8 @@ class Reglages:
     ecaille_mm: float = 7.0      # longueur des grandes écailles du centre
     ecaille_relief: float = 1.0  # intensité du bombé des écailles et des sillons
     ecaille_grande: float = 0.85 # grandes écailles : hauteur d'une écaille en part de la largeur du brin
+    queue: str = "auto"          # pointe des grandes écailles : "irreguliere", "carree" ou "auto" (varie selon la référence)
+    graine: int = -1             # disposition des écailles ; -1 = tirée de la référence (chaque brin est unique)
     # couture
     couture: bool = True
     fil: str = ""                # couleur du fil (#rrggbb) ; vide = ton sur ton, plus foncé que le cuir
@@ -611,20 +614,30 @@ def grandes_ecailles(inside: np.ndarray, px_mm: float, r: Reglages, graine: int 
     L = (y1 - y0) / px_mm
 
     # --- graines : une par grande écaille, puis plusieurs par rangée en approchant la pointe
-    graines = []
+    # queue « irreguliere » : écailles de plus en plus petites et désordonnées
+    # queue « carree »      : grille d'écailles carrées bien rangées (2 ou 3 colonnes)
+    queue = r.queue if r.queue in ("irreguliere", "carree") else ("carree" if rng.random() < 0.5 else "irreguliere")
+    graines, grandes = [], []
     v, k = -2.0, 0
     debut_queue = 0.45           # part de la longueur où les écailles commencent à rapetisser
     while v < L + 4:
         f = np.clip(v / L, 0, 1)
         yc = int(np.clip(y0 + v * px_mm, y0, y1))
         W = 2 * w[yc] / px_mm
-        s = 1.0 if f < debut_queue else 1 - 0.84 * ((f - debut_queue) / (1 - debut_queue)) ** 0.6
-        h = max(2.2, r.ecaille_grande * W * s * rng.uniform(0.85, 1.15))
-        n = 1 if s > 0.85 else max(2, int(round(W / h * 1.15)))
+        if f < debut_queue:
+            h, n = max(2.2, r.ecaille_grande * W * rng.uniform(0.85, 1.15)), 1
+        elif queue == "carree":
+            n = 3 if W >= 15 else 2
+            h = max(2.2, W / n * rng.uniform(0.95, 1.1))   # écailles à peu près carrées
+        else:
+            s = 1 - 0.84 * ((f - debut_queue) / (1 - debut_queue)) ** 0.6
+            h = max(2.2, r.ecaille_grande * W * s * rng.uniform(0.85, 1.15))
+            n = 1 if s > 0.85 else max(2, int(round(W / h * 1.15)))
         for i in range(n):
             if n == 1:
-                u = rng.uniform(-0.06, 0.06)
-                dv = 0.0
+                u, dv = rng.uniform(-0.06, 0.06), 0.0
+            elif queue == "carree" and f >= debut_queue:
+                u, dv = -1 + (2 * i + 1) / n + rng.uniform(-0.04, 0.04), 0.0
             else:
                 u = -1 + (2 * i + 1 + (0.5 if k % 2 else 0)) / n + rng.uniform(-0.22, 0.22) / n
                 u = float(np.clip(u, -1.1, 1.1))
@@ -632,6 +645,8 @@ def grandes_ecailles(inside: np.ndarray, px_mm: float, r: Reglages, graine: int 
             yy = y0 + (v + h / 2 + dv) * px_mm
             yi = int(np.clip(yy, y0, y1))
             graines.append((a[yi] + u * w[yi], yy))
+            # grandes écailles : sillon partiel, il ne traverse pas toute la largeur
+            grandes.append(rng.uniform(0.55, 0.9) if n == 1 else 9.0)
         v += h
         k += 1
     G = np.array(graines, np.float32)
@@ -661,6 +676,12 @@ def grandes_ecailles(inside: np.ndarray, px_mm: float, r: Reglages, graine: int 
     t = np.clip(d_edge / 0.9, 0, 1)
     relief = 0.2 * rel * t * t * (3 - 2 * t) * fondu + 0.2 * rel * (1 - fondu)
     sillon = np.exp(-(d_edge / 0.17) ** 2) * fondu
+    # sur les grandes écailles, le sillon s'arrête avant les bords (trait partiel, comme sur la peau)
+    U = np.abs((np.arange(wm, dtype=np.float32)[None, :] - a[:, None]) / w[:, None])
+    lim = np.array(grandes, np.float32)[cell]
+    partiel = np.clip((lim - U) / 0.12, 0, 1)
+    sillon = sillon * partiel
+    relief = relief + (0.2 * rel - relief) * (1 - partiel)   # pas de creux là où le sillon est masqué
     teintes = rng.normal(0, 0.05, len(G)).astype(np.float32)
     teinte = 1 + teintes[cell] + 0.05 * (1 - np.exp(-d_edge / 2.5))
     return relief.astype(np.float32), teinte.astype(np.float32), sillon.astype(np.float32)
@@ -684,7 +705,7 @@ def rendre(masque: np.ndarray, trous, r: Reglages, echantillon: str, px_mm: floa
     matiere = r.matiere if r.matiere != "auto" else detecter_matiere(echantillon)
     if matiere in ("ecailles", "grandes_ecailles"):
         motif = ecailles if matiere == "ecailles" else grandes_ecailles
-        relief, teinte, sillon = motif(inside, px_mm, r)
+        relief, teinte, sillon = motif(inside, px_mm, r, graine=r.graine if r.graine >= 0 else 5)
         h = h + relief * (inside > 0)
         base = np.median(tex[inside > 0], 0)
         gcol = couleur_sillon(echantillon, base)
@@ -785,6 +806,9 @@ def traiter(plan: Path, r: Reglages, echantillon: str, sortie: Path) -> dict:
     else:
         source = "échelle du PDF"
     doute = bool(ech_txt and ech_pas and abs(ech_txt / ech_pas - 1) > 0.2)
+
+    if r.graine < 0:   # même référence -> même peau ; références différentes -> peaux différentes
+        r.graine = zlib.crc32(plan.stem.encode()) % 100000
 
     # matière : la fiche produit fait foi (« Alligator », « Toutes écailles carrées », « croco »…)
     if r.matiere == "auto":
