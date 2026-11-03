@@ -166,9 +166,111 @@ def chercher_trous(lines: np.ndarray, px_mm: float):
     for i in range(1, n):
         x, y, w, h, a = stats[i]
         if math.pi * r_min ** 2 * 0.6 <= a <= math.pi * r_max ** 2 and 0.6 < w / max(h, 1) < 1.6:
-            if a / (math.pi * (max(w, h) / 2) ** 2) > 0.6:
-                petits.append((cent[i][0], cent[i][1], max(w, h) / 2))
+            circ = a / (math.pi * (max(w, h) / 2) ** 2)
+            if circ > 0.6:
+                petits.append((cent[i][0], cent[i][1], max(w, h) / 2, circ))
     return petits
+
+
+def progression_trous(cand):
+    """Trouve la rangée de trous régulière : le pas et la phase qui expliquent le plus de
+    candidats, avec UN seul trou par position. Écarte les doublons (trou dessiné dans une
+    cuvette, cercles concentriques…) en gardant le plus rond. Renvoie (trous, pas_px)."""
+    if len(cand) < 3:
+        return [], 0.0
+    rmed = float(np.median([q[3] for q in cand]))
+    cand = sorted([q for q in cand if 0.6 * rmed < q[3] < 1.6 * rmed])
+    if len(cand) < 3:
+        return [], 0.0
+    pos = np.array([q[0] for q in cand])
+    pas_possibles = sorted({round(abs(p2 - p1), 1) for i, p1 in enumerate(pos) for p2 in pos[i + 1:]
+                            if abs(p2 - p1) > 2.2 * rmed})
+    meilleur = None
+    for g in pas_possibles:
+        for ancre in pos:
+            k = np.round((pos - ancre) / g)
+            res = np.abs(pos - ancre - k * g)
+            ok = res < 0.12 * g
+            if ok.sum() < 3:
+                continue
+            par_k = {}
+            for i in np.nonzero(ok)[0]:          # une position = un trou (le plus rond, le mieux placé)
+                note = cand[i][4] - res[i] / g
+                if int(k[i]) not in par_k or note > par_k[int(k[i])][0]:
+                    par_k[int(k[i])] = (note, i)
+            ks = sorted(par_k)
+            trous_manquants = (ks[-1] - ks[0] + 1) - len(ks)
+            score = len(ks) - 0.6 * trous_manquants + 0.3 * np.mean([cand[i][4] for _, i in par_k.values()])
+            if meilleur is None or score > meilleur[0] + 1e-6:
+                meilleur = (score, g, [par_k[kk][1] for kk in ks])
+    if meilleur is None:
+        return [], 0.0
+    _, g, idx = meilleur
+    return [(cand[i][1], cand[i][2], cand[i][3]) for i in idx], float(g)
+
+
+def anneau_present(lines: np.ndarray, x: float, y: float, r: float) -> bool:
+    """Y a-t-il un cercle dessiné de rayon ~r centré en (x, y) ? (marche même si une ligne
+    de cote traverse le trou)."""
+    H, W = lines.shape
+    touches = 0
+    angles = np.linspace(0, 2 * np.pi, 48, endpoint=False)
+    for t in angles:
+        trouve = False
+        for rr in np.linspace(0.85 * r, 1.45 * r, 7):
+            px, py = int(round(x + rr * np.cos(t))), int(round(y + rr * np.sin(t)))
+            if 0 <= px < W and 0 <= py < H and lines[py, px]:
+                trouve = True
+                break
+        touches += trouve
+    if touches < 0.8 * len(angles):
+        return False
+    # l'intérieur doit être globalement vide (une ligne de cote fine est tolérée)
+    ri = max(1, int(0.6 * r))
+    x0, y0 = int(x), int(y)
+    zone = lines[max(0, y0 - ri):y0 + ri + 1, max(0, x0 - ri):x0 + ri + 1]
+    return zone.size > 0 and (zone > 0).mean() < 0.35
+
+
+def completer_trous(det, lines: np.ndarray):
+    """Ajoute les trous de la rangée que la détection a ratés (trou barré par une cote,
+    cercle ouvert…) : dans les écarts de la rangée et au-delà de ses extrémités."""
+    if len(det.trous) < 3 or not det.pas_trous_px:
+        return det
+    P = np.array([(x, y) for x, y, _ in det.trous], np.float64)
+    r = float(np.median([t[2] for t in det.trous]))
+    d = P[-1] - P[0]
+    d /= max(np.linalg.norm(d), 1e-6)
+    s = (P - P[0]) @ d
+    o = np.argsort(s)
+    P, s = P[o], s[o]
+    g = det.pas_trous_px
+    pas = np.diff(s)
+    if len(pas):
+        g = float(np.median(pas[pas < 1.5 * g])) if (pas < 1.5 * g).any() else g
+    H, W = det.masque.shape
+    def dedans(p):
+        return 0 <= int(p[1]) < H and 0 <= int(p[0]) < W and det.masque[int(p[1]), int(p[0])]
+    trous = [tuple(p) for p in P]
+    # écarts internes
+    for i in range(len(P) - 1):
+        m = int(round((s[i + 1] - s[i]) / g))
+        for j in range(1, m):
+            p = P[i] + d * g * j
+            if anneau_present(lines, p[0], p[1], r):
+                trous.append(tuple(p))
+    # extrémités
+    for sens, depart in ((-1, P[0]), (1, P[-1])):
+        p = depart.copy()
+        for _ in range(12):
+            p = p + sens * d * g
+            if not dedans(p) or not anneau_present(lines, p[0], p[1], r):
+                break
+            trous.append(tuple(p))
+    trous = sorted(trous, key=lambda p: (np.array(p) - P[0]) @ d)
+    det.trous = [(x, y, r) for x, y in trous]
+    det.pas_trous_px = g
+    return det
 
 
 def evaluer(c: np.ndarray, petits, px_mm: float):
@@ -202,27 +304,13 @@ def evaluer(c: np.ndarray, petits, px_mm: float):
 
     # trous alignés sur l'axe, rayon homogène, pas régulier
     cand = []
-    for tx, ty, tr in petits:
+    for tx, ty, tr, circ in petits:
         q = np.array([tx - cx, ty - cy])
         a_u, a_v = q @ u, q @ v
         if abs(a_u) < L / 2 * 0.95 and abs(a_v) < 0.2 * l and 0.015 < tr / l < 0.13:
             if cv2.pointPolygonTest(c, (float(tx), float(ty)), False) > 0:
-                cand.append((a_u, tx, ty, tr))
-    alignes, pas = [], 0.0
-    if len(cand) >= 3:
-        rmed = np.median([q[3] for q in cand])
-        cand = sorted([q for q in cand if 0.6 * rmed < q[3] < 1.6 * rmed])
-        if len(cand) >= 3:
-            gaps = np.diff([q[0] for q in cand])
-            g = np.median(gaps)
-            if g > 2 * rmed:
-                ok = set()
-                for k, gg in enumerate(gaps):
-                    if 0.75 * g < gg < 1.25 * g:
-                        ok.update((k, k + 1))
-                if len(ok) >= 3:
-                    alignes = [(cand[k][1], cand[k][2], cand[k][3]) for k in sorted(ok)]
-                    pas = float(g)
+                cand.append((a_u, tx, ty, tr, circ))
+    alignes, pas = progression_trous(cand)
     if not pointe and not alignes:
         return None
     if not pointe and allong > 10:       # bande très fine sans pointe = ligne de tableau
@@ -258,6 +346,8 @@ def detecter_brin(gray: np.ndarray, px_mm: float, page: int, zone=None) -> Detec
         d = _detecter(variante, petits, px_mm, page)
         if d and (best is None or d.score > best.score):
             best = d
+    if best is not None:
+        best = completer_trous(best, lines)
     return best
 
 
