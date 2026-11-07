@@ -221,6 +221,30 @@ const homeInsightDemand: ImageSlot = {
   tone: 'water', focal: '50% 50%',
 };
 
+// ABOUT & CONSULTATION VISUALS: « BF Properties Pack V2 » (received 2026-11-07, /public/images, files kept under the names supplied).
+//   hero-about.jpeg (1923 × 1301) and about-philosophy.jpeg (1923 × 1300): two renders taken from an Emaar brochure (the pack does not say which project; both stay captioned « Rendu promoteur Emaar »
+//      and are never presented as photographs or as a specific project). Used on /a-propos only. Commercial rights are NOT confirmed (marked 'unconfirmed'): confirm with BF Properties / Emaar before production.
+//   hero-consult.jpg (1774 × 887): an AI-generated ILLUSTRATION (the pack names it .png, the file is a .jpg), not a documentary photograph and not a real project: the hero of /consultation says so (note).
+const IMG = '/images';
+const heroAbout: ImageSlot = {
+  src: `${IMG}/hero-about.jpeg`, width: 1923, height: 1301, kind: 'render', rights: 'unconfirmed',
+  note: 'Rendu promoteur Emaar — illustration',
+  alt: 'Rendu promoteur : villas blanches au bord d’un lac au crépuscule, palmiers, promeneurs et canards sur l’eau',
+  tone: 'dusk', focal: '50% 72%', focalMobile: '72% 60%', veil: { bottom: 0.82, left: 0.7, top: 0.4 },
+};
+const aboutPhilosophy: ImageSlot = {
+  src: `${IMG}/about-philosophy.jpeg`, width: 1923, height: 1300, kind: 'render', rights: 'unconfirmed',
+  note: 'Rendu promoteur Emaar — illustration',
+  alt: 'Rendu promoteur : villa contemporaine au crépuscule, baies vitrées éclairées, terrasse et piscine dans un jardin',
+  tone: 'day', focal: '62% 50%',
+};
+const heroConsult: ImageSlot = {
+  src: `${IMG}/hero-consult.jpg`, width: 1774, height: 887, kind: 'render', rights: 'cleared',
+  note: 'Illustration — image générée, non photographique',
+  alt: 'Illustration : terrasse aux palmiers face à la skyline de Dubai et à la tour Burj Khalifa au crépuscule, reflétées dans l’eau',
+  tone: 'water', focal: '55% 45%', focalMobile: '67% 50%', veil: { bottom: 0.8, left: 0.66, top: 0.4 },
+};
+
 export const IMAGES = {
   'creek-hero': creekHero,
   'area-dubai-creek-harbour': creekHero,
@@ -587,7 +611,7 @@ export const IMAGES = {
     tone: 'dusk', focal: '0% 50%', focalMobile: '42% 50%',
   },
   // home-philosophy = visual created for BF Properties (an investor looking at the Dubai skyline from a premium interior): reflection, projection, never a sales scene.
-  // It has its own key on purpose: `philosophy` is also used by the À propos page, which stays untouched (placeholder) until it gets its own picture.
+  // It has its own key on purpose: `philosophy` is the À propos page picture (about-philosophy.jpeg).
   'home-philosophy': {
     src: '/images/home/02-home-philosophy-investor.webp', width: 1672, height: 941, kind: 'render', rights: 'cleared',
     alt: 'Un homme en costume observe la skyline de Dubai au coucher du soleil depuis un salon aux grandes baies vitrées',
@@ -603,7 +627,7 @@ export const IMAGES = {
   'strategy-financing': { src: '/images/home/strategy-financing.webp', width: 275, height: 278, kind: 'render', rights: 'cleared', alt: 'Colonnes d’une institution et pièces', tone: 'dusk' },
   'strategy-portfolio-diversification': { src: '/images/home/strategy-portfolio-diversification.webp', width: 279, height: 279, kind: 'render', rights: 'cleared', alt: 'Globe terrestre et lignes de connexion', tone: 'dusk' },
   'strategy-entrepreneurs-companies': { src: '/images/home/strategy-entrepreneurs-companies.webp', width: 283, height: 279, kind: 'render', rights: 'cleared', alt: 'Mallette devant la skyline de nuit', tone: 'dusk' },
-  philosophy: { alt: 'Architecture contemporaine à Dubai', tone: 'day', focal: '50% 50%' },
+  philosophy: aboutPhilosophy,
   lab: homeLab,
   'home-insight-guide': homeInsightGuide,
   'home-insight-where': homeInsightWhere,
@@ -655,8 +679,10 @@ export const IMAGES = {
   'hero-areas': heroAreas,
   'hero-stories': editorialStories,
   'hero-insights': editorialInsights,
-  'hero-about': { alt: 'Skyline de Dubai', tone: 'dusk' },
-  'hero-consult': { alt: 'Dubai la nuit', tone: 'water' },
+  'hero-about': heroAbout,
+  // 404 page: kept on the neutral placeholder it always had (it used `hero-about` before that slot got its own picture).
+  'hero-notfound': { alt: 'Skyline de Dubai', tone: 'dusk' },
+  'hero-consult': heroConsult,
   'hero-lab': { alt: 'BF Investment Lab', tone: 'dusk' },
   'hero-legal': { alt: 'BF Properties', tone: 'dusk' },
 } satisfies Record<string, ImageSlot>;

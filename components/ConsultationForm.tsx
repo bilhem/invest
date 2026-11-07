@@ -2,6 +2,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { track } from '@/lib/analytics';
 import { getAttribution } from '@/lib/attribution';
+import PhoneField from '@/components/PhoneField';
+import { CONSENT_LEAD } from '@/lib/consent';
+import { BOOKING_URL, bookingEmbedUrl, bookingIsCalendly } from '@/lib/booking';
+import { countryFromName, DEFAULT_PHONE_COUNTRY, parsePhone, type CountryCode } from '@/lib/phone';
 
 const OBJECTIVES = ['Valorisation du capital', 'Revenus locatifs', 'Diversification', 'Résidence secondaire', 'Je découvre'];
 const BUDGETS = ['Moins de 250 k€', '250 k€ – 500 k€', '500 k€ – 1 M€', 'Plus de 1 M€'];
@@ -11,10 +15,16 @@ const COUNTRIES = ['France', 'Suisse', 'Belgique', 'Luxembourg', 'Canada', 'Roya
 
 type Data = {
   country: string; objective: string; budget: string; horizon: string;
-  name: string; email: string; phone: string; language: string;
+  name: string; email: string;
+  phone: string; phoneCountry: CountryCode; // phone = what the visitor typed; it is sent as E.164 (« +33612345678 »), see submit()
+  language: string;
   message: string; consent: boolean; website: string; // website = honeypot
 };
-const EMPTY: Data = { country: '', objective: '', budget: '', horizon: '', name: '', email: '', phone: '', language: 'Français', message: '', consent: false, website: '' };
+const EMPTY: Data = { country: '', objective: '', budget: '', horizon: '', name: '', email: '', phone: '', phoneCountry: DEFAULT_PHONE_COUNTRY, language: 'Français', message: '', consent: false, website: '' };
+
+/** One id per form: a retry after an error carries the same id, so the CRM never creates the lead twice. */
+const newSubmissionId = () =>
+  typeof crypto !== 'undefined' && 'randomUUID' in crypto ? crypto.randomUUID() : `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 12)}`;
 
 const STEPS = [
   { title: 'Où résidez-vous ?', hint: 'Votre pays de résidence nous aide à préparer l’échange.' },
@@ -34,7 +44,7 @@ function validate(step: number, d: Data): string {
     case 4:
       if (d.name.trim().length < 2) return 'Indiquez votre nom.';
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(d.email.trim())) return 'Indiquez une adresse e-mail valide.';
-      if (d.phone.replace(/[^\d]/g, '').length < 6) return 'Indiquez un numéro de téléphone ou WhatsApp valide.';
+      if (!parsePhone(d.phone, d.phoneCountry)) return 'Indiquez un numéro de téléphone ou WhatsApp valide, avec le bon pays.';
       return '';
     case 5: return d.consent ? '' : 'Vous devez accepter le traitement de vos données pour envoyer la demande.';
     default: return '';
@@ -46,7 +56,11 @@ export default function ConsultationForm() {
   const [d, setD] = useState<Data>(EMPTY);
   const [error, setError] = useState('');
   const [status, setStatus] = useState<'idle' | 'sending' | 'done' | 'failed'>('idle');
+  const [failure, setFailure] = useState('');
   const started = useRef(false);
+  const sending = useRef(false); // synchronous lock: two quick clicks / Enter presses can never send twice
+  const submissionId = useRef('');
+  const openedAt = useRef(Date.now());
   const headingRef = useRef<HTMLHeadingElement>(null);
 
   const mounted = useRef(false);
@@ -66,30 +80,61 @@ export default function ConsultationForm() {
     const e = validate(step, d);
     if (e) return setError(e);
     setError('');
+    // The dial code starts from the residence country given in the first step (the visitor can change it).
+    if (step === 0 && !d.phone) setD((p) => ({ ...p, phoneCountry: countryFromName(p.country) ?? p.phoneCountry }));
     setStep((s) => s + 1);
   };
 
   const submit = async (ev: React.FormEvent) => {
     ev.preventDefault();
     if (step < STEPS.length - 1) return next();
+    if (sending.current || status === 'done') return;
     const e = validate(step, d);
     if (e) return setError(e);
+    const phone = parsePhone(d.phone, d.phoneCountry);
+    if (!phone) return setError('Indiquez un numéro de téléphone ou WhatsApp valide, avec le bon pays.');
+    sending.current = true;
     setStatus('sending');
+    setFailure('');
+    submissionId.current ||= newSubmissionId();
     try {
       const res = await fetch('/api/consultation', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...d, attribution: getAttribution(), submitted_at: new Date().toISOString() }),
+        body: JSON.stringify({
+          ...d,
+          phone: phone.e164,
+          submission_id: submissionId.current,
+          elapsed_ms: Date.now() - openedAt.current,
+          attribution: getAttribution(),
+          submitted_at: new Date().toISOString(),
+        }),
       });
-      if (!res.ok) throw new Error('bad status');
+      const out = (await res.json().catch(() => ({}))) as { ok?: boolean; error?: string };
+      if (!res.ok || !out.ok) {
+        // The lead was NOT saved: say so, and let the visitor try again (same submission id).
+        const code = out.error ?? '';
+        if (code === 'invalid_phone') { setStep(4); setError('Ce numéro de téléphone n’a pas été accepté. Vérifiez-le et le pays sélectionné.'); setStatus('idle'); }
+        else {
+          setFailure(res.status === 429
+            ? 'Trop de tentatives pour le moment. Patientez quelques instants puis réessayez.'
+            : 'L’envoi a échoué. Vérifiez votre connexion et réessayez, ou contactez-nous directement.');
+          setStatus('failed');
+        }
+        sending.current = false;
+        return;
+      }
+      // Saved on the server (the route answers ok only once the CRM has accepted the lead): only now does the booking step open.
       track('consultation_completed', { budget: d.budget, objective: d.objective });
       setStatus('done');
     } catch {
+      setFailure('L’envoi a échoué. Vérifiez votre connexion et réessayez, ou contactez-nous directement.');
       setStatus('failed');
+      sending.current = false;
     }
   };
 
-  if (status === 'done') return <Confirmation firstName={d.name.trim().split(' ')[0]} headingRef={headingRef} />;
+  if (status === 'done') return <Confirmation name={d.name.trim()} email={d.email.trim()} headingRef={headingRef} />;
 
   const choice = (name: keyof Data, options: string[]) => (
     <div className="grid gap-3 sm:grid-cols-2">
@@ -132,7 +177,14 @@ export default function ConsultationForm() {
             <div className="space-y-5">
               <div><label htmlFor="name" className={label}>Nom</label><input id="name" autoComplete="name" className={input} value={d.name} onChange={(e) => set('name', e.target.value)} /></div>
               <div><label htmlFor="email" className={label}>E-mail</label><input id="email" type="email" autoComplete="email" className={input} value={d.email} onChange={(e) => set('email', e.target.value)} /></div>
-              <div><label htmlFor="phone" className={label}>Téléphone / WhatsApp</label><input id="phone" type="tel" autoComplete="tel" className={input} value={d.phone} onChange={(e) => set('phone', e.target.value)} /></div>
+              <PhoneField
+                id="phone"
+                label="Téléphone / WhatsApp"
+                value={{ country: d.phoneCountry, national: d.phone }}
+                onChange={(v) => { set('phone', v.national); set('phoneCountry', v.country); }}
+                inputClass={input}
+                labelClass={label}
+              />
               <div>
                 <label htmlFor="language" className={label}>Langue préférée</label>
                 <select id="language" className={input} value={d.language} onChange={(e) => set('language', e.target.value)}>{LANGS.map((l) => <option key={l}>{l}</option>)}</select>
@@ -149,7 +201,7 @@ export default function ConsultationForm() {
               </div>
               <label className="flex items-start gap-3 text-sm leading-relaxed text-charcoal/75">
                 <input type="checkbox" checked={d.consent} onChange={(e) => set('consent', e.target.checked)} className="mt-1 h-4 w-4 accent-[#B8935A]" />
-                <span>J’accepte que BF Properties traite ces informations pour organiser notre échange. Consultez la <a href="/legal/privacy-policy" className="underline underline-offset-4">politique de confidentialité</a>.</span>
+                <span>{CONSENT_LEAD} Consultez la <a href="/legal/privacy-policy" className="underline underline-offset-4">politique de confidentialité</a>.</span>
               </label>
             </div>
           )}
@@ -157,12 +209,12 @@ export default function ConsultationForm() {
       </fieldset>
 
       <div role="alert" className="mt-5 min-h-[1.5rem] text-sm text-[#9B2C2C]">
-        {error || (status === 'failed' ? 'L’envoi a échoué. Vérifiez votre connexion et réessayez, ou contactez-nous directement.' : '')}
+        {error || (status === 'failed' ? failure : '')}
       </div>
 
       <div className="mt-6 flex items-center justify-between gap-4">
         {step > 0 ? (
-          <button type="button" onClick={() => { setError(''); setStep(step - 1); }} className="text-sm text-charcoal/70 underline-offset-4 hover:underline">Retour</button>
+          <button type="button" disabled={status === 'sending'} onClick={() => { setError(''); setStep(step - 1); }} className="text-sm text-charcoal/70 underline-offset-4 hover:underline disabled:opacity-60">Retour</button>
         ) : <span />}
         <button type="submit" disabled={status === 'sending'} className="btn btn-gold disabled:opacity-60">
           {step < STEPS.length - 1 ? 'Continuer' : status === 'sending' ? 'Envoi…' : 'Envoyer ma demande'}
@@ -172,15 +224,22 @@ export default function ConsultationForm() {
   );
 }
 
-const BOOKING_URL = process.env.NEXT_PUBLIC_BOOKING_URL;
+/**
+ * Step shown ONLY once the server has saved the request. The booking is a separate, third-party step (Calendly): the appointment is announced as confirmed
+ * only when Calendly itself says so (« calendly.event_scheduled », from calendly.com). If the visitor leaves without booking, the request stays saved.
+ */
+function Confirmation({ name, email, headingRef }: { name: string; email: string; headingRef: React.RefObject<HTMLHeadingElement | null> }) {
+  const [booked, setBooked] = useState(false);
+  const [src] = useState(() => bookingEmbedUrl({ name, email, host: typeof window !== 'undefined' ? window.location.hostname : undefined }));
+  const firstName = name.split(' ')[0];
 
-function Confirmation({ firstName, headingRef }: { firstName: string; headingRef: React.RefObject<HTMLHeadingElement | null> }) {
   useEffect(() => {
-    if (BOOKING_URL) track('calendar_opened');
+    track('calendar_opened');
+    if (!bookingIsCalendly()) return;
     const onMsg = (e: MessageEvent) => {
-      // Calendly posts { event: 'calendly.event_scheduled' } when a slot is booked.
+      if (e.origin !== 'https://calendly.com') return;
       const ev = (e.data as { event?: string } | null)?.event;
-      if (ev === 'calendly.event_scheduled') track('appointment_booked');
+      if (ev === 'calendly.event_scheduled') { setBooked(true); track('appointment_booked'); }
     };
     window.addEventListener('message', onMsg);
     return () => window.removeEventListener('message', onMsg);
@@ -188,14 +247,24 @@ function Confirmation({ firstName, headingRef }: { firstName: string; headingRef
 
   return (
     <div className="mx-auto max-w-3xl text-center">
-      <h2 ref={headingRef} tabIndex={-1} className="font-serif text-4xl outline-none">Merci{firstName ? `, ${firstName}` : ''}.</h2>
-      <p className="mt-4 text-charcoal/70">Votre demande est bien reçue. Choisissez dès maintenant un créneau pour notre échange.</p>
-      {BOOKING_URL ? (
-        <iframe title="Réservation de rendez-vous" src={BOOKING_URL} className="mt-10 h-[720px] w-full border border-stone-light/70 bg-white" />
-      ) : (
-        <div className="mt-10 border border-dashed border-stone-light p-10 text-sm text-stone">
-          Le calendrier de réservation sera affiché ici une fois configuré (variable <code>NEXT_PUBLIC_BOOKING_URL</code>, par exemple un lien Calendly ou Cal.com). Nous reviendrons vers vous pour fixer un rendez-vous.
-        </div>
+      <h2 ref={headingRef} tabIndex={-1} className="font-serif text-4xl outline-none" aria-live="polite">
+        {booked ? `Votre rendez-vous est confirmé${firstName ? `, ${firstName}` : ''}.` : `Merci${firstName ? `, ${firstName}` : ''}.`}
+      </h2>
+      <p className="mt-4 text-charcoal/70">
+        {booked
+          ? 'Calendly vous envoie le détail du rendez-vous par e-mail.'
+          : 'Votre demande est enregistrée. Choisissez maintenant un créneau pour notre échange : le rendez-vous n’est confirmé qu’une fois le créneau réservé. Si vous préférez le faire plus tard, votre demande reste enregistrée.'}
+      </p>
+      <iframe title="Réservation de rendez-vous" src={src} className="mt-10 h-[720px] w-full border border-stone-light/70 bg-white" />
+      <p className="mt-5 text-sm text-charcoal/65">
+        Le calendrier ne s’affiche pas ?{' '}
+        <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">Ouvrir la page de réservation</a>.
+      </p>
+      {bookingIsCalendly() && (
+        <p className="mt-2 text-xs text-charcoal/50">
+          La réservation est gérée par Calendly, qui applique sa propre{' '}
+          <a href="https://calendly.com/privacy" target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">politique de confidentialité</a>.
+        </p>
       )}
     </div>
   );

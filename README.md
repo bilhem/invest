@@ -37,10 +37,22 @@ Node 20+ recommandé. Copiez `.env.example` en `.env.local` pour configurer CRM,
 
 ## Formulaires, CRM, calendrier
 
-- `POST /api/consultation` et `POST /api/lab` valident les champs, appliquent un honeypot anti-spam, puis envoient un JSON à `CRM_WEBHOOK_URL`. En production sans webhook configuré, la route renvoie une erreur volontairement (pas de lead perdu en silence).
+**Parcours `/consultation`** : formulaire en 6 étapes → `POST /api/consultation` → enregistrement du lead (webhook CRM) → **seulement ensuite**, calendrier Calendly en iframe. Si le visiteur abandonne la réservation, sa demande reste enregistrée. Le message « rendez-vous confirmé » n’apparaît qu’à la réception de l’événement `calendly.event_scheduled` (origine `https://calendly.com`) ; sinon le texte dit « demande enregistrée », jamais « rendez-vous confirmé ».
+
+- **Persistance** : il n’y a ni base de données ni CRM dans ce dépôt. Le **seul** stockage est le webhook `CRM_WEBHOOK_URL` (JSON `{ kind: 'consultation' | 'lab', ... }`, secret optionnel en en-tête `X-BF-Secret`). **En production sans webhook, la route répond 502 volontairement** : le formulaire échoue et le calendrier ne s’ouvre pas (aucun lead perdu en silence). À configurer avant la mise en ligne.
+- **Champs envoyés** (consultation) : `submission_id`, `country`, `objective`, `budget`, `horizon`, `name`, `email`, `phone` (**E.164**, ex. `+33612345678`), `phone_country`, `language`, `message`, `utm_*`, `landing_page`, `referrer`, `submitted_at`, et la preuve de consentement écrite par le serveur : `consent`, `consent_text`, `consent_version`, `consent_received_at` (texte dans `lib/consent.ts`, à faire évoluer avec la politique de confidentialité). Le CRM doit dédupliquer sur `submission_id`.
+- **Téléphone** : `components/PhoneField.tsx` + `lib/phone.ts`, avec `libphonenumber-js` (sélecteur de pays avec drapeaux et indicatifs, validation, stockage E.164). Dépendance ajoutée à `package.json` : lancez `npm install`. Validation refaite côté serveur.
+- **Protections** (`app/api/consultation/route.ts`, `lib/lead-guard.ts`) : honeypot `website` ; délai minimum de remplissage de 3 s (production) ; limite de 8 requêtes / 15 min / IP (production) ; corps limité à 20 Ko ; `Cache-Control: no-store` ; verrou anti double envoi côté navigateur et identifiant `submission_id` côté serveur. Limites, la mémoire du serveur étant locale à chaque instance : ces protections sont **best-effort**, elles ne remplacent ni un WAF / un antibot (ex. Cloudflare Turnstile) ni la déduplication du CRM.
+- **Calendrier** : `lib/booking.ts`. Par défaut `https://calendly.com/bilel-hemissi/new-meeting` ; `NEXT_PUBLIC_BOOKING_URL` le remplace. Nom et e-mail sont pré-remplis, les couleurs du site appliquées, et un lien de secours « Ouvrir la page de réservation » reste affiché. Notifications au conseiller et e-mails de confirmation : réglages Calendly, hors code. Calendly applique sa propre politique de confidentialité : la mentionner dans la politique du site.
+- `POST /api/lab` : honeypot + webhook, sans les protections ci-dessus (non modifié).
 - Capturé : `utm_source`, `utm_medium`, `utm_campaign`, `landing_page`, `referrer`, `timestamp`.
-- Après envoi, `NEXT_PUBLIC_BOOKING_URL` s’affiche en iframe (Calendly/Cal.com). Sans lui, un message d’attente est montré.
-- Pas encore de limitation de débit : à ajouter (par ex. au niveau de l’hébergeur) avant un fort trafic.
+
+## Visuels /a-propos et /consultation
+
+- `hero-about.jpeg` et `about-philosophy.jpeg` sont des **rendus promoteur (Emaar)** issus d’une brochure : `rights: 'unconfirmed'` dans `lib/images.ts` (légende « Rendu promoteur Emaar — illustration »). **Confirmer le droit d’usage commercial avant publication** (`npm run images:check` les liste).
+- `hero-consult.jpg` est une **illustration générée**, non une photographie : légende « Illustration — image générée, non photographique ». Ne jamais la présenter comme un projet réel.
+- Le texte de `/a-propos` vient de `lib/data/about.ts` (copie validée, à la première personne). L’orthographe « Dubaï » y est celle du texte fourni.
+- La page 404 utilise son propre emplacement `hero-notfound` (placeholder), pour ne pas dépendre du visuel de `/a-propos`.
 
 ## Analytics
 
