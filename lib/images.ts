@@ -222,19 +222,17 @@ const homeInsightDemand: ImageSlot = {
 };
 
 // ABOUT & CONSULTATION VISUALS: « BF Properties Pack V2 » (received 2026-11-07, /public/images, files kept under the names supplied).
-//   hero-about.jpeg (1923 × 1301) and about-philosophy.jpeg (1923 × 1300): two renders taken from an Emaar brochure (the pack does not say which project; both stay captioned « Rendu promoteur Emaar »
-//      and are never presented as photographs or as a specific project). Used on /a-propos only. Commercial rights are NOT confirmed (marked 'unconfirmed'): confirm with BF Properties / Emaar before production.
+//   hero-about.jpeg (1923 × 1301) and about-philosophy.jpeg (1923 × 1300): two renders taken from an Emaar brochure (the pack does not say which project). No visible caption (removed on request);
+//      they are not presented as photographs or as a specific project. Used on /a-propos only. Commercial rights are NOT confirmed (marked 'unconfirmed'): confirm with BF Properties / Emaar before production.
 //   hero-consult.jpg (1774 × 887): an AI-generated ILLUSTRATION (the pack names it .png, the file is a .jpg), not a documentary photograph and not a real project: the hero of /consultation says so (note).
 const IMG = '/images';
 const heroAbout: ImageSlot = {
   src: `${IMG}/hero-about.jpeg`, width: 1923, height: 1301, kind: 'render', rights: 'unconfirmed',
-  note: 'Rendu promoteur Emaar — illustration',
   alt: 'Rendu promoteur : villas blanches au bord d’un lac au crépuscule, palmiers, promeneurs et canards sur l’eau',
   tone: 'dusk', focal: '50% 72%', focalMobile: '72% 60%', veil: { bottom: 0.82, left: 0.7, top: 0.4 },
 };
 const aboutPhilosophy: ImageSlot = {
   src: `${IMG}/about-philosophy.jpeg`, width: 1923, height: 1300, kind: 'render', rights: 'unconfirmed',
-  note: 'Rendu promoteur Emaar — illustration',
   alt: 'Rendu promoteur : villa contemporaine au crépuscule, baies vitrées éclairées, terrasse et piscine dans un jardin',
   tone: 'day', focal: '62% 50%',
 };

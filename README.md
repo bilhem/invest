@@ -49,7 +49,7 @@ Node 20+ recommandé. Copiez `.env.example` en `.env.local` pour configurer CRM,
 
 ## Visuels /a-propos et /consultation
 
-- `hero-about.jpeg` et `about-philosophy.jpeg` sont des **rendus promoteur (Emaar)** issus d’une brochure : `rights: 'unconfirmed'` dans `lib/images.ts` (légende « Rendu promoteur Emaar — illustration »). **Confirmer le droit d’usage commercial avant publication** (`npm run images:check` les liste).
+- `hero-about.jpeg` et `about-philosophy.jpeg` sont des **rendus promoteur (Emaar)** issus d’une brochure : `rights: 'unconfirmed'` dans `lib/images.ts` (aucune légende visible sur la page). **Confirmer le droit d’usage commercial avant publication** (`npm run images:check` les liste).
 - `hero-consult.jpg` est une **illustration générée**, non une photographie : légende « Illustration — image générée, non photographique ». Ne jamais la présenter comme un projet réel.
 - Le texte de `/a-propos` vient de `lib/data/about.ts` (copie validée, à la première personne). L’orthographe « Dubaï » y est celle du texte fourni.
 - La page 404 utilise son propre emplacement `hero-notfound` (placeholder), pour ne pas dépendre du visuel de `/a-propos`.
