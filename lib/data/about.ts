@@ -4,7 +4,8 @@
  * No biography, figure, track record, award or transaction is added anywhere on the page: only what this text says.
  */
 export const ABOUT = {
-  title: 'Une approche différente de l’immobilier à Dubaï.',
+  /** Title given by the founder on 2026-11-07 (the supplied copy opened with « Une approche différente de l’immobilier à Dubaï. »). */
+  title: 'Avant de conseiller, j’ai commencé par investir.',
   subtitle: 'Quatre années d’expérience. Une conviction d’investisseur.',
   /** From « Je m’appelle Bilel Hemissi. » to « C’est de cette réflexion qu’est né BF Properties. » */
   story: [
@@ -18,7 +19,8 @@ export const ABOUT = {
     'C’est de cette réflexion qu’est né **BF Properties**.',
   ],
   investor: {
-    title: 'Je suis investisseur avant d’être conseiller.',
+    /** Shortened by the founder on 2026-11-07 (supplied copy: « Je suis investisseur avant d’être conseiller. »). */
+    title: 'Investisseur avant d’être conseiller.',
     paragraphs: [
       'Cette distinction est essentielle pour moi. Lorsque je vous accompagne, je ne regarde pas uniquement le bien que vous pourriez acheter. Je m’intéresse à ce que cet investissement représente pour vous.',
       'Votre capital. Vos ambitions. Votre horizon d’investissement. Votre tolérance au risque. Et la place que cette acquisition doit occuper dans votre patrimoine.',
@@ -44,10 +46,10 @@ export const ABOUT = {
     ],
     signature: { name: 'Bilel Hemissi', role: 'Fondateur de BF Properties' },
   },
+  /** Closing call to action. The button reads « Parlons de votre projet » (founder's brief of 2026-11-07, supplied copy: « Réserver une consultation privée »); the sentence is the supplied one. */
   cta: {
-    title: 'Parlons de votre projet.',
-    text: 'Votre investissement mérite une réflexion personnalisée.',
-    label: 'Réserver une consultation privée',
+    title: 'Votre investissement mérite une réflexion personnalisée.',
+    label: 'Parlons de votre projet',
     href: '/consultation',
   },
 } as const;
