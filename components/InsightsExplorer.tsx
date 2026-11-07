@@ -1,98 +1,74 @@
 'use client';
 import Link from 'next/link';
-import { useState } from 'react';
-import { categoryLabel, type Article, type ArticleCategory } from '@/lib/data/articles';
-import { fmtFr } from '@/components/insights/dates';
+import { useState, type ReactNode } from 'react';
+import { HUB_FILTERS, minutesLabel, type HubFilterKey } from '@/lib/data/insights-hub';
 
-/** An editorial page of its own (a « vertical »), shown first on the « Tout » view. */
-export type Featured = { eyebrow: string; title: string; text: string; href: string; cta: string };
-
-/** Only what the cards show (the client component never receives the article bodies). */
-export type ArticleCard = Pick<Article, 'slug' | 'category' | 'alsoIn' | 'title' | 'description' | 'published'> & { readingMinutes: number };
-
-type Props = {
-  articles: ArticleCard[];
-  categories: ArticleCategory[];
-  /** Categories that have their own page: their button leads there instead of filtering. */
-  categoryLinks?: Partial<Record<ArticleCategory, string>>;
-  featured?: Featured[];
+/** Only what the cards show (the client component never receives the article bodies). `media` is the picture, rendered on the server (BFImage). */
+export type HubCard = {
+  slug: string;
+  /** Card headline (see splitTitle) and the rest of the title, kept for screen readers. */
+  headline: string;
+  rest: string;
+  /** French label of the main category. */
+  category: string;
+  readingMinutes: number;
+  /** The filters this article belongs to (main and secondary categories). */
+  filters: HubFilterKey[];
+  media: ReactNode;
 };
 
-export default function InsightsExplorer({ articles, categories, categoryLinks = {}, featured = [] }: Props) {
-  const [cat, setCat] = useState<ArticleCategory | 'all'>('all');
-  const list = cat === 'all' ? articles : articles.filter((a) => a.category === cat || a.alsoIn?.includes(cat));
-  const [lead, ...rest] = list;
+/** Filter tabs + grid of editorial cards. The cover article and the developers dossier live outside (page.tsx): they do not depend on the filter. */
+export default function InsightsExplorer({ cards }: { cards: HubCard[] }) {
+  const [active, setActive] = useState<HubFilterKey>('all');
+  const shown = active === 'all' ? cards : cards.filter((c) => c.filters.includes(active));
+  const n = shown.length;
 
   return (
     <div>
-      <div role="group" aria-label="Filtrer par catégorie" className="flex flex-wrap gap-2">
-        {(['all', ...categories] as const).map((c) => {
-          const href = c === 'all' ? undefined : categoryLinks[c];
-          if (href) {
+      <div className="flex flex-col md:flex-row md:items-end md:justify-between md:border-b md:border-charcoal/15">
+        {/* Phones: small solid chips that wrap (every filter stays visible, nothing scrolls sideways). From tablets up: quiet text tabs on one hairline. */}
+        <div role="group" aria-label="Filtrer les analyses par catégorie" className="flex flex-wrap gap-2 md:gap-10">
+          {HUB_FILTERS.map((f) => {
+            const on = active === f.key;
             return (
-              <Link key={c} href={href} className="border border-stone-light px-4 py-2 text-sm text-charcoal/70 transition-colors hover:border-charcoal">
-                {c}<span aria-hidden> →</span>
-              </Link>
+              <button
+                key={f.key}
+                type="button"
+                onClick={() => setActive(f.key)}
+                aria-pressed={on}
+                className={`relative inline-flex min-h-11 items-center px-4 text-[0.9375rem] tracking-wide transition-colors md:min-h-0 md:px-0 md:py-4 ${on
+                  ? 'bg-charcoal text-ivory md:bg-transparent md:text-charcoal md:after:absolute md:after:inset-x-0 md:after:bottom-0 md:after:h-px md:after:bg-champagne-dark'
+                  : 'bg-ivory-200 text-charcoal/70 hover:text-charcoal md:bg-transparent md:text-charcoal/55'}`}
+              >
+                {f.label}
+              </button>
             );
-          }
-          return (
-            <button
-              key={c}
-              type="button"
-              onClick={() => setCat(c)}
-              aria-pressed={cat === c}
-              className={`border px-4 py-2 text-sm transition-colors ${cat === c ? 'border-charcoal bg-charcoal text-ivory' : 'border-stone-light text-charcoal/70 hover:border-charcoal'}`}
-            >
-              {c === 'all' ? 'Tout' : c}
-            </button>
-          );
-        })}
+          })}
+        </div>
+        <p aria-live="polite" className="mt-5 text-sm text-stone md:mt-0 md:pb-4">{n} {n > 1 ? 'analyses' : 'analyse'}</p>
       </div>
 
-      {cat === 'all' && featured.map((f) => (
-        <Link key={f.href} href={f.href} className="group mt-12 grid bg-charcoal text-ivory md:grid-cols-[1.3fr_1fr]">
-          <div className="p-8 md:p-14">
-            <p className="eyebrow !text-champagne-light">{f.eyebrow}</p>
-            <h2 className="mt-5 max-w-[34rem] text-balance font-serif text-3xl leading-[1.1] tracking-tight md:text-5xl">{f.title}</h2>
-          </div>
-          <div className="flex flex-col justify-between gap-10 border-t border-ivory/15 p-8 md:border-l md:border-t-0 md:p-14">
-            <p className="leading-relaxed text-ivory/75">{f.text}</p>
-            <span className="text-sm font-medium text-champagne-light">{f.cta}<span aria-hidden className="ml-1.5 inline-block transition-transform duration-300 group-hover:translate-x-1">→</span></span>
-          </div>
-        </Link>
-      ))}
-
-      {!lead ? (
-        (cat !== 'all' || featured.length === 0) && <p className="mt-12 text-charcoal/70">Aucune analyse dans cette catégorie pour le moment.</p>
+      {n === 0 ? (
+        <p className="mt-14 text-charcoal/70">Aucune analyse dans cette catégorie pour le moment.</p>
       ) : (
-        /* Text-first: no illustration is invented. The latest article leads; the others follow as a quiet list of columns. */
-        <>
-          <Link href={`/insights/${lead.slug}`} className="group mt-12 grid gap-8 border-t border-charcoal/25 pt-8 md:grid-cols-[1.3fr_1fr] md:gap-14 md:pt-10">
-            <div>
-              <p className="text-xs text-champagne-dark">{categoryLabel(lead)} — {fmtFr(lead.published)} — Lecture : {lead.readingMinutes} min</p>
-              <h2 className="mt-4 max-w-[34rem] text-balance font-serif text-[2rem] leading-[1.1] tracking-tight transition-colors group-hover:text-champagne-dark md:text-[3rem]">{lead.title}</h2>
-            </div>
-            <div className="flex flex-col justify-between gap-8">
-              <p className="leading-relaxed text-charcoal/70">{lead.description}</p>
-              <span className="text-sm font-medium text-champagne-dark">Lire l’analyse<span aria-hidden className="ml-1.5 inline-block transition-transform duration-300 group-hover:translate-x-1">→</span></span>
-            </div>
-          </Link>
-
-          {rest.length > 0 && (
-            <ul className={`mt-14 grid gap-x-8 gap-y-12 sm:grid-cols-2 ${rest.length >= 3 ? 'lg:grid-cols-3' : ''}`}>
-              {rest.map((a) => (
-                <li key={a.slug}>
-                  <Link href={`/insights/${a.slug}`} className="group flex h-full flex-col border-t border-charcoal/25 pt-5">
-                    <p className="text-xs text-champagne-dark">{categoryLabel(a)} — {fmtFr(a.published)}</p>
-                    <h2 className="mt-3 text-balance font-serif text-[1.5rem] leading-[1.2] transition-colors group-hover:text-champagne-dark">{a.title}</h2>
-                    <p className="mt-4 text-[0.95rem] leading-relaxed text-charcoal/70">{a.description}</p>
-                    <span className="mt-6 pt-1 text-sm font-medium text-champagne-dark">Lire l’analyse<span aria-hidden className="ml-1.5 inline-block transition-transform duration-300 group-hover:translate-x-1">→</span></span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          )}
-        </>
+        <ul className="mt-10 grid gap-x-8 gap-y-14 sm:grid-cols-2 md:mt-14 lg:grid-cols-3 lg:gap-x-10 lg:gap-y-16">
+          {shown.map((c) => (
+            <li key={c.slug} className="min-w-0">
+              <Link href={`/insights/${c.slug}`} className="group block">
+                <div className="relative aspect-[4/3] overflow-hidden bg-ivory-200">{c.media}</div>
+                <p className="mt-5 flex items-center gap-3 text-xs">
+                  <span className="font-medium uppercase tracking-[0.16em] text-champagne-dark">{c.category}</span>
+                  <span aria-hidden className="h-px w-4 bg-stone-light" />
+                  <span className="text-stone">{minutesLabel(c.readingMinutes)}</span>
+                </p>
+                <h2 className="mt-3 line-clamp-3 text-balance font-serif text-[1.625rem] font-medium leading-[1.15] tracking-tight transition-colors group-hover:text-champagne-dark md:text-[1.75rem]">
+                  {c.headline}
+                  {c.rest && <span className="sr-only">{c.rest}</span>}
+                </h2>
+              </Link>
+            </li>
+          ))}
+        </ul>
       )}
     </div>
   );

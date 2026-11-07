@@ -36,18 +36,22 @@ function Placeholder({ tone, seed }: { tone: keyof typeof TONES; seed: number })
 const SHOW_SLOTS = process.env.NODE_ENV !== 'production' || process.env.NEXT_PUBLIC_SHOW_IMAGE_SLOTS === '1';
 
 /** `tag`: draws the slot's discreet `note` in the corner (« Rendu du projet — illustration promoteur »). Slots without a note, and callers without `tag`, are unchanged. */
-type Props = { slot: ImageKey; className?: string; priority?: boolean; sizes?: string; overlay?: 'none' | 'soft' | 'strong'; tag?: boolean };
+type Props = {
+  slot: ImageKey; className?: string; priority?: boolean; sizes?: string; overlay?: 'none' | 'soft' | 'strong'; tag?: boolean;
+  /** Optional per-use overrides (a card that crops the picture differently, or needs its own wording). Without them the slot's values apply, so existing callers are unchanged. */
+  alt?: string; focal?: string; focalMobile?: string;
+};
 
 /** Fills its (relative) parent. Swap placeholders via lib/images.ts only. */
-export default function BFImage({ slot, className = '', priority, sizes = '100vw', overlay = 'none', tag = false }: Props) {
+export default function BFImage({ slot, className = '', priority, sizes = '100vw', overlay = 'none', tag = false, alt, focal, focalMobile }: Props) {
   const img = getImage(slot);
   const seed = slot.length * 7 + slot.charCodeAt(slot.length - 1);
-  const fpMd = img.focal ?? '50% 50%'; // focal point from 768px up
-  const fpSm = img.focalMobile ?? fpMd; // focal point on phones
+  const fpMd = focal ?? img.focal ?? '50% 50%'; // focal point from 768px up
+  const fpSm = focalMobile ?? focal ?? img.focalMobile ?? fpMd; // focal point on phones
   return (
     <div className={`absolute inset-0 overflow-hidden ${className}`}>
       {'src' in img && img.src ? (
-        <Image src={img.src} alt={img.alt} fill priority={priority} sizes={sizes} quality={85} className="bf-img"
+        <Image src={img.src} alt={alt ?? img.alt} fill priority={priority} sizes={sizes} quality={85} className="bf-img"
           style={{ objectFit: 'cover', '--fp-md': fpMd, '--fp-sm': fpSm } as React.CSSProperties} />
       ) : (
         <>

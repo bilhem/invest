@@ -27,6 +27,7 @@ Node 20+ recommandé. Copiez `.env.example` en `.env.local` pour configurer CRM,
 - **Contenu** : `lib/data/*` (quartiers, stratégies, stories, articles, FAQ), lu uniquement via `lib/cms.ts`. Pour brancher un CMS headless, réécrivez `lib/cms.ts` ; les modèles de documents sont dans `cms/schemas.ts`. Le CMS n’est **pas encore connecté** en V1.
 - **Images** : `lib/images.ts`. Déposez le fichier dans `public/images` et renseignez `src` (+ `focal`, `alt`). Tant que `src` est absent, un placeholder SVG neutre s’affiche. `next/image` fournit AVIF/WebP, lazy loading et tailles responsives.
 - **Home** : `lib/content.ts` et `components/home/sections.tsx`.
+- **Page /insights** : mise en page éditoriale (à la une, filtres, cartes 4:3) dans `components/insights/HubCover.tsx`, `components/InsightsExplorer.tsx` et `components/insights/HubDossier.tsx`. L’article à la une, la photo de chaque article, les filtres (Marché, Stratégies, Quartiers, Guides) et le titre court des cartes se règlent dans `lib/data/insights-hub.ts`. Les articles, leurs URL et leurs métadonnées ne sont pas touchés ; un nouvel article apparaît seul dans la grille (sans entrée dans `HUB_VISUALS`, il reprend sa propre image, sinon un placeholder).
 
 ## Règles de contenu
 
