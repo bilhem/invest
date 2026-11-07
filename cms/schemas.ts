@@ -38,7 +38,7 @@ export const schemas = [
   { name: 'developer', type: 'document', fields: [{ name: 'name', type: 'string' }, { name: 'description', type: 'text' }, { name: 'logo', type: 'image' }] },
   { name: 'strategy', type: 'document', fields: [
     { name: 'title', type: 'string' }, { name: 'slug', type: 'slug' }, { name: 'objective', type: 'text' }, { name: 'suits', type: 'text' },
-    { name: 'how', type: 'text' }, { name: 'scenario', type: 'text' }, { name: 'capital', type: 'string' },
+    { name: 'how', type: 'text' }, { name: 'label', type: 'string', description: 'French name shown on /strategies.' }, { name: 'criteria', type: 'array', of: [{ type: 'string' }] }, { name: 'more', type: 'object', description: 'label + href of an existing page.' },
     { name: 'benefits', type: 'array', of: [{ type: 'string' }] }, { name: 'considerations', type: 'array', of: [{ type: 'string' }] }, seo,
   ] },
   { name: 'testimonial', type: 'document', fields: [{ name: 'quote', type: 'text' }, { name: 'author', type: 'string' }, { name: 'approved', type: 'boolean' }] },
