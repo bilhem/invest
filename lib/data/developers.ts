@@ -39,7 +39,7 @@ export const DEVELOPERS_PATH = '/insights/developers';
 export const developerHref = (d: Pick<Developer, 'slug'>) => `${DEVELOPERS_PATH}/${d.slug}`;
 
 export const DEVELOPERS_PAGE = {
-  title: 'Développeurs immobiliers à Dubai : comprendre les principaux acteurs',
+  title: 'Développeurs immobiliers à Dubai : les principaux acteurs',
   description: 'À Dubai, choisir un bien signifie aussi choisir un développeur. Comprendre l’ADN et le positionnement des principaux acteurs, avant de regarder le projet.',
   hero: {
     eyebrow: 'Developers',

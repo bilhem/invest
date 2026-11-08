@@ -209,11 +209,11 @@ export function LabTeaser() {
     <section className="relative overflow-hidden bg-charcoal section text-ivory">
       <div className="wrap grid items-center gap-12 lg:grid-cols-2 xl:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
         <Reveal>
-          <p className="eyebrow">Coming soon</p>
+          <p className="eyebrow">Bientôt disponible</p>
           <h2 className="h-section mt-4">BF Investment Lab</h2>
           <p className="mt-3 font-serif text-2xl text-champagne-light">Votre stratégie immobilière, modélisée.</p>
           <p className="mt-6 max-w-md leading-relaxed text-ivory/70">
-            Un nouvel outil BF Properties conçu pour comparer différentes stratégies d’investissement, visualiser leurs besoins en capital et mieux préparer votre projet immobilier à Dubai.
+            Un outil BF Properties en préparation, conçu pour comparer différentes stratégies d’investissement, visualiser leurs besoins en capital et mieux préparer votre projet immobilier à Dubai.
           </p>
           <CtaLink href="/lab" id="lab_teaser" className="btn btn-gold mt-9">Découvrir le Lab</CtaLink>
         </Reveal>

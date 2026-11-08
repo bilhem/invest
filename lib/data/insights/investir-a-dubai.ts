@@ -346,7 +346,7 @@ export const INVESTIR_A_DUBAI: Article = {
   disclaimer:
     'Les performances passées ne préjugent pas des performances futures. Les informations présentées sont générales et ne constituent pas une garantie de rendement, un conseil fiscal ou un conseil juridique personnalisé.',
 
-  related: ['ou-investir-a-dubai'],
+  related: ['acheter-bien-immobilier-dubai-2026', 'combien-faut-il-investir-dubai', 'ou-investir-a-dubai'],
   // « Pour aller plus loin »: the five districts discussed are already linked in the text.
   links: [
     { label: 'Stratégies d’investissement', href: '/strategies' },

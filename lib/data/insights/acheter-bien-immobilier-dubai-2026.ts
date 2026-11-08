@@ -19,7 +19,7 @@ export const ACHETER_BIEN_IMMOBILIER_DUBAI_2026: Article = {
   title: 'Acheter un bien immobilier à Dubai en 2026 : le guide complet pour investir',
   seoTitle: 'Acheter un bien immobilier à Dubai en 2026 : le guide complet',
   description:
-    'Comment acheter un appartement ou une villa à Dubai en 2026 ? Budget, frais DLD, off-plan, ready, financement, quartiers, rendement, risques et revente : le guide investisseur BF Properties.',
+    'Comment acheter un appartement ou une villa à Dubai en 2026 ? Budget, frais DLD, off-plan, financement, quartiers, rendement, risques et revente.',
   published: '2026-10-07',
 
   body: [

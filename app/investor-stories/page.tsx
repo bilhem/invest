@@ -7,8 +7,8 @@ import { getStories } from '@/lib/cms';
 import { STORY_NOTES } from '@/lib/data/stories';
 
 export const metadata = buildMetadata({
-  title: 'Investor Stories',
-  description: 'Investor Stories présente des cas réels pour montrer comment un objectif d’investissement peut se traduire en stratégie, puis en sélection d’un quartier, d’un projet et finalement d’une unité.',
+  title: 'Investor Stories : parcours d’investisseurs immobiliers à Dubai',
+  description: 'Des cas réels pour montrer comment un objectif d’investissement devient une stratégie, puis le choix d’un quartier, d’un projet et d’une unité à Dubai.',
   path: '/investor-stories',
 });
 

@@ -15,8 +15,9 @@ export const OU_INVESTIR_A_DUBAI: Article = {
   category: 'Investment',
   alsoIn: ['Areas'],
   title: 'Où investir à Dubai en 2026 ? Les quartiers selon votre stratégie',
+  seoTitle: 'Où investir à Dubai en 2026 : les quartiers selon la stratégie',
   description:
-    'Downtown, Dubai Hills, Creek Harbour, City Walk, Palm Jebel Ali ou zones émergentes : comment choisir un quartier à Dubai selon votre stratégie d’investissement.',
+    'Downtown, Dubai Hills, Creek Harbour, City Walk, Palm Jebel Ali ou zones émergentes : choisir un quartier à Dubai selon votre stratégie d’investissement.',
   published: '2026-10-07',
   image: 'area-downtown-dubai',
 
@@ -621,7 +622,7 @@ export const OU_INVESTIR_A_DUBAI: Article = {
   disclaimer:
     'Les performances passées ne préjugent pas des performances futures. Les valeurs, rendements, exemples et analyses présentés sont fournis à titre informatif. Ils ne constituent ni une garantie de rendement, ni une projection de performance, ni un conseil fiscal ou juridique personnalisé.',
 
-  related: ['investir-a-dubai'],
+  related: ['investir-a-dubai', 'acheter-bien-immobilier-dubai-2026'],
   // « Pour aller plus loin »: the ten destinations are already linked from the reading map above.
   links: [
     { label: 'Stratégies d’investissement', href: '/strategies' },

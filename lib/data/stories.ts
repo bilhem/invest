@@ -116,7 +116,7 @@ export const STORIES: Story[] = [
     },
     quote: '« La performance ne venait pas uniquement du projet. Elle venait aussi de l’unité choisie à l’intérieur du projet. »',
     seo: {
-      title: 'Franck — Peninsula Five, Business Bay',
+      title: 'Peninsula Five, Business Bay : cas d’investissement à Dubai',
       description: 'Franck, investisseur basé à Genève : Peninsula Five, Business Bay. Une plus-value ne commence pas à la revente. Elle commence au choix de l’unité.',
     },
     layout: { figures: 'dark', timelineFirst: false, regard: 'dark', quote: 'band', flip: false },
@@ -170,7 +170,7 @@ export const STORIES: Story[] = [
     quote: '« Une belle performance ne nécessite pas toujours une sortie. »',
     areaSlug: 'city-walk',
     seo: {
-      title: 'Julia & Guillaume — Erin, Central Park at City Walk',
+      title: 'Erin, Central Park at City Walk : cas d’investissement à Dubai',
       description: 'Julia et Guillaume, investisseurs à Paris : Erin, Central Park at City Walk. Quand l’appréciation du capital rencontre le revenu locatif.',
     },
     layout: { figures: 'sand', timelineFirst: true, regard: 'dark', quote: 'inline', flip: true },
@@ -221,7 +221,7 @@ export const STORIES: Story[] = [
     },
     quote: '« Toutes les opportunités ne se trouvent pas dans les quartiers les plus chers de Dubai. »',
     seo: {
-      title: 'Sonia — Oxford 212, Jumeirah Village Circle',
+      title: 'Oxford 212, Jumeirah Village Circle : cas d’investissement à Dubai',
       description: 'Sonia, investisseuse à Lyon : Oxford 212, Jumeirah Village Circle. Parfois, la performance commence simplement par un excellent prix d’entrée.',
     },
     layout: { figures: 'dark', timelineFirst: false, regard: 'sand', quote: 'inline', flip: false },
@@ -271,7 +271,7 @@ export const STORIES: Story[] = [
     quote: '« La liquidité n’empêche pas la performance. Elle faisait partie de la stratégie dès le départ. »',
     areaSlug: 'dubai-creek-harbour',
     seo: {
-      title: 'Nawal — Creek Palace, Dubai Creek Harbour',
+      title: 'Creek Palace, Dubai Creek Harbour : cas d’investissement',
       description: 'Nawal, investisseuse à Lausanne : Creek Palace, Dubai Creek Harbour. Investir avec une priorité : pouvoir rester flexible.',
     },
     layout: { figures: 'sand', timelineFirst: false, regard: 'dark', quote: 'band', flip: true },

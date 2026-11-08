@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import PageHero from '@/components/ui/PageHero';
 import CtaBand from '@/components/ui/CtaBand';
 import JsonLd from '@/components/ui/JsonLd';
@@ -7,8 +8,8 @@ import { buildMetadata } from '@/lib/seo';
 import { getInvestFaq } from '@/lib/cms';
 
 export const metadata = buildMetadata({
-  title: 'Investir à Dubai',
-  description: 'Comprendre le marché immobilier de Dubai avant de choisir une propriété : zones, processus d’achat, coûts à anticiper, plans de paiement, financement et risques.',
+  title: 'Investir à Dubai : marché, coûts, financement et risques',
+  description: 'Comprendre le marché immobilier de Dubai avant de choisir un bien : zones freehold, processus d’achat, coûts, plans de paiement, financement et risques.',
   path: '/investir-a-dubai',
 });
 
@@ -47,12 +48,26 @@ const COMPARE = [
   ['Flexibilité', 'Engagement ferme sur l’échéancier', 'Capital engagé immédiatement'],
 ];
 
+// No percentage is shown: they differ from one developer and one project to the next.
 const PLAN = [
-  { t: 'Réservation', d: 'Acompte initial : [X %]' },
-  { t: 'Acquisition', d: 'Signature et premières échéances : [X %]' },
-  { t: 'Construction', d: 'Versements échelonnés selon l’avancement : [X %]' },
-  { t: 'Livraison', d: 'Solde à la remise des clés : [X %]' },
+  { t: 'Réservation', d: 'Acompte initial à la réservation du bien.' },
+  { t: 'Acquisition', d: 'Signature du contrat et premières échéances.' },
+  { t: 'Construction', d: 'Versements échelonnés selon l’avancement du chantier.' },
+  { t: 'Livraison', d: 'Solde à la remise des clés.' },
 ];
+
+/** Small contextual link under a section: an existing page that goes further on the same subject. */
+function Further({ links, dark = false }: { links: { href: string; label: string }[]; dark?: boolean }) {
+  return (
+    <p className={`mt-10 flex flex-wrap gap-x-8 gap-y-3 text-sm font-medium ${dark ? 'text-ivory' : 'text-charcoal'}`}>
+      {links.map((l) => (
+        <Link key={l.href} href={l.href} className="inline-flex items-center gap-2 border-b border-champagne-dark/60 pb-1 transition-colors hover:border-champagne-dark">
+          {l.label}<span aria-hidden className={dark ? 'text-champagne-light' : 'text-[#7E6234]'}>→</span>
+        </Link>
+      ))}
+    </p>
+  );
+}
 
 const RISKS = [
   { t: 'Cycles de marché', d: 'Les prix peuvent baisser comme augmenter ; les périodes de croissance sont suivies de phases de correction.' },
@@ -105,6 +120,10 @@ export default function Page() {
               </div>
             ))}
           </dl>
+          <Further links={[
+            { href: '/quartiers', label: 'Découvrir les quartiers' },
+            { href: '/insights/ou-investir-a-dubai', label: 'Où investir selon votre stratégie' },
+          ]} />
         </div>
       </section>
 
@@ -119,21 +138,25 @@ export default function Page() {
               </li>
             ))}
           </ol>
+          <Further links={[{ href: '/insights/acheter-bien-immobilier-dubai-2026', label: 'Le guide complet pour acheter un bien à Dubai' }]} />
         </div>
       </section>
 
       <section className="section bg-ivory-200">
         <div className="wrap">
-          <SectionHead title="Les coûts à anticiper" intro="Chaque poste est à chiffrer pour votre projet précis. Aucun montant n’est affiché ici tant qu’il n’est pas vérifié." />
+          <SectionHead title="Les coûts à anticiper" intro="Chaque poste est à chiffrer pour votre projet précis. Aucun montant n’est donné ici : il dépend du projet et de la transaction." />
           <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {COSTS.map((c) => (
               <article key={c.t} className="border border-stone-light/70 bg-ivory p-6">
                 <h3 className="font-serif text-xl">{c.t}</h3>
                 <p className="mt-3 text-sm leading-relaxed text-charcoal/70">{c.d}</p>
-                <p className="mt-5 border-t border-stone-light/60 pt-3 text-xs text-stone">Montant : [à confirmer selon le projet]</p>
               </article>
             ))}
           </div>
+          <Further links={[
+            { href: '/insights/combien-faut-il-investir-dubai', label: 'Budgets, frais et financement' },
+            { href: '/insights/rendement-locatif-dubai-2026', label: 'Du rendement brut au rendement net' },
+          ]} />
         </div>
       </section>
 
@@ -161,6 +184,7 @@ export default function Page() {
               </tbody>
             </table>
           </div>
+          <Further links={[{ href: '/strategies#off-plan', label: 'Achat sur plan : avantages et risques' }]} />
         </div>
       </section>
 
@@ -178,6 +202,7 @@ export default function Page() {
               </li>
             ))}
           </ol>
+          <Further dark links={[{ href: '/strategies#payment-plans', label: 'Plans de paiement : points d’attention' }]} />
         </div>
       </section>
 
@@ -188,6 +213,7 @@ export default function Page() {
             <p>Un financement peut compléter un apport personnel. Son accès, son coût et ses conditions dépendent de votre profil, de votre pays de résidence et de l’établissement.</p>
             <p>Il augmente votre capacité d’investissement, mais aussi votre exposition au risque : le crédit doit être remboursé quelle que soit l’évolution du marché.</p>
             <p>BF Properties vous aide à comprendre ces mécanismes à haut niveau. Les offres de financement relèvent des établissements concernés.</p>
+            <Further links={[{ href: '/strategies#financing', label: 'Financement : points d’attention' }]} />
           </div>
         </div>
       </section>

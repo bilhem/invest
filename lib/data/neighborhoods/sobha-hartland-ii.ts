@@ -14,7 +14,7 @@ export const SOBHA_HARTLAND_II_STORY: NeighborhoodStory = {
   seo: {
     title: 'Sobha Hartland II : investir dans le waterfront de Dubai',
     description:
-      'Découvrez Sobha Hartland II : communauté waterfront, lagoons, environnement premium et proximité du cœur de Dubai.',
+      'Découvrez Sobha Hartland II : communauté waterfront, lagoons, environnement premium et proximité du cœur de Dubai, analysés selon une approche d’investissement.',
   },
   hero: {
     eyebrow: 'SOBHA HARTLAND II',

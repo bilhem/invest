@@ -17,9 +17,9 @@ export const RENDEMENT_LOCATIF_DUBAI_2026: Article = {
   category: 'Investment',
   alsoIn: ['Market'],
   title: 'Rendement locatif à Dubai en 2026 : combien rapporte réellement un investissement ?',
-  seoTitle: 'Rendement locatif à Dubai en 2026 : combien rapporte réellement un investissement ?',
+  seoTitle: 'Rendement locatif à Dubai en 2026 : combien rapporte un bien ?',
   description:
-    'Quel rendement locatif peut réellement offrir Dubai en 2026 ? Rendement brut, charges, vacance, gestion, JVC, Business Bay, Marina, Downtown, Dubai Hills : BF Properties analyse les chiffres derrière le ROI.',
+    'Quel rendement locatif à Dubai en 2026 ? Brut, net, charges, vacance et gestion, avec JVC, Business Bay, Marina, Downtown et Dubai Hills comme repères.',
   published: '2026-10-07',
 
   body: [
@@ -742,7 +742,7 @@ export const RENDEMENT_LOCATIF_DUBAI_2026: Article = {
 
   // The closing call to action is the supplied one (ctaPanel above): no second, generic band under the page.
   cta: false,
-  related: ['quartiers-les-plus-demandes-location-dubai', 'ou-investir-a-dubai'],
+  related: ['quartiers-les-plus-demandes-location-dubai', 'ou-investir-a-dubai', 'acheter-bien-immobilier-dubai-2026'],
   links: [
     { label: 'Stratégies d’investissement', href: '/strategies' },
     { label: 'Quartiers', href: '/quartiers' },

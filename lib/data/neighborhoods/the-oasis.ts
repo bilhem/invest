@@ -14,7 +14,7 @@ export const THE_OASIS_STORY: NeighborhoodStory = {
   seo: {
     title: 'The Oasis by Emaar : investir dans les villas premium de Dubai',
     description:
-      'Découvrez The Oasis by Emaar : villas, waterways, environnement premium et analyse des micro-localisations pour investir dans cette nouvelle communauté de Dubai.',
+      'Découvrez The Oasis by Emaar : villas, waterways, environnement premium et analyse des micro-localisations pour investir dans cette communauté de Dubai.',
   },
   hero: {
     eyebrow: 'THE OASIS BY EMAAR',

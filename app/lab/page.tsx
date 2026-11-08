@@ -3,9 +3,11 @@ import LabForm from '@/components/LabForm';
 import { buildMetadata } from '@/lib/seo';
 
 export const metadata = buildMetadata({
-  title: 'BF Investment Lab',
-  description: 'Votre stratégie immobilière, modélisée. Un futur outil BF Properties pour comparer des stratégies, visualiser des plans de paiement et modéliser les besoins en capital.',
+  title: 'BF Investment Lab : un outil en préparation',
+  description: 'Votre stratégie immobilière, modélisée. Un outil BF Properties en préparation pour comparer des stratégies et modéliser les besoins en capital.',
   path: '/lab',
+  // Not launched yet: kept out of search results and out of the sitemap until the tool exists (remove `noindex` and add '/lab' to app/sitemap.ts at launch).
+  noindex: true,
 });
 
 const CAPS = [

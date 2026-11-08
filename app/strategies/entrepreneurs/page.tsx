@@ -6,7 +6,7 @@ import { buildMetadata } from '@/lib/seo';
 
 export const metadata = buildMetadata({
   title: 'Entrepreneurs & sociétés : investir à Dubai',
-  description: 'Votre entreprise génère du cash. Quelles sont vos options ? Une présentation conceptuelle des pistes immobilières à Dubai pour les entrepreneurs, sans conseil fiscal ou juridique.',
+  description: 'Entrepreneurs : explorer l’immobilier à Dubai dans une logique patrimoniale (structures, financement, plans de paiement), sans conseil fiscal ni juridique.',
   path: '/strategies/entrepreneurs',
 });
 

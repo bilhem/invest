@@ -15,9 +15,9 @@ export const QUARTIERS_DEMANDE_LOCATIVE: Article = {
   category: 'Market',
   alsoIn: ['Areas'],
   title: 'Les quartiers les plus demandés à la location à Dubai en 2026 : ce que les contrats Ejari révèlent sur l’économie de la ville',
-  seoTitle: 'Location à Dubai : les quartiers avec le plus de demande locative en 2026',
+  seoTitle: 'Location à Dubai : les quartiers les plus demandés en 2026',
   description:
-    'Quels quartiers concentrent le plus de contrats locatifs à Dubai en 2026 ? Analyse des données Ejari et du lien entre emploi, développement économique et demande locative.',
+    'Quels quartiers concentrent le plus de contrats locatifs à Dubai en 2026 ? Analyse des données Ejari, de l’emploi et de la demande locative.',
   published: '2026-10-07',
 
   body: [
@@ -516,7 +516,7 @@ export const QUARTIERS_DEMANDE_LOCATIVE: Article = {
   disclaimer:
     'Les données historiques et statistiques présentées dans cette analyse ne constituent ni une garantie de rendement ni une projection de performance future. La demande locative d’une zone ne suffit pas à déterminer la qualité d’un investissement ; le prix d’acquisition, l’offre concurrente, les charges, la qualité de l’actif et la stratégie de sortie doivent notamment être analysés.',
 
-  related: ['investir-a-dubai', 'ou-investir-a-dubai'],
+  related: ['investir-a-dubai', 'ou-investir-a-dubai', 'investir-bureaux-dubai-2026'],
   links: [
     { label: 'Stratégies d’investissement', href: '/strategies' },
     { label: 'Investor Stories', href: '/investor-stories' },

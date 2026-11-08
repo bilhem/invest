@@ -9,8 +9,8 @@ import { getImage } from '@/lib/images';
 import type { Strategy } from '@/lib/data/strategies';
 
 export const metadata = buildMetadata({
-  title: 'Stratégies d’investissement à Dubai',
-  description: 'Valorisation, revenus locatifs, off-plan, plans de paiement, financement, diversification : les stratégies d’investissement immobilier à Dubai, expliquées sans promesse de rendement.',
+  title: 'Stratégies d’investissement immobilier à Dubai',
+  description: 'Capital, revenus locatifs, diversification, achat sur plan, plans de paiement, financement : stratégies d’investissement à Dubai, sans promesse de rendement.',
   path: '/strategies',
 });
 

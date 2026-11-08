@@ -14,7 +14,7 @@ export const PALM_JEBEL_ALI_STORY: NeighborhoodStory = {
   seo: {
     title: 'Palm Jebel Ali : investir dans la nouvelle Palm de Dubai',
     description:
-      'Découvrez la thèse d’investissement de Palm Jebel Ali : beachfront, développement vers le sud de Dubai, micro-localisation et potentiel d’une nouvelle destination à long terme.',
+      'Palm Jebel Ali, nouvelle destination beachfront au sud de Dubai : la thèse d’investissement, la micro-localisation et le potentiel à long terme.',
   },
   hero: {
     eyebrow: 'Palm Jebel Ali',

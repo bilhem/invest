@@ -9,7 +9,7 @@ import ArticleBody from '@/components/insights/ArticleBody';
 import ArticleMore from '@/components/insights/ArticleMore';
 import ArticleSources from '@/components/insights/ArticleSources';
 import { tocFrom, withHeadingIds } from '@/components/insights/inline';
-import { buildMetadata, abs } from '@/lib/seo';
+import { buildMetadata, abs, ORG_ID } from '@/lib/seo';
 import { SITE } from '@/lib/site';
 import { getArticle, getArticles, getRelatedArticles } from '@/lib/cms';
 import { INSIGHTS_AUTHOR, articleWords, plainText } from '@/lib/data/articles';
@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
     path: `/insights/${a.slug}`,
     noindex: a.noindex,
     image: cover && 'src' in cover && cover.src ? { src: cover.src, width: cover.width, height: cover.height, alt: cover.alt } : undefined,
-    article: { section: a.category, publishedTime: a.published, modifiedTime: a.updated ?? a.published },
+    article: { section: a.category, publishedTime: a.published, modifiedTime: a.updated },
   });
 }
 
@@ -56,11 +56,12 @@ export default async function Page({ params }: { params: Promise<Params> }) {
     inLanguage: 'fr',
     articleSection: [a.category, ...(a.alsoIn ?? [])],
     datePublished: a.published,
-    dateModified: a.updated ?? a.published,
+    // Only a real update date: none is invented when the article has not been revised.
+    ...(a.updated ? { dateModified: a.updated } : {}),
     wordCount: articleWords(a),
     ...(cover && 'src' in cover && cover.src ? { image: abs(cover.src) } : {}),
     author: a.author ? { '@type': 'Person', name: a.author.name } : { '@type': 'Organization', name: INSIGHTS_AUTHOR, url: SITE.url },
-    publisher: { '@type': 'Organization', name: SITE.name, url: SITE.url },
+    publisher: { '@type': 'Organization', '@id': ORG_ID, name: SITE.name, url: SITE.url },
     mainEntityOfPage: { '@type': 'WebPage', '@id': abs(`/insights/${a.slug}`) },
     ...(a.sources.length ? { citation: a.sources.map((s) => ({ '@type': 'CreativeWork', name: s.label, url: s.url })) } : {}),
   };

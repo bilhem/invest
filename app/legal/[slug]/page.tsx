@@ -6,7 +6,7 @@ import { buildMetadata } from '@/lib/seo';
 
 type Params = { slug: string };
 
-type LegalDoc = { title: string; draft: boolean; sections: { h: string; p: string }[] };
+type LegalDoc = { title: string; draft: boolean; sections: { h: string; p: string }[]; /** Optional SEO title / description (the draft pages keep the generic ones until their text is validated). */ seoTitle?: string; seoDescription?: string };
 
 /**
  * Legal texts must be written or validated by BF Properties' legal counsel.
@@ -55,6 +55,8 @@ const DOCS: Record<string, LegalDoc> = {
   },
   disclaimers: {
     title: 'Avertissements',
+    seoTitle: 'Avertissements : un contenu informatif, pas un conseil',
+    seoDescription: 'Les contenus de BF Properties sont informatifs : ils ne constituent pas un conseil juridique, fiscal ou financier, et aucune performance n’est garantie.',
     draft: false,
     sections: [
       { h: 'Information, pas conseil', p: 'Les contenus de ce site sont fournis à titre informatif. Ils ne constituent ni un conseil juridique, fiscal ou financier, ni une recommandation personnalisée d’investissement.' },
@@ -74,7 +76,7 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   const { slug } = await params;
   const d = DOCS[slug];
   if (!d) return {};
-  return buildMetadata({ title: d.title, description: `${d.title} de BF Properties.`, path: `/legal/${slug}`, noindex: d.draft });
+  return buildMetadata({ title: d.seoTitle ?? d.title, description: d.seoDescription ?? `${d.title} de BF Properties.`, path: `/legal/${slug}`, noindex: d.draft });
 }
 
 export default async function Page({ params }: { params: Promise<Params> }) {

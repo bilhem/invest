@@ -17,8 +17,9 @@ export const INVESTIR_BUREAUX_DUBAI_2026: Article = {
   category: 'Market',
   alsoIn: ['Investment'],
   title: 'Investir dans des bureaux à Dubai en 2026 : pourquoi le Grade A devient stratégique',
+  seoTitle: 'Investir dans des bureaux à Dubai en 2026 : le Grade A',
   description:
-    'Occupation, loyers, demande des entreprises, Grade A et nouvelles livraisons : BF Properties analyse le marché des bureaux à Dubai en 2026 et les critères à étudier avant d’investir.',
+    'Occupation, loyers, demande des entreprises, Grade A et nouvelles livraisons : le marché des bureaux à Dubai en 2026 et les critères à étudier avant d’investir.',
   published: '2026-10-07',
 
   body: [

@@ -4,7 +4,8 @@ import { getAreas, getStories, getArticles, getReadyDevelopers, isPublishable } 
 import { developerHref } from '@/lib/data/developers';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const staticRoutes = ['', '/investir-a-dubai', '/strategies', '/strategies/entrepreneurs', '/quartiers', '/investor-stories', '/insights', '/insights/developers', '/a-propos', '/consultation', '/lab', '/legal/disclaimers'];
+  // /lab is left out until the tool is launched (the page is also noindex). Draft legal pages are noindex and left out too.
+  const staticRoutes = ['', '/investir-a-dubai', '/strategies', '/strategies/entrepreneurs', '/quartiers', '/investor-stories', '/insights', '/insights/developers', '/a-propos', '/consultation', '/legal/disclaimers'];
   const entries: MetadataRoute.Sitemap = staticRoutes.map((p) => ({
     url: `${SITE.url}${p}`,
     changeFrequency: p === '' ? 'weekly' : 'monthly',

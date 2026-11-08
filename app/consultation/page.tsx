@@ -3,8 +3,8 @@ import ConsultationForm from '@/components/ConsultationForm';
 import { buildMetadata } from '@/lib/seo';
 
 export const metadata = buildMetadata({
-  title: 'Prendre rendez-vous',
-  description: 'Parlons de votre projet immobilier à Dubai. Quelques informations nous permettent de préparer notre échange avec BF Properties.',
+  title: 'Prendre rendez-vous : votre projet immobilier à Dubai',
+  description: 'Parlons de votre projet d’investissement immobilier à Dubai. Quelques informations nous permettent de préparer notre échange.',
   path: '/consultation',
 });
 

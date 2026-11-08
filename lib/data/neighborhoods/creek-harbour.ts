@@ -10,7 +10,7 @@ export const CREEK_HARBOUR_STORY: NeighborhoodStory = {
   seo: {
     title: 'Dubai Creek Harbour : investir dans le quartier',
     description:
-      'Dubai Creek Harbour, destination waterfront d’Emaar face à Downtown : masterplan, Dubai Square, Blue Line, Creek Tower et regard d’investissement de BF Properties.',
+      'Dubai Creek Harbour, destination waterfront d’Emaar face à Downtown : Dubai Square, Blue Line, Creek Tower et regard d’investissement de BF Properties.',
   },
   hero: {
     eyebrow: 'Dubai Creek Harbour',

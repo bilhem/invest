@@ -5,8 +5,8 @@ import { buildMetadata } from '@/lib/seo';
 import { ABOUT, type AboutBlock } from '@/lib/data/about';
 
 export const metadata = buildMetadata({
-  title: 'À propos de BF Properties',
-  description: 'BF Properties accompagne les investisseurs internationaux dans la compréhension, la sélection et l’acquisition d’opportunités immobilières à Dubai, en commençant par l’investisseur.',
+  title: 'À propos : Bilel Hemissi, investisseur immobilier à Dubai',
+  description: 'Bilel Hemissi, investisseur à Dubai depuis quatre ans : son parcours, sa manière d’investir, ses engagements et la raison d’être de BF Properties.',
   path: '/a-propos',
 });
 

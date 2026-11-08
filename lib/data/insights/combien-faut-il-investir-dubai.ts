@@ -16,9 +16,9 @@ export const COMBIEN_FAUT_IL_INVESTIR_DUBAI: Article = {
   slug: 'combien-faut-il-investir-dubai',
   category: 'Investment',
   title: 'Combien faut-il pour investir à Dubai en 2026 ?',
-  seoTitle: 'Combien faut-il pour investir à Dubai en 2026 ? Budgets, frais et stratégies',
+  seoTitle: 'Combien faut-il pour investir à Dubai en 2026 ? Budgets et frais',
   description:
-    '100 000 €, 250 000 €, 500 000 € ou 1 M€ : découvrez ce que chaque budget permet réellement d’envisager à Dubai, les frais à anticiper et la stratégie d’investissement à privilégier.',
+    '100 000 €, 250 000 €, 500 000 € ou 1 M€ : ce que chaque budget permet d’envisager à Dubai, les frais à anticiper et la stratégie d’investissement à privilégier.',
   published: '2026-10-07',
 
   body: [
@@ -738,7 +738,7 @@ export const COMBIEN_FAUT_IL_INVESTIR_DUBAI: Article = {
 
   // The closing call to action is the supplied one (ctaPanel above): no second, generic band under the page.
   cta: false,
-  related: ['investir-a-dubai', 'ou-investir-a-dubai'],
+  related: ['acheter-bien-immobilier-dubai-2026', 'investir-a-dubai', 'ou-investir-a-dubai'],
   links: [
     { label: 'Stratégies d’investissement', href: '/strategies' },
     { label: 'Investor Stories', href: '/investor-stories' },

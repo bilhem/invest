@@ -11,8 +11,8 @@ import { CATEGORY_FR, DEVELOPERS_VISUAL, FEATURED_SLUG, HUB_FILTERS, HUB_VISUALS
 import type { ImageKey } from '@/lib/images';
 
 export const metadata = buildMetadata({
-  title: 'BF Insights : analyses du marché immobilier de Dubai',
-  description: 'Comprendre le marché. Mieux investir. Analyses de marché, stratégies d’investissement, quartiers, promoteurs et guides pour investisseurs à Dubai.',
+  title: 'Marché immobilier de Dubai : analyses et guides pour investir',
+  description: 'Analyses de marché, stratégies d’investissement, quartiers, promoteurs et guides pour comprendre le marché immobilier de Dubai et mieux investir.',
   path: '/insights',
 });
 
